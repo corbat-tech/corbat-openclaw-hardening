@@ -1,0 +1,112 @@
+site_name: OpenClaw on VPS
+site_description: Secure OpenClaw installation guide for VPS - CIS Benchmark, Tailscale Hardening, OWASP Agentic Top 10
+site_author: CORBAT
+site_url: https://corbat.github.io/corbat-openclaw-hardening/
+
+repo_name: corbat-openclaw-hardening
+repo_url: https://github.com/corbat/corbat-openclaw-hardening
+
+theme:
+  name: material
+  language: en
+  palette:
+    - scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search:
+      lang:
+        - en
+        - es
+  - i18n:
+      docs_structure: folder
+      default_language: en
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: es
+          name: Español
+          build: true
+          site_name: OpenClaw en VPS
+          nav:
+            - Inicio: index.md
+            - Guía de instalación:
+              - 1. Preparación: 01-preparacion.md
+              - 2. Contratar VPS: 02-vps.md
+              - 3. Seguridad del sistema: 03-seguridad-sistema.md
+              - 4. Acceso privado (Tailscale): 04-acceso-privado.md
+              - 5. Instalar OpenClaw: 05-openclaw.md
+              - 6. APIs de LLM: 06-llm-apis.md
+              - 7. Casos de uso: 07-casos-uso.md
+            - Seguridad avanzada:
+              - 8. Seguridad del agente: 08-seguridad-agente.md
+              - 9. Mantenimiento: 09-mantenimiento.md
+              - 10. Checklist final: 10-checklist-final.md
+            - Referencia:
+              - Glosario: glosario.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Installation Guide:
+    - 1. Preparation: 01-preparation.md
+    - 2. Provision VPS: 02-vps.md
+    - 3. System security: 03-system-security.md
+    - 4. Private access (Tailscale): 04-private-access.md
+    - 5. Install OpenClaw: 05-openclaw.md
+    - 6. LLM APIs: 06-llm-apis.md
+    - 7. Use cases: 07-use-cases.md
+  - Advanced Security:
+    - 8. Agent security: 08-agent-security.md
+    - 9. Maintenance: 09-maintenance.md
+    - 10. Final checklist: 10-final-checklist.md
+  - Reference:
+    - Glossary: glossary.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/corbat
+  alternate:
+    - name: English
+      link: /
+      lang: en
+    - name: Español
+      link: /es/
+      lang: es
