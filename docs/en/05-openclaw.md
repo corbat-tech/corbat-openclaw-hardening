@@ -727,8 +727,10 @@ sudo nano /etc/systemd/system/openclaw.service
 [Unit]
 Description=OpenClaw AI Agent Gateway
 Documentation=https://docs.openclaw.ai/
-After=network.target tailscaled.service docker.service
+After=network.target tailscaled.service
 Wants=tailscaled.service
+StartLimitBurst=5
+StartLimitIntervalSec=300
 
 [Service]
 Type=simple
@@ -743,18 +745,12 @@ Environment=OPENCLAW_NO_RESPAWN=1
 
 # --- Start command ---
 # IMPORTANT: First find the correct path by running: which openclaw
-# OpenClaw Gateway (default port: 18789)
-ExecStart=/home/openclaw/.local/bin/openclaw gateway --port 18789
-
-# If you used nvm, run: which openclaw to get the correct path
-# Example with nvm (adjust version according to your installation):
-# ExecStart=/home/openclaw/.nvm/versions/node/v22.x.x/bin/node /home/openclaw/.nvm/versions/node/v22.x.x/lib/node_modules/openclaw/dist/cli.js gateway --port 18789
+# If you used nvm: /home/openclaw/.nvm/versions/node/v22.x.x/bin/openclaw
+ExecStart=/home/openclaw/.nvm/versions/node/v22.x.x/bin/openclaw gateway --port 18789
 
 # --- Automatic restart ---
 Restart=on-failure
 RestartSec=10
-StartLimitBurst=5
-StartLimitIntervalSec=300
 
 # ============================================================
 # SYSTEMD HARDENING - Process sandboxing
@@ -769,7 +765,7 @@ ProtectHome=read-only
 ReadWritePaths=/home/openclaw/openclaw/workspace
 ReadWritePaths=/home/openclaw/openclaw/logs
 ReadWritePaths=/home/openclaw/.openclaw
-ReadWritePaths=/var/run/docker.sock
+ReadWritePaths=/var/tmp/openclaw-compile-cache
 # Private temp (isolated)
 PrivateTmp=true
 
@@ -781,8 +777,8 @@ CapabilityBoundingSet=
 AmbientCapabilities=
 
 # --- Isolate network ---
-# Only allow IPv4, IPv6, and Unix sockets
-RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+# AF_NETLINK required for OpenClaw to list network interfaces
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 
 # --- Restrict syscalls ---
 # Only syscalls needed for normal services
@@ -863,6 +859,9 @@ sudo systemctl status openclaw
      Loaded: loaded (/etc/systemd/system/openclaw.service; enabled; ...)
      Active: active (running) since ...
 ```
+
+!!! info "Gateway startup time"
+    On a 4GB VPS, the gateway can take **1-2 minutes** to fully start and begin listening on port 18789. Use `ss -tln | grep 18789` to verify it's ready. If it doesn't show immediately, wait and retry.
 
 ### Verify logs
 

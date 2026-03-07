@@ -342,6 +342,8 @@ Description=OpenClaw AI Agent Gateway
 Documentation=https://docs.openclaw.ai/
 After=network.target tailscaled.service
 Wants=tailscaled.service
+StartLimitBurst=5
+StartLimitIntervalSec=300
 
 [Service]
 Type=simple
@@ -356,8 +358,6 @@ Environment=OPENCLAW_NO_RESPAWN=1
 ExecStart=${OPENCLAW_BIN} gateway --port 18789
 Restart=on-failure
 RestartSec=10
-StartLimitBurst=5
-StartLimitIntervalSec=300
 
 # === SYSTEMD HARDENING ===
 ProtectSystem=strict
@@ -365,11 +365,12 @@ ProtectHome=read-only
 ReadWritePaths=/home/openclaw/openclaw/workspace
 ReadWritePaths=/home/openclaw/openclaw/logs
 ReadWritePaths=/home/openclaw/.openclaw
+ReadWritePaths=/var/tmp/openclaw-compile-cache
 PrivateTmp=true
 NoNewPrivileges=true
 CapabilityBoundingSet=
 AmbientCapabilities=
-RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 SystemCallFilter=@system-service
 SystemCallFilter=~@privileged @resources @mount @clock @reboot @swap @raw-io @cpu-emulation @debug
 SystemCallArchitectures=native

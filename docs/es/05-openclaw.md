@@ -727,8 +727,10 @@ sudo nano /etc/systemd/system/openclaw.service
 [Unit]
 Description=OpenClaw AI Agent Gateway
 Documentation=https://docs.openclaw.ai/
-After=network.target tailscaled.service docker.service
+After=network.target tailscaled.service
 Wants=tailscaled.service
+StartLimitBurst=5
+StartLimitIntervalSec=300
 
 [Service]
 Type=simple
@@ -753,8 +755,6 @@ ExecStart=/home/openclaw/.local/bin/openclaw gateway --port 18789
 # --- Reinicio automático ---
 Restart=on-failure
 RestartSec=10
-StartLimitBurst=5
-StartLimitIntervalSec=300
 
 # ============================================================
 # HARDENING SYSTEMD - Sandboxing del proceso
@@ -769,7 +769,7 @@ ProtectHome=read-only
 ReadWritePaths=/home/openclaw/openclaw/workspace
 ReadWritePaths=/home/openclaw/openclaw/logs
 ReadWritePaths=/home/openclaw/.openclaw
-ReadWritePaths=/var/run/docker.sock
+ReadWritePaths=/var/tmp/openclaw-compile-cache
 # Temp privado (aislado)
 PrivateTmp=true
 
@@ -781,8 +781,8 @@ CapabilityBoundingSet=
 AmbientCapabilities=
 
 # --- Aislar red ---
-# Solo permitir IPv4, IPv6 y Unix sockets
-RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+# Solo permitir IPv4, IPv6, Unix sockets y Netlink (necesario para listar interfaces)
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 
 # --- Restringir syscalls ---
 # Solo syscalls necesarios para servicios normales
@@ -856,6 +856,10 @@ sudo systemctl start openclaw
 # Ver estado
 sudo systemctl status openclaw
 ```
+
+!!! info "Tiempo de inicio"
+    El Gateway puede tardar **~2 minutos** en estar completamente operativo en un VPS de 4 GB.
+    Si `systemctl status` muestra `active (running)` pero el puerto aún no responde, espera un poco.
 
 **Salida esperada:**
 ```
