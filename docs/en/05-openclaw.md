@@ -732,6 +732,9 @@ Add the `channels` section at root level (before the last `}`):
 !!! tip "Don't forget the comma"
     Add a comma after the closing `}` of the previous section before `"channels"`.
 
+!!! warning "Switch to allowlist after pairing"
+    Use `"pairing"` only for the initial setup. After approving your account (Step 4), switch to `"allowlist"` in Step 5 to lock down access.
+
 **Step 3 — Restart and verify:**
 
 ```bash
@@ -764,14 +767,14 @@ Then edit the config:
 nano ~/.openclaw/openclaw.json
 ```
 
-Add `allowFrom` to the telegram channel with your ID:
+Change `dmPolicy` to `"allowlist"` and add `allowFrom` with your ID:
 
 ```json
 "channels": {
   "telegram": {
     "enabled": true,
     "botToken": "YOUR_TOKEN",
-    "dmPolicy": "pairing",
+    "dmPolicy": "allowlist",
     "allowFrom": ["YOUR_TELEGRAM_ID"]
   }
 }
@@ -779,8 +782,34 @@ Add `allowFrom` to the telegram channel with your ID:
 
 Restart: `sudo systemctl restart openclaw`
 
-!!! danger "Always set allowFrom"
-    Without `allowFrom`, anyone who finds your bot can request pairing. With `allowFrom`, only your account can interact with the bot — all others are silently ignored.
+!!! danger "Use dmPolicy 'allowlist' — not 'pairing'"
+    With `"pairing"`, **anyone** who finds your bot can request a pairing code — `allowFrom` is ignored.
+    With `"allowlist"`, **only** the IDs in `allowFrom` can interact with the bot — all others are silently ignored.
+
+#### Revoke access from a previously approved sender
+
+If you approved someone by mistake, you need to edit the pairing store file:
+
+```bash
+# View currently approved senders
+cat ~/.openclaw/credentials/telegram-default-allowFrom.json
+
+# Remove a sender (replace SENDER_ID with the ID to remove)
+python3 -c "
+import json
+f = '/home/openclaw/.openclaw/credentials/telegram-default-allowFrom.json'
+with open(f) as fh:
+    d = json.load(fh)
+d['allowFrom'] = [x for x in d['allowFrom'] if x != 'SENDER_ID']
+with open(f, 'w') as fh:
+    json.dump(d, fh, indent=2)
+print('Removed SENDER_ID')
+"
+sudo systemctl restart openclaw
+```
+
+!!! note "No CLI command for revocation"
+    OpenClaw does not have a CLI command to revoke approved senders. The pairing store files in `~/.openclaw/credentials/` must be edited manually.
 
 !!! note "The `openclaw channels add` wizard"
     The interactive CLI wizard (`openclaw channels add`) may not always save the config correctly. If it fails, use the manual JSON method above — it is more reliable.

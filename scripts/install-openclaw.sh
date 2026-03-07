@@ -226,10 +226,15 @@ if [ -n "$TELEGRAM_TOKEN" ]; then
     read -r TELEGRAM_USER_ID
 
     if [ -n "$TELEGRAM_USER_ID" ]; then
+        TELEGRAM_DM_POLICY="allowlist"
         ALLOW_FROM="\"allowFrom\": [\"${TELEGRAM_USER_ID}\"],"
+        info "Telegram will be restricted to your account only (allowlist mode)."
     else
+        TELEGRAM_DM_POLICY="pairing"
         ALLOW_FROM=""
-        warn "No allowFrom set — anyone can request pairing. Set it later in ~/.openclaw/openclaw.json"
+        warn "No user ID set — using pairing mode. After first message, approve with:"
+        warn "  openclaw pairing approve telegram <CODE>"
+        warn "Then switch to dmPolicy: allowlist in ~/.openclaw/openclaw.json"
     fi
 
     CHANNELS_CONFIG=$(cat <<CHCONF
@@ -237,15 +242,14 @@ if [ -n "$TELEGRAM_TOKEN" ]; then
     "telegram": {
       "enabled": true,
       "botToken": "${TELEGRAM_TOKEN}",
-      "dmPolicy": "pairing",
+      "dmPolicy": "${TELEGRAM_DM_POLICY}",
       ${ALLOW_FROM}
       "groupPolicy": "allowlist"
     }
   },
 CHCONF
     )
-    info "Telegram configured with dmPolicy: pairing"
-    info "After first message, approve pairing with: openclaw pairing approve telegram <CODE>"
+    info "Telegram configured with dmPolicy: ${TELEGRAM_DM_POLICY}"
 else
     CHANNELS_CONFIG=""
     info "Skipped. Add Telegram later by editing ~/.openclaw/openclaw.json"

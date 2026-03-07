@@ -732,6 +732,9 @@ Añade la sección `channels` a nivel raíz (antes del último `}`):
 !!! tip "No olvides la coma"
     Añade una coma después del `}` de la sección anterior antes de `"channels"`.
 
+!!! warning "Cambia a allowlist después del emparejamiento"
+    Usa `"pairing"` solo para la configuración inicial. Después de aprobar tu cuenta (Paso 4), cambia a `"allowlist"` en el Paso 5 para bloquear el acceso.
+
 **Paso 3 — Reiniciar y verificar:**
 
 ```bash
@@ -764,14 +767,14 @@ Luego edita la config:
 nano ~/.openclaw/openclaw.json
 ```
 
-Añade `allowFrom` al canal de Telegram con tu ID:
+Cambia `dmPolicy` a `"allowlist"` y añade `allowFrom` con tu ID:
 
 ```json
 "channels": {
   "telegram": {
     "enabled": true,
     "botToken": "TU_TOKEN",
-    "dmPolicy": "pairing",
+    "dmPolicy": "allowlist",
     "allowFrom": ["TU_TELEGRAM_ID"]
   }
 }
@@ -779,8 +782,34 @@ Añade `allowFrom` al canal de Telegram con tu ID:
 
 Reinicia: `sudo systemctl restart openclaw`
 
-!!! danger "Siempre configura allowFrom"
-    Sin `allowFrom`, cualquiera que encuentre tu bot puede solicitar pairing. Con `allowFrom`, solo tu cuenta puede interactuar — el resto es ignorado silenciosamente.
+!!! danger "Usa dmPolicy 'allowlist' — no 'pairing'"
+    Con `"pairing"`, **cualquiera** que encuentre tu bot puede pedir un código de emparejamiento — `allowFrom` se ignora.
+    Con `"allowlist"`, **solo** los IDs en `allowFrom` pueden interactuar con el bot — el resto es ignorado silenciosamente.
+
+#### Revocar acceso de un remitente aprobado previamente
+
+Si aprobaste a alguien por error, edita el archivo de pairing:
+
+```bash
+# Ver remitentes aprobados
+cat ~/.openclaw/credentials/telegram-default-allowFrom.json
+
+# Eliminar un remitente (reemplaza SENDER_ID con el ID a eliminar)
+python3 -c "
+import json
+f = '/home/openclaw/.openclaw/credentials/telegram-default-allowFrom.json'
+with open(f) as fh:
+    d = json.load(fh)
+d['allowFrom'] = [x for x in d['allowFrom'] if x != 'SENDER_ID']
+with open(f, 'w') as fh:
+    json.dump(d, fh, indent=2)
+print('Removed SENDER_ID')
+"
+sudo systemctl restart openclaw
+```
+
+!!! note "No hay comando CLI para revocar"
+    OpenClaw no tiene un comando CLI para revocar remitentes aprobados. Los archivos de pairing en `~/.openclaw/credentials/` deben editarse manualmente.
 
 !!! note "El wizard `openclaw channels add`"
     El wizard interactivo (`openclaw channels add`) puede no guardar la config correctamente. Si falla, usa el método manual de JSON descrito arriba — es más fiable.
