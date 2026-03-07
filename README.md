@@ -1,6 +1,6 @@
 # OpenClaw VPS Hardening Guide
 
-[![Documentation](https://img.shields.io/badge/docs-live-brightgreen)](https://corbat.github.io/corbat-openclaw-hardening/)
+[![Documentation](https://img.shields.io/badge/docs-live-brightgreen)](https://corbat-tech.github.io/corbat-openclaw-hardening/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Languages](https://img.shields.io/badge/languages-EN%20%7C%20ES-orange)](#documentation)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-v2026.3.x-blue)](#whats-covered)
@@ -9,7 +9,7 @@ Complete security guide for deploying [OpenClaw](https://openclaw.ai) AI agents 
 
 ## Documentation
 
-**[Read in English](https://corbat.github.io/corbat-openclaw-hardening/)** | **[Leer en Español](https://corbat.github.io/corbat-openclaw-hardening/es/)**
+**[Read in English](https://corbat-tech.github.io/corbat-openclaw-hardening/)** | **[Leer en Español](https://corbat-tech.github.io/corbat-openclaw-hardening/es/)**
 
 ## Security Standards Implemented
 
@@ -50,7 +50,7 @@ Complete security guide for deploying [OpenClaw](https://openclaw.ai) AI agents 
 
 ```bash
 # Clone the repository
-git clone https://github.com/corbat/corbat-openclaw-hardening.git
+git clone https://github.com/corbat-tech/corbat-openclaw-hardening.git
 
 # Install dependencies
 pip install -r requirements.txt
@@ -91,4 +91,4 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
-Made with security in mind by [CORBAT](https://github.com/corbat)
+Made with security in mind by [CORBAT](https://github.com/corbat-tech)

@@ -1,10 +1,10 @@
 site_name: OpenClaw on VPS
 site_description: Secure OpenClaw installation guide for VPS - CIS Benchmark, Tailscale Hardening, OWASP Agentic Top 10
 site_author: CORBAT
-site_url: https://corbat.github.io/corbat-openclaw-hardening/
+site_url: https://corbat-tech.github.io/corbat-openclaw-hardening/
 
 repo_name: corbat-openclaw-hardening
-repo_url: https://github.com/corbat/corbat-openclaw-hardening
+repo_url: https://github.com/corbat-tech/corbat-openclaw-hardening
 
 theme:
   name: material
@@ -101,7 +101,7 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/corbat
+      link: https://github.com/corbat-tech
   alternate:
     - name: English
       link: /
