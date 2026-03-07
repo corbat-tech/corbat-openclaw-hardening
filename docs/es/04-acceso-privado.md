@@ -265,14 +265,16 @@ Por defecto, Tailscale permite que todos los dispositivos se comuniquen entre s�
 
 ### Aplicar tag al VPS
 
+!!! danger "NUNCA ejecutes `tailscale down` una vez cerrado el SSH público"
+    Si Tailscale es tu única forma de acceder al servidor y ejecutas `tailscale down`, perderás todo el acceso. La única recuperación es via el modo rescue del proveedor (ver Troubleshooting más abajo). Usa siempre `--reset` para reconfigurar sin cortar la conexión.
+
 En el VPS, ejecuta:
 
 ```bash
 sudo tailscale up --advertise-tags=tag:vps --reset
 ```
 
-!!! warning "El flag --reset reinicia el estado"
-    Esto aplica la nueva configuración de tags. Necesitarás re-autenticar si ya estabas conectado.
+Te mostrará una URL para re-autenticar. Ábrela en el navegador y autoriza. **NO uses `tailscale down` + `tailscale up` — eso cortará tu conexión.**
 
 ### Verificar tags
 
@@ -321,7 +323,26 @@ ListenAddress 100.64.0.1
 !!! warning "IP de ejemplo"
     Tu IP será diferente (algo como `100.x.x.x`). El comando usa automáticamente tu IP real.
 
-### Paso 2: Verificar sintaxis
+### Paso 2: Deshabilitar ssh.socket (Ubuntu 24.04)
+
+!!! warning "Crítico: Ubuntu 24.04 usa activación por socket por defecto"
+    Ubuntu 24.04 inicia SSH mediante `ssh.socket` (activación por socket de systemd), que escucha en `0.0.0.0:22` e **ignora la directiva `ListenAddress`** de sshd_config. Debes deshabilitarlo y cambiar al servicio tradicional `ssh.service` para que `ListenAddress` funcione.
+
+```bash
+# Deshabilitar activación por socket (ignora ListenAddress)
+sudo systemctl disable --now ssh.socket
+
+# Habilitar servicio SSH tradicional (respeta ListenAddress)
+sudo systemctl enable ssh.service
+
+# Crear directorio de separación de privilegios (normalmente lo crea ssh.socket)
+sudo mkdir -p /run/sshd
+
+# Matar procesos sshd residuales de la activación por socket
+sudo kill $(cat /run/sshd.pid 2>/dev/null) 2>/dev/null || true
+```
+
+### Paso 3: Verificar sintaxis
 
 ```bash
 sudo sshd -t
@@ -329,13 +350,13 @@ sudo sshd -t
 
 **Si hay errores, NO reinicies SSH.** Corrige primero.
 
-### Paso 3: Reiniciar SSH
+### Paso 4: Reiniciar SSH
 
 ```bash
 sudo systemctl restart ssh
 ```
 
-### Paso 4: Eliminar regla de firewall
+### Paso 5: Eliminar regla de firewall
 
 ```bash
 # Eliminar regla que permite SSH desde cualquier lugar
@@ -676,12 +697,86 @@ sudo ss -ulnp | grep tailscale
 tailscale netcheck
 ```
 
-### Perdí acceso por SSH público y Tailscale no funciona
+### SSH sigue accesible en la IP pública tras configurar ListenAddress
+
+**Causa**: Ubuntu 24.04 usa `ssh.socket` (activación por socket de systemd) que escucha en `0.0.0.0:22` e ignora `ListenAddress`.
 
 **Solución**:
-1. Accede por la consola web del proveedor VPS (Hostinger/Hetzner tienen VNC)
-2. Revierte los cambios de ListenAddress en `/etc/ssh/sshd_config.d/99-hardening.conf`
-3. `sudo systemctl restart ssh`
+```bash
+# Verificar si ssh.socket está activo
+systemctl is-active ssh.socket
+
+# Si está activo, deshabilitarlo y cambiar al servicio tradicional
+sudo systemctl disable --now ssh.socket
+sudo systemctl enable ssh.service
+sudo mkdir -p /run/sshd
+sudo kill $(cat /run/sshd.pid 2>/dev/null) 2>/dev/null || true
+sudo systemctl restart ssh
+
+# Verificar que solo escucha en la IP de Tailscale
+ss -tln | grep :22
+```
+
+### Error: "Cannot bind any address" o "Address already in use"
+
+**Causa**: Tras deshabilitar `ssh.socket`, quedan procesos sshd residuales de la activación por socket que siguen ocupando el puerto.
+
+**Solución**:
+```bash
+# Matar proceso sshd residual
+sudo kill $(cat /run/sshd.pid 2>/dev/null) 2>/dev/null || true
+sudo systemctl restart ssh
+```
+
+### Error: "Missing privilege separation directory: /run/sshd"
+
+**Causa**: El directorio `/run/sshd` normalmente lo crea `ssh.socket`. Tras deshabilitarlo, el directorio no existe.
+
+**Solución**:
+```bash
+sudo mkdir -p /run/sshd
+sudo systemctl restart ssh
+```
+
+### Perdí el acceso: SSH público cerrado y Tailscale caído
+
+**Causa**: Ejecutaste `tailscale down` o Tailscale se detuvo cuando el SSH público ya estaba cerrado. La consola del VPS tampoco funciona si tu usuario no tiene contraseña (autenticación solo por clave SSH).
+
+**Solución — Modo Rescue de Hetzner:**
+
+1. En el panel de Hetzner Cloud → tu servidor → pestaña **Rescue** → **Enable Rescue & Power Cycle**
+2. Copia la **contraseña de root** que muestra el panel
+3. Ve a la pestaña **Power** → **Power cycle** el servidor (arrancará en rescue)
+4. Desde tu máquina local, elimina la clave antigua y conecta:
+    ```bash
+    ssh-keygen -R <TU_IP_PUBLICA>
+    ssh root@<TU_IP_PUBLICA>
+    ```
+    Usa la contraseña de root del rescue del paso 2.
+5. Monta tu disco y levanta Tailscale:
+    ```bash
+    # Montar el sistema de archivos del servidor
+    mount /dev/sda1 /mnt
+
+    # Chroot a tu sistema
+    mount --bind /dev /mnt/dev
+    mount --bind /proc /mnt/proc
+    mount --bind /sys /mnt/sys
+    chroot /mnt
+
+    # Levantar Tailscale
+    tailscale up --advertise-tags=tag:vps
+    ```
+6. Tras re-autenticar, sal del chroot y reinicia en modo normal:
+    ```bash
+    exit
+    umount -R /mnt
+    reboot
+    ```
+7. En el panel de Hetzner → pestaña **Rescue** → **Disable Rescue** para que el siguiente reinicio sea normal.
+
+!!! tip "Cloud Firewall de Hetzner"
+    El modo rescue arranca un sistema diferente que ignora UFW, pero sí respeta el **Cloud Firewall de Hetzner**. Si SSH al rescue es rechazado, ve a la pestaña **Firewalls** y añade temporalmente una regla de entrada permitiendo TCP puerto 22.
 
 ---
 
