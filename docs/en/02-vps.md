@@ -160,6 +160,9 @@ runcmd:
   - timedatectl set-timezone America/New_York
 ```
 
+!!! tip "Timezone: use YOUR timezone, not the datacenter's"
+    Set the timezone to where **you** are, not where the server is located. This way logs and timestamps match your local time, making monitoring and debugging easier.
+
 !!! warning "Remove NOPASSWD after initial setup"
     Cloud-init uses `NOPASSWD` so you can run `sudo` immediately after first login (there is no password set yet). After completing sections 3-5, you **must** secure this:
 

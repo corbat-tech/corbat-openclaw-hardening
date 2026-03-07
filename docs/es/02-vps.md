@@ -160,6 +160,9 @@ runcmd:
   - timedatectl set-timezone Europe/Madrid
 ```
 
+!!! tip "Zona horaria: usa TU zona horaria, no la del datacenter"
+    Configura la zona horaria donde **tú** estés, no donde esté el servidor. Así los logs y timestamps coinciden con tu hora local, facilitando la monitorización y el debugging.
+
 !!! warning "Eliminar NOPASSWD tras el setup inicial"
     Cloud-init usa `NOPASSWD` para que puedas ejecutar `sudo` inmediatamente después del primer login (aún no hay contraseña establecida). Tras completar las secciones 3-5, **debes** asegurar esto:
 
