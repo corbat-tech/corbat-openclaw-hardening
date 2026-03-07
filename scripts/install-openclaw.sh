@@ -214,7 +214,7 @@ cat > ~/.openclaw/openclaw.json << OCEOF
       },
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
-        "mode": "all"
+        "mode": "off"
       },
       "compaction": {
         "mode": "safeguard"
@@ -362,7 +362,7 @@ CapabilityBoundingSet=
 AmbientCapabilities=
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 SystemCallFilter=@system-service
-SystemCallFilter=~@privileged @resources @mount @clock @reboot @swap @raw-io @cpu-emulation @debug
+SystemCallFilter=~@privileged @resources @mount @clock @reboot @swap @raw-io @cpu-emulation
 SystemCallArchitectures=native
 ProtectKernelTunables=true
 ProtectKernelModules=true

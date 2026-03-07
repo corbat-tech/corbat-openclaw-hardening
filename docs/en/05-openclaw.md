@@ -644,8 +644,14 @@ Add or modify the sandbox section:
 }
 ```
 
-!!! warning "Sandbox mode 'all'"
-    According to the [OpenClaw security documentation](https://docs.openclaw.ai/gateway/security), the sandbox isolates tool execution in Docker. Mode `all` is the most secure for servers, containerizing all tool execution including the main thread.
+!!! warning "Sandbox mode 'all' requires Docker"
+    Mode `all` containerizes all tool execution in Docker — it is the most secure for servers. **Docker must be installed** or the agent will fail with: `Sandbox mode requires Docker, but the "docker" command was not found`.
+
+    If you don't want Docker, set `"mode": "off"`. The systemd hardening (ProtectSystem, NoNewPrivileges, etc.) still provides strong isolation.
+
+    ```json
+    "sandbox": { "mode": "off" }
+    ```
 
 ### Configure DM Policy (message security)
 
@@ -663,6 +669,62 @@ openclaw pairing approve telegram ABC123
 
 !!! danger "Never use dmPolicy: 'open'"
     This would allow anyone to send commands to your agent. Only use `pairing` or `closed`.
+
+### Configure Telegram channel
+
+**Step 1 — Create bot in Telegram:**
+
+1. Open Telegram and chat with **@BotFather**
+2. Send `/newbot`
+3. Choose a display name (e.g., "OpenClaw Assistant")
+4. Choose a username ending in `_bot` (e.g., `openclaw_myname_bot`)
+5. BotFather gives you a token (format: `123456789:ABCdef...`) — save it
+
+**Step 2 — Add channel to config:**
+
+```bash
+nano ~/.openclaw/openclaw.json
+```
+
+Add the `channels` section at root level (before the last `}`):
+
+```json
+"channels": {
+  "telegram": {
+    "enabled": true,
+    "botToken": "YOUR_BOTFATHER_TOKEN",
+    "dmPolicy": "pairing"
+  }
+}
+```
+
+!!! tip "Don't forget the comma"
+    Add a comma after the closing `}` of the previous section before `"channels"`.
+
+**Step 3 — Restart and verify:**
+
+```bash
+sudo systemctl restart openclaw
+# Wait ~2 minutes, then verify Telegram connected:
+sudo journalctl -u openclaw --since "3 min ago" --no-pager | grep telegram
+```
+
+You should see: `[telegram] [default] starting provider (@your_bot_name)`
+
+**Step 4 — Pair your account:**
+
+1. Open Telegram and send any message to your bot
+2. The bot replies with a pairing code
+3. Approve it on the VPS:
+
+```bash
+openclaw pairing approve telegram <CODE>
+```
+
+After approval, send another message — the bot should respond.
+
+!!! note "The `openclaw channels add` wizard"
+    The interactive CLI wizard (`openclaw channels add`) may not always save the config correctly. If it fails, use the manual JSON method above — it is more reliable.
 
 ---
 
@@ -776,10 +838,10 @@ AmbientCapabilities=
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 
 # --- Restrict syscalls ---
-# Only syscalls needed for normal services
+# Relaxed filter — @system-service + @debug is required for Telegram channel
+# The strict filter (without @debug) causes core dumps when Telegram connects
 SystemCallFilter=@system-service
-# Block dangerous syscalls
-SystemCallFilter=~@privileged @resources @mount @clock @reboot @swap @raw-io @cpu-emulation @debug
+SystemCallFilter=~@privileged @resources @mount @clock @reboot @swap @raw-io @cpu-emulation
 # Native architecture only
 SystemCallArchitectures=native
 
@@ -905,6 +967,22 @@ ssh -L 18789:127.0.0.1:18789 openclaw@<YOUR_TAILSCALE_IP>
 ```
 
 Now access in your browser: `http://localhost:18789`
+
+#### Authenticate in the Control UI
+
+On first connect, the dashboard shows **"unauthorized: gateway token missing"**. Pass your token via URL:
+
+```
+http://127.0.0.1:18789/?#token=YOUR_GATEWAY_TOKEN
+```
+
+To find your token:
+
+```bash
+openclaw config get gateway.auth.token
+```
+
+The token is stored in the browser's localStorage — you only need to do this once per browser.
 
 #### Recommended aliases for macOS/Linux
 
