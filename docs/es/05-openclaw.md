@@ -539,44 +539,70 @@ ls -la ~/openclaw/.env
 
 ### Configurar SOUL.md (identidad del agente)
 
-OpenClaw usa archivos Markdown para configurar la identidad del agente:
+SOUL.md define quién es tu agente, qué puede hacer y cómo se comporta. OpenClaw inyecta este archivo en el contexto del agente en cada interacción.
 
 ```bash
 nano ~/.openclaw/workspace/SOUL.md
 ```
 
+#### Secciones recomendadas
+
+Un SOUL.md bien estructurado debería incluir estas secciones:
+
+| Sección | Propósito |
+|---------|-----------|
+| **Identidad** | Quién es el agente y para quién trabaja |
+| **Misión** | Qué debe optimizar (corrección, seguridad, valor, velocidad) |
+| **Reglas de idioma** | Idioma de respuesta, idioma de código, idioma de comunicación de negocio |
+| **Capacidades** | En qué puede ayudar (desarrollo, negocio, investigación, etc.) |
+| **Puertas de aprobación** | Acciones que requieren confirmación explícita antes de ejecutarse |
+| **Límites de filesystem** | Paths permitidos y prohibidos |
+| **Reglas de seguridad** | Cómo manejar secrets, credenciales y datos sensibles |
+| **Reglas de comunicación** | Tono, estilo y preferencias de formato de salida |
+| **Continuidad** | Cómo usar archivos del workspace como memoria persistente entre sesiones |
+
+#### Buenas prácticas
+
+- **Sé específico con la identidad**: Dile al agente para quién trabaja y qué representa. Un genérico "eres un asistente" produce respuestas genéricas.
+- **Define puertas de aprobación explícitamente**: Lista cada acción irreversible o externa que necesita confirmación (emails, commits, llamadas API, compras). El agente debe mostrar borradores antes de enviar.
+- **Establece reglas de idioma claras**: Separa el idioma de conversación del idioma de código. Por ejemplo: "responde en español, escribe código y documentación en inglés."
+- **Incluye límites de filesystem**: Siempre restringe el acceso al directorio workspace. Prohíbe explícitamente el acceso a `.ssh`, `.env`, `/etc` y `/var`.
+- **Añade contexto de negocio si aplica**: Si el agente representa un negocio, incluye servicios ofrecidos, clientes ideales y reglas de estilo de comunicación comercial. Cuanto más contexto, mejor la calidad del output.
+- **Define estructura de output**: Dile al agente cómo formatear diferentes tipos de respuestas (técnicas, investigación, borradores de negocio). Esto ahorra tiempo en aclaraciones.
+- **Protege datos sensibles**: Indica explícitamente que secrets, credenciales e información personal nunca deben aparecer en outputs.
+- **Usa la sección de continuidad**: Dile al agente que persista conocimiento reutilizable (investigación de clientes, preferencias, plantillas) en archivos del workspace para que se mantenga entre sesiones.
+
+#### Ejemplo mínimo
+
 ```markdown
-# OpenClaw Assistant
+# Mi Asistente
 
 ## Identidad
-Eres un asistente de desarrollo y automatización que opera en un VPS aislado.
+Eres un asistente de desarrollo en un VPS aislado.
+Trabajas para [tu nombre/empresa].
 
-## Límites estrictos de comportamiento
+## Idioma
+- Responde en [tu idioma]
+- Escribe código, comentarios y documentación en inglés
 
-### Filesystem
-- Solo acceder a archivos dentro de `/home/openclaw/openclaw/workspace`
-- No eliminar archivos recursivamente (rm -rf)
-- No modificar permisos de archivos del sistema
-- No acceder a `/home/openclaw/.ssh`, `/home/openclaw/.env`, `/etc`, `/var`
+## Puertas de aprobación
+Pide siempre antes de: enviar emails, hacer push de commits, borrar archivos,
+llamar a APIs externas, o cualquier acción irreversible.
 
-### Ejecución
-- No ejecutar comandos como root/sudo
-- No instalar software sin aprobación explícita
-- No modificar configuración del sistema
+## Filesystem
+- Solo acceder a: /home/openclaw/openclaw/workspace
+- Nunca acceder a: .ssh, .env, /etc, /var
 
-### Comunicación
-- No enviar emails sin confirmación explícita del usuario
-- No hacer commits/push a repositorios sin revisión
-- No llamar a APIs no incluidas en la allowlist
-
-### Datos sensibles
-- No exponer API keys, tokens o credenciales en respuestas
-- No almacenar información sensible en logs
-- Redactar cualquier secret que aparezca en outputs
+## Seguridad
+- Nunca exponer secrets, tokens o credenciales
+- Redactar secrets en outputs
 
 ## Tono
-Profesional, conciso, técnico. Responde en español por defecto.
+Profesional, conciso, directo.
 ```
+
+!!! tip "Itera sobre tu SOUL.md"
+    Empieza con lo mínimo y amplía según descubras qué hace mal el agente. Si hace algo que no quieres, añade una regla. Si le falta contexto, añade información. El SOUL.md es un documento vivo.
 
 !!! info "Archivos SOUL, TOOLS y AGENTS"
     OpenClaw inyecta automáticamente estos archivos Markdown en el contexto del agente:
