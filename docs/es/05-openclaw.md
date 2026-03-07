@@ -33,6 +33,40 @@
 - [ ] Acceso SSH funcionando solo por Tailscale
 - [ ] Usuario `openclaw` con sudo
 
+## Setup rápido (script automatizado)
+
+!!! tip "Salta los pasos manuales"
+    Si completaste las secciones 3-4 (o usaste `harden.sh`), puedes automatizar la sección 5 con:
+
+    ```bash
+    curl -fsSL -o /tmp/install-openclaw.sh \
+      https://raw.githubusercontent.com/corbat-tech/corbat-openclaw-hardening/main/scripts/install-openclaw.sh
+    less /tmp/install-openclaw.sh
+    bash /tmp/install-openclaw.sh
+    ```
+
+    El script instala Node.js 22, OpenClaw, escribe un `openclaw.json` hardened, crea el servicio systemd y configura permisos. Te pedirá elegir un proveedor de modelo.
+
+    **Después de que el script termine:**
+
+    1. Configura tu API key: `openclaw models auth add`
+    2. Inicia el servicio: `sudo systemctl start openclaw`
+    3. Accede desde tu Mac: `ssh -L 18789:127.0.0.1:18789 openclaw@<TAILSCALE_IP>`
+    4. Abre `http://localhost:18789` en tu navegador
+    5. Ejecuta auditoría de seguridad: `openclaw security audit`
+
+    O usa el **script de setup completo** para automatizar las secciones 3+4+5 de una vez en un VPS nuevo:
+    ```bash
+    curl -fsSL -o /tmp/setup.sh \
+      https://raw.githubusercontent.com/corbat-tech/corbat-openclaw-hardening/main/scripts/setup.sh
+    less /tmp/setup.sh
+    bash /tmp/setup.sh
+    ```
+
+    Si prefieres entender cada paso, continúa con las instrucciones manuales de abajo.
+
+---
+
 ## Objetivos
 
 Al terminar esta sección tendrás:
