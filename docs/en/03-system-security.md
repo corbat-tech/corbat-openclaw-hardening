@@ -26,6 +26,39 @@ By the end of this section you will have:
 
 ---
 
+## Quick setup (automated script)
+
+!!! tip "Skip the manual steps"
+    If you provisioned with cloud-init (Section 2) and want to automate Sections 3 and 4, you can use the hardening script. It performs all steps below plus Tailscale installation and SSH lockdown in a single command.
+
+    **Before running the script:**
+
+    1. Ensure cloud-init has finished: `cloud-init status --wait`
+    2. Change your temporary password: `sudo passwd openclaw`
+    3. Configure the Tailscale ACLs in the [admin panel](https://login.tailscale.com/admin/acls) (see [Section 4](04-private-access.md#configure-acls-mandatory) for the JSON)
+
+    **Run the script:**
+    ```bash
+    # Download and review first (recommended)
+    curl -fsSL -o /tmp/harden.sh \
+      https://raw.githubusercontent.com/corbat-tech/corbat-openclaw-hardening/main/scripts/harden.sh
+    less /tmp/harden.sh
+    sudo bash /tmp/harden.sh
+    ```
+
+    The script will pause to show a Tailscale authentication URL — open it in your browser to authorize.
+
+    **After the script completes:**
+
+    1. From your Mac, connect via Tailscale: `ssh openclaw@<TAILSCALE_IP>`
+    2. Remove the inbound SSH rule (port 22) from the **Hetzner Cloud Firewall**
+    3. Disable key expiry for the VPS in [Tailscale admin](https://login.tailscale.com/admin/machines) (... menu → Disable key expiry)
+    4. Run the verification script: `curl -fsSL https://raw.githubusercontent.com/corbat-tech/corbat-openclaw-hardening/main/scripts/verify-hardening.sh | sudo bash`
+
+    If you prefer to understand each step, continue with the manual instructions below.
+
+---
+
 ## Create dedicated user
 
 !!! danger "Never run OpenClaw as root"
