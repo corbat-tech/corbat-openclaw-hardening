@@ -2592,13 +2592,9 @@ for the version you're installing.</p>
 <a id="__codelineno-22-35" name="__codelineno-22-35" href="#__codelineno-22-35"></a><span class="w">      </span><span class="nt">&quot;mode&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;off&quot;</span>
 <a id="__codelineno-22-36" name="__codelineno-22-36" href="#__codelineno-22-36"></a><span class="w">    </span><span class="p">},</span>
 <a id="__codelineno-22-37" name="__codelineno-22-37" href="#__codelineno-22-37"></a><span class="w">    </span><span class="nt">&quot;nodes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-22-38" name="__codelineno-22-38" href="#__codelineno-22-38"></a><span class="w">      </span><span class="nt">&quot;denyCommands&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<a id="__codelineno-22-39" name="__codelineno-22-39" href="#__codelineno-22-39"></a><span class="w">        </span><span class="s2">&quot;camera.snap&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;camera.clip&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;screen.record&quot;</span><span class="p">,</span>
-<a id="__codelineno-22-40" name="__codelineno-22-40" href="#__codelineno-22-40"></a><span class="w">        </span><span class="s2">&quot;contacts.add&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;calendar.add&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;reminders.add&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;sms.send&quot;</span>
-<a id="__codelineno-22-41" name="__codelineno-22-41" href="#__codelineno-22-41"></a><span class="w">      </span><span class="p">]</span>
-<a id="__codelineno-22-42" name="__codelineno-22-42" href="#__codelineno-22-42"></a><span class="w">    </span><span class="p">}</span>
-<a id="__codelineno-22-43" name="__codelineno-22-43" href="#__codelineno-22-43"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-22-44" name="__codelineno-22-44" href="#__codelineno-22-44"></a><span class="p">}</span>
+<a id="__codelineno-22-38" name="__codelineno-22-38" href="#__codelineno-22-38"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-22-39" name="__codelineno-22-39" href="#__codelineno-22-39"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-22-40" name="__codelineno-22-40" href="#__codelineno-22-40"></a><span class="p">}</span>
 </code></pre></div>
 <div class="admonition danger">
 <p class="admonition-title">Critical security configuration</p>
@@ -2607,7 +2603,6 @@ for the version you're installing.</p>
 <li><code>sandbox.mode: "all"</code> — <strong>All</strong> tool execution containerized (most secure level)</li>
 <li><code>auth.mode: "token"</code> — Gateway access requires authentication token</li>
 <li><code>session.dmScope: "per-channel-peer"</code> — Isolates DM sessions to prevent context leakage</li>
-<li><code>nodes.denyCommands</code> — Blocks dangerous node commands (camera, contacts, SMS)</li>
 <li><code>tls: {}</code> — TLS enabled with defaults</li>
 </ul>
 </div>
