@@ -906,6 +906,26 @@ ssh -L 18789:127.0.0.1:18789 openclaw@<YOUR_TAILSCALE_IP>
 
 Now access in your browser: `http://localhost:18789`
 
+#### Recommended aliases for macOS/Linux
+
+Add these to your `~/.zshrc` or `~/.bashrc` on your **local machine** (not the VPS):
+
+```bash
+# OPENCLAW
+alias oclaw="ssh openclaw@<YOUR_TAILSCALE_IP>"
+alias ooclaw='pkill -f "ssh.*18789.*openclaw" 2>/dev/null; sleep 0.5; ssh -f -L 18789:127.0.0.1:18789 openclaw@<YOUR_TAILSCALE_IP> sleep 9999 && sleep 1 && open http://127.0.0.1:18789'
+alias closeclaw='pkill -f "ssh.*18789.*openclaw" 2>/dev/null; echo "Tunnel closed"'
+```
+
+| Alias | Description |
+|-------|-------------|
+| `oclaw` | SSH into the VPS for administration |
+| `ooclaw` | Opens dashboard (kills previous tunnel + creates new one + opens browser) |
+| `closeclaw` | Closes the SSH tunnel |
+
+!!! tip "Replace `<YOUR_TAILSCALE_IP>`"
+    Use your VPS Tailscale IP (e.g., `100.x.x.x`). On Linux, replace `open` with `xdg-open`.
+
 ### Option 2: Tailscale Serve
 
 ```bash
