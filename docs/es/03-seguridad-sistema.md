@@ -103,96 +103,59 @@ sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.backup.$(date +%Y%m%d)
 
 ### Crear configuración hardened
 
-```bash
-sudo tee /etc/ssh/sshd_config.d/99-hardening.conf << 'EOF'
-# ============================================================
-# SSH Hardening - CIS Benchmark Ubuntu 24.04 LTS L1
-# Fecha: 2026-02
-# Referencia: https://www.cisecurity.org/benchmark/ubuntu_linux
-# ============================================================
+!!! tip "Evitar problemas al copiar configuraciones largas"
+    La configuración SSH contiene líneas largas que pueden romperse al pegarlas en la terminal. Usa uno de estos métodos:
 
-# --- 5.2.4 - Ciphers seguros ---
-# Solo algoritmos de cifrado modernos y seguros
-Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+    **Método 1 — Descargar directamente desde este repositorio (recomendado):**
+    ```bash
+    sudo curl -o /etc/ssh/sshd_config.d/99-hardening.conf \
+      https://raw.githubusercontent.com/corbat-tech/corbat-openclaw-hardening/main/scripts/99-openclaw-hardening.conf
+    ```
 
-# --- 5.2.5 - MACs seguros ---
-# Solo algoritmos de autenticación de mensajes seguros
-MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
+    **Método 2 — Usar nano para editar manualmente:**
+    ```bash
+    sudo nano /etc/ssh/sshd_config.d/99-hardening.conf
+    ```
+    Luego copia el contenido desde el [archivo de configuración en el repositorio](https://github.com/corbat-tech/corbat-openclaw-hardening/blob/main/scripts/99-openclaw-hardening.conf).
 
-# --- 5.2.6 - Key Exchange seguros ---
-# Solo algoritmos de intercambio de claves seguros
-# Incluye sntrup761x25519-sha512 para resistencia post-cuántica (recomendado desde abril 2025)
-KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
+El archivo de configuración ([`scripts/99-openclaw-hardening.conf`](https://github.com/corbat-tech/corbat-openclaw-hardening/blob/main/scripts/99-openclaw-hardening.conf)) contiene todos los controles CIS Benchmark 5.2:
 
-# --- 5.2.7 - Banner de advertencia ---
-Banner /etc/issue.net
+??? note "Click para ver la configuración SSH completa"
+    ```ini
+    # --- 5.2.4 - Ciphers seguros ---
+    Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
 
-# --- 5.2.8 - Logging detallado ---
-LogLevel VERBOSE
+    # --- 5.2.5 - MACs seguros ---
+    MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
 
-# --- 5.2.9 - Desactivar X11 forwarding ---
-X11Forwarding no
+    # --- 5.2.6 - Key Exchange seguros (post-cuántico) ---
+    KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
 
-# --- 5.2.10 - MaxAuthTries ---
-# Máximo 4 intentos de autenticación por conexión
-MaxAuthTries 4
-
-# --- 5.2.11 - Ignorar rhosts ---
-IgnoreRhosts yes
-
-# --- 5.2.12 - Desactivar autenticación basada en host ---
-HostbasedAuthentication no
-
-# --- 5.2.13 - Desactivar login root ---
-PermitRootLogin no
-
-# --- 5.2.14 - Desactivar contraseñas vacías ---
-PermitEmptyPasswords no
-
-# --- 5.2.15 - Desactivar environment de usuario ---
-PermitUserEnvironment no
-
-# --- 5.2.17 - Timeout de conexión ---
-# Desconectar clientes inactivos después de 15 minutos (300s * 3)
-ClientAliveInterval 300
-ClientAliveCountMax 3
-
-# --- 5.2.18 - Tiempo de gracia para login ---
-# Solo 60 segundos para completar autenticación
-LoginGraceTime 60
-
-# --- 5.2.19 - Limitar usuarios ---
-# CRÍTICO: Solo el usuario openclaw puede conectarse
-AllowUsers openclaw
-
-# --- 5.2.20 - MaxStartups (anti-DoS) ---
-# Limitar conexiones simultáneas no autenticadas
-MaxStartups 10:30:60
-
-# --- 5.2.21 - MaxSessions ---
-MaxSessions 10
-
-# --- 5.2.22 - Desactivar autenticación por contraseña ---
-PasswordAuthentication no
-KbdInteractiveAuthentication no
-
-# --- 5.2.23 - Usar solo claves públicas ---
-PubkeyAuthentication yes
-
-# --- Configuración adicional de seguridad ---
-
-# Allow local forwarding only (needed for OpenClaw access via SSH tunnel)
-AllowTcpForwarding local
-AllowAgentForwarding no
-
-# Desactivar túneles
-PermitTunnel no
-
-# Nota: "Protocol 2" es obsoleto en OpenSSH 9.x (ya solo soporta v2)
-# ListenAddress se configurará después de instalar Tailscale
-# para escuchar solo en la interfaz de Tailscale
-EOF
-```
+    # --- 5.2.7-23 - Autenticación y acceso ---
+    Banner /etc/issue.net
+    LogLevel VERBOSE
+    X11Forwarding no
+    MaxAuthTries 4
+    IgnoreRhosts yes
+    HostbasedAuthentication no
+    PermitRootLogin no
+    PermitEmptyPasswords no
+    PermitUserEnvironment no
+    ClientAliveInterval 300
+    ClientAliveCountMax 3
+    LoginGraceTime 60
+    AllowUsers openclaw
+    MaxStartups 10:30:60
+    MaxSessions 10
+    PasswordAuthentication no
+    KbdInteractiveAuthentication no
+    PubkeyAuthentication yes
+    AllowTcpForwarding local
+    AllowAgentForwarding no
+    PermitTunnel no
+    UsePAM yes
+    StrictModes yes
+    ```
 
 ### Crear banner de advertencia legal
 
@@ -247,10 +210,10 @@ Si hay errores, corrígelos antes de continuar.
 
 ```bash
 # Si no hay errores, reiniciar SSH
-sudo systemctl restart sshd
+sudo systemctl restart ssh
 
 # Verificar que está corriendo
-sudo systemctl status sshd
+sudo systemctl status ssh
 ```
 
 ### Verificar controles aplicados
@@ -795,7 +758,7 @@ sudo journalctl -u sshd -n 50
 # Restaurar backup
 sudo cp /etc/ssh/sshd_config.backup.* /etc/ssh/sshd_config
 sudo rm /etc/ssh/sshd_config.d/99-hardening.conf
-sudo systemctl restart sshd
+sudo systemctl restart ssh
 ```
 
 ### Error: "Too many authentication failures"

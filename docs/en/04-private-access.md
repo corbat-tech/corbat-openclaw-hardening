@@ -332,7 +332,7 @@ sudo sshd -t
 ### Step 3: Restart SSH
 
 ```bash
-sudo systemctl restart sshd
+sudo systemctl restart ssh
 ```
 
 ### Step 4: Remove firewall rule
@@ -681,7 +681,7 @@ tailscale netcheck
 **Solution**:
 1. Access via the VPS provider's web console (Hetzner/DigitalOcean have VNC)
 2. Revert ListenAddress changes in `/etc/ssh/sshd_config.d/99-hardening.conf`
-3. `sudo systemctl restart sshd`
+3. `sudo systemctl restart ssh`
 
 ---
 

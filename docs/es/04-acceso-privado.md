@@ -332,7 +332,7 @@ sudo sshd -t
 ### Paso 3: Reiniciar SSH
 
 ```bash
-sudo systemctl restart sshd
+sudo systemctl restart ssh
 ```
 
 ### Paso 4: Eliminar regla de firewall
@@ -681,7 +681,7 @@ tailscale netcheck
 **Solución**:
 1. Accede por la consola web del proveedor VPS (Hostinger/Hetzner tienen VNC)
 2. Revierte los cambios de ListenAddress en `/etc/ssh/sshd_config.d/99-hardening.conf`
-3. `sudo systemctl restart sshd`
+3. `sudo systemctl restart ssh`
 
 ---
 
