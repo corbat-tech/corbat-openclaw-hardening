@@ -408,10 +408,6 @@ nano ~/.openclaw/openclaw.json
       "mode": "off"
     },
     "nodes": {
-      "denyCommands": [
-        "camera.snap", "camera.clip", "screen.record",
-        "contacts.add", "calendar.add", "reminders.add", "sms.send"
-      ]
     }
   }
 }
@@ -422,7 +418,6 @@ nano ~/.openclaw/openclaw.json
     - `sandbox.mode: "all"` — **All** tool execution containerized (most secure level)
     - `auth.mode: "token"` — Gateway access requires authentication token
     - `session.dmScope: "per-channel-peer"` — Isolates DM sessions to prevent context leakage
-    - `nodes.denyCommands` — Blocks dangerous node commands (camera, contacts, SMS)
     - `tls: {}` — TLS enabled with defaults
 
 !!! warning "Removed in v2026.3.x"

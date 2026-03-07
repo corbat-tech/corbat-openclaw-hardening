@@ -253,17 +253,7 @@ cat > ~/.openclaw/openclaw.json << OCEOF
       "mode": "off",
       "resetOnExit": false
     },
-    "nodes": {
-      "denyCommands": [
-        "camera.snap",
-        "camera.clip",
-        "screen.record",
-        "contacts.add",
-        "calendar.add",
-        "reminders.add",
-        "sms.send"
-      ]
-    }
+    "nodes": {}
   },
   "meta": {
     "lastTouchedVersion": "$(openclaw --version 2>/dev/null || echo '2026.3.x')",
