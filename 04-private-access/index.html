@@ -767,10 +767,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-2-verify-syntax" class="md-nav__link">
+  <a href="#step-2-disable-sshsocket-ubuntu-2404" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 2: Verify syntax
+        Step 2: Disable ssh.socket (Ubuntu 24.04)
       
     </span>
   </a>
@@ -778,10 +778,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-3-restart-ssh" class="md-nav__link">
+  <a href="#step-3-verify-syntax" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 3: Restart SSH
+        Step 3: Verify syntax
       
     </span>
   </a>
@@ -789,10 +789,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-4-remove-firewall-rule" class="md-nav__link">
+  <a href="#step-4-restart-ssh" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 4: Remove firewall rule
+        Step 4: Restart SSH
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-remove-firewall-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Remove firewall rule
       
     </span>
   </a>
@@ -1100,10 +1111,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lost-public-ssh-access-and-tailscale-isnt-working" class="md-nav__link">
+  <a href="#ssh-still-accessible-on-public-ip-after-setting-listenaddress" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lost public SSH access and Tailscale isn't working
+        SSH still accessible on public IP after setting ListenAddress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-cannot-bind-any-address-or-address-already-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Cannot bind any address" or "Address already in use"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-missing-privilege-separation-directory-runsshd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Missing privilege separation directory: /run/sshd"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lost-access-public-ssh-closed-and-tailscale-is-down" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lost access: public SSH closed and Tailscale is down
       
     </span>
   </a>
@@ -1733,10 +1777,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-2-verify-syntax" class="md-nav__link">
+  <a href="#step-2-disable-sshsocket-ubuntu-2404" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 2: Verify syntax
+        Step 2: Disable ssh.socket (Ubuntu 24.04)
       
     </span>
   </a>
@@ -1744,10 +1788,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-3-restart-ssh" class="md-nav__link">
+  <a href="#step-3-verify-syntax" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 3: Restart SSH
+        Step 3: Verify syntax
       
     </span>
   </a>
@@ -1755,10 +1799,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-4-remove-firewall-rule" class="md-nav__link">
+  <a href="#step-4-restart-ssh" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step 4: Remove firewall rule
+        Step 4: Restart SSH
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-remove-firewall-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Remove firewall rule
       
     </span>
   </a>
@@ -2066,10 +2121,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#lost-public-ssh-access-and-tailscale-isnt-working" class="md-nav__link">
+  <a href="#ssh-still-accessible-on-public-ip-after-setting-listenaddress" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Lost public SSH access and Tailscale isn't working
+        SSH still accessible on public IP after setting ListenAddress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-cannot-bind-any-address-or-address-already-in-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Cannot bind any address" or "Address already in use"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-missing-privilege-separation-directory-runsshd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Missing privilege separation directory: /run/sshd"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lost-access-public-ssh-closed-and-tailscale-is-down" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lost access: public SSH closed and Tailscale is down
       
     </span>
   </a>
@@ -2329,13 +2417,14 @@ This violates the zero-trust principle and is a security risk.</p>
 <li>Click <strong>Save</strong> and verify that tests pass.</li>
 </ol>
 <h3 id="apply-tag-to-vps">Apply tag to VPS<a class="headerlink" href="#apply-tag-to-vps" title="Permanent link">&para;</a></h3>
+<div class="admonition danger">
+<p class="admonition-title">NEVER run <code>tailscale down</code> once public SSH is closed</p>
+<p>If Tailscale is your only way to access the server and you run <code>tailscale down</code>, you will lose all access. The only recovery is via the provider's rescue mode (see Troubleshooting below). Always use <code>--reset</code> to reconfigure without dropping connectivity.</p>
+</div>
 <p>On the VPS, run:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>up<span class="w"> </span>--advertise-tags<span class="o">=</span>tag:vps<span class="w"> </span>--reset
 </code></pre></div>
-<div class="admonition warning">
-<p class="admonition-title">The --reset flag resets state</p>
-<p>This applies the new tag configuration. You'll need to re-authenticate if already connected.</p>
-</div>
+<p>It will print a URL to re-authenticate. Open it in your browser and authorize. <strong>Do NOT use <code>tailscale down</code> + <code>tailscale up</code> — that will cut your connection.</strong></p>
 <h3 id="verify-tags">Verify tags<a class="headerlink" href="#verify-tags" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>tailscale<span class="w"> </span>status
 </code></pre></div>
@@ -2367,26 +2456,43 @@ This violates the zero-trust principle and is a security risk.</p>
 <p class="admonition-title">Example IP</p>
 <p>Your IP will be different (something like <code>100.x.x.x</code>). The command automatically uses your actual IP.</p>
 </div>
-<h3 id="step-2-verify-syntax">Step 2: Verify syntax<a class="headerlink" href="#step-2-verify-syntax" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>sudo<span class="w"> </span>sshd<span class="w"> </span>-t
+<h3 id="step-2-disable-sshsocket-ubuntu-2404">Step 2: Disable ssh.socket (Ubuntu 24.04)<a class="headerlink" href="#step-2-disable-sshsocket-ubuntu-2404" title="Permanent link">&para;</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Critical: Ubuntu 24.04 uses socket activation by default</p>
+<p>Ubuntu 24.04 starts SSH via <code>ssh.socket</code> (systemd socket activation), which listens on <code>0.0.0.0:22</code> and <strong>ignores the <code>ListenAddress</code> directive</strong> in sshd_config. You must disable it and switch to the traditional <code>ssh.service</code> for <code>ListenAddress</code> to take effect.</p>
+</div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Disable socket activation (ignores ListenAddress)</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>disable<span class="w"> </span>--now<span class="w"> </span>ssh.socket
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="c1"># Enable traditional ssh service (respects ListenAddress)</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>ssh.service
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="c1"># Create privilege separation directory (normally created by ssh.socket)</span>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/run/sshd
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="c1"># Kill any leftover sshd processes from socket activation</span>
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>sudo<span class="w"> </span><span class="nb">kill</span><span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>/run/sshd.pid<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+</code></pre></div>
+<h3 id="step-3-verify-syntax">Step 3: Verify syntax<a class="headerlink" href="#step-3-verify-syntax" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>sudo<span class="w"> </span>sshd<span class="w"> </span>-t
 </code></pre></div>
 <p><strong>If there are errors, do NOT restart SSH.</strong> Fix them first.</p>
-<h3 id="step-3-restart-ssh">Step 3: Restart SSH<a class="headerlink" href="#step-3-restart-ssh" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>sshd
+<h3 id="step-4-restart-ssh">Step 4: Restart SSH<a class="headerlink" href="#step-4-restart-ssh" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>ssh
 </code></pre></div>
-<h3 id="step-4-remove-firewall-rule">Step 4: Remove firewall rule<a class="headerlink" href="#step-4-remove-firewall-rule" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># Remove rule that allows SSH from anywhere</span>
-<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>delete<span class="w"> </span>allow<span class="w"> </span>ssh
-<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
-<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1"># Verify status</span>
-<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>status
+<h3 id="step-5-remove-firewall-rule">Step 5: Remove firewall rule<a class="headerlink" href="#step-5-remove-firewall-rule" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Remove rule that allows SSH from anywhere</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>delete<span class="w"> </span>allow<span class="w"> </span>ssh
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># Verify status</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>status
 </code></pre></div>
 <p><strong>Expected output:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>Status: active
-<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
-<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>To                         Action      From
-<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>--                         ------      ----
-<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>(no SSH rules)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>Status: active
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>To                         Action      From
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>--                         ------      ----
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>(no SSH rules)
 </code></pre></div></p>
 <hr />
 <h2 id="final-verification">Final verification<a class="headerlink" href="#final-verification" title="Permanent link">&para;</a></h2>
@@ -2394,18 +2500,18 @@ This violates the zero-trust principle and is a security risk.</p>
 <p class="admonition-title">Test BEFORE closing your current session</p>
 </div>
 <h3 id="in-a-new-terminal">In a NEW terminal:<a class="headerlink" href="#in-a-new-terminal" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># 1. Connect via Tailscale (MUST work)</span>
-<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>ssh<span class="w"> </span>openclaw@&lt;YOUR_TAILSCALE_IP&gt;
-<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
-<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="c1"># 2. Verify public SSH does NOT work</span>
-<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>ssh<span class="w"> </span>openclaw@&lt;YOUR_PUBLIC_IP&gt;
-<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="c1"># Expected: Connection timed out or Connection refused</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># 1. Connect via Tailscale (MUST work)</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>ssh<span class="w"> </span>openclaw@&lt;YOUR_TAILSCALE_IP&gt;
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="c1"># 2. Verify public SSH does NOT work</span>
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>ssh<span class="w"> </span>openclaw@&lt;YOUR_PUBLIC_IP&gt;
+<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="c1"># Expected: Connection timed out or Connection refused</span>
 </code></pre></div>
 <h3 id="verify-ssh-only-listens-on-tailscale">Verify SSH only listens on Tailscale<a class="headerlink" href="#verify-ssh-only-listens-on-tailscale" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>sshd
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>sshd
 </code></pre></div>
 <p><strong>Expected output:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>LISTEN  0  128  100.x.x.x:22  0.0.0.0:*  users:((&quot;sshd&quot;,pid=XXX,fd=3))
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>LISTEN  0  128  100.x.x.x:22  0.0.0.0:*  users:((&quot;sshd&quot;,pid=XXX,fd=3))
 </code></pre></div></p>
 <div class="admonition success">
 <p class="admonition-title">If you see only your Tailscale IP, hardening is complete</p>
@@ -2425,31 +2531,31 @@ they couldn't inject malicious devices into your network.</p>
 </ul>
 <h3 id="activate-tailnet-lock">Activate Tailnet Lock<a class="headerlink" href="#activate-tailnet-lock" title="Permanent link">&para;</a></h3>
 <p><strong>From your main device (NOT the VPS):</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># 1. Initialize Tailnet Lock</span>
-<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>tailscale<span class="w"> </span>lock<span class="w"> </span>init
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1"># 1. Initialize Tailnet Lock</span>
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>tailscale<span class="w"> </span>lock<span class="w"> </span>init
 </code></pre></div>
 <p>It will show you a signing key. <strong>Store it in a secure offline location.</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1"># 2. View your signing key and nodes</span>
-<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>tailscale<span class="w"> </span>lock<span class="w"> </span>status
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># 2. View your signing key and nodes</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>tailscale<span class="w"> </span>lock<span class="w"> </span>status
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># 3. View the VPS node key (you need this to sign it)</span>
-<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>tailscale<span class="w"> </span>status
-<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="c1"># Find the VPS line and copy the node key</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="c1"># 3. View the VPS node key (you need this to sign it)</span>
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>tailscale<span class="w"> </span>status
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="c1"># Find the VPS line and copy the node key</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="c1"># 4. Sign the VPS from your main device</span>
-<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>tailscale<span class="w"> </span>lock<span class="w"> </span>sign<span class="w"> </span>nodekey:&lt;VPS_NODE_KEY&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1"># 4. Sign the VPS from your main device</span>
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>tailscale<span class="w"> </span>lock<span class="w"> </span>sign<span class="w"> </span>nodekey:&lt;VPS_NODE_KEY&gt;
 </code></pre></div>
 <h3 id="verify-tailnet-lock">Verify Tailnet Lock<a class="headerlink" href="#verify-tailnet-lock" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>tailscale<span class="w"> </span>lock<span class="w"> </span>status
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>tailscale<span class="w"> </span>lock<span class="w"> </span>status
 </code></pre></div>
 <p><strong>Expected output:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>Tailnet lock is ENABLED
-<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>...
-<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>Trusted signing keys:
-<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>  - nlpub:XXXX (this node)
-<a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>
-<a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a>Filtered nodes:
-<a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a>  (none, if all are signed)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>Tailnet lock is ENABLED
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>...
+<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>Trusted signing keys:
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>  - nlpub:XXXX (this node)
+<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>
+<a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a>Filtered nodes:
+<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a>  (none, if all are signed)
 </code></pre></div></p>
 <div class="admonition warning">
 <p class="admonition-title">Save the recovery keys</p>
@@ -2518,15 +2624,15 @@ Store the keys in a password manager or secure offline location.</p>
 </tbody>
 </table>
 <h3 id="webhook-payload-example">Webhook payload example<a class="headerlink" href="#webhook-payload-example" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="p">{</span>
-<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-02-01T10:30:00Z&quot;</span><span class="p">,</span>
-<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;nodeCreated&quot;</span><span class="p">,</span>
-<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a><span class="w">  </span><span class="nt">&quot;tailnet&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;your-tailnet.ts.net&quot;</span><span class="p">,</span>
-<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a><span class="w">  </span><span class="nt">&quot;node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;new-device&quot;</span><span class="p">,</span>
-<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="w">    </span><span class="nt">&quot;addresses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;100.x.x.x&quot;</span><span class="p">]</span>
-<a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="p">{</span>
+<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-02-01T10:30:00Z&quot;</span><span class="p">,</span>
+<a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;nodeCreated&quot;</span><span class="p">,</span>
+<a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a><span class="w">  </span><span class="nt">&quot;tailnet&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;your-tailnet.ts.net&quot;</span><span class="p">,</span>
+<a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a><span class="w">  </span><span class="nt">&quot;node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;new-device&quot;</span><span class="p">,</span>
+<a id="__codelineno-32-7" name="__codelineno-32-7" href="#__codelineno-32-7"></a><span class="w">    </span><span class="nt">&quot;addresses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;100.x.x.x&quot;</span><span class="p">]</span>
+<a id="__codelineno-32-8" name="__codelineno-32-8" href="#__codelineno-32-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-32-9" name="__codelineno-32-9" href="#__codelineno-32-9"></a><span class="p">}</span>
 </code></pre></div>
 <hr />
 <h2 id="magicdns-hardening">MagicDNS Hardening<a class="headerlink" href="#magicdns-hardening" title="Permanent link">&para;</a></h2>
@@ -2541,13 +2647,13 @@ Store the keys in a password manager or secure offline location.</p>
 </ol>
 <h3 id="add-split-dns-optional">Add Split DNS (optional)<a class="headerlink" href="#add-split-dns-optional" title="Permanent link">&para;</a></h3>
 <p>If you need to resolve specific internal domains:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="p">{</span>
-<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="w">  </span><span class="nt">&quot;dns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a><span class="w">    </span><span class="nt">&quot;nameservers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;1.1.1.1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;9.9.9.9&quot;</span><span class="p">],</span>
-<a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a><span class="w">    </span><span class="nt">&quot;magicDNS&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a><span class="w">    </span><span class="nt">&quot;overrideLocalDNS&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-<a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a><span class="w">  </span><span class="p">}</span>
-<a id="__codelineno-32-7" name="__codelineno-32-7" href="#__codelineno-32-7"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="p">{</span>
+<a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="w">  </span><span class="nt">&quot;dns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="w">    </span><span class="nt">&quot;nameservers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;1.1.1.1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;9.9.9.9&quot;</span><span class="p">],</span>
+<a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="w">    </span><span class="nt">&quot;magicDNS&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="w">    </span><span class="nt">&quot;overrideLocalDNS&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a><span class="p">}</span>
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Advantage of Override local DNS</p>
@@ -2570,95 +2676,95 @@ For personal devices, keep expiration active.</p>
 </div>
 <h3 id="option-b-renew-manually">Option B: Renew manually<a class="headerlink" href="#option-b-renew-manually" title="Permanent link">&para;</a></h3>
 <p>If you prefer to keep expiration active, renew before it expires:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="c1"># View when current key expires</span>
-<a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>tailscale<span class="w"> </span>status<span class="w"> </span>--json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.Self.KeyExpiry&#39;</span>
-<a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>
-<a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="c1"># Renew (requires re-authentication)</span>
-<a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>up<span class="w"> </span>--reset
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="c1"># View when current key expires</span>
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>tailscale<span class="w"> </span>status<span class="w"> </span>--json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.Self.KeyExpiry&#39;</span>
+<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>
+<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="c1"># Renew (requires re-authentication)</span>
+<a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>up<span class="w"> </span>--reset
 </code></pre></div>
 <h3 id="configure-expiration-alert">Configure expiration alert<a class="headerlink" href="#configure-expiration-alert" title="Permanent link">&para;</a></h3>
 <p>Add a weekly check to cron:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>crontab<span class="w"> </span>-e
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>crontab<span class="w"> </span>-e
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a># Check Tailscale key expiration every Monday
-<a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>0 9 * * 1 tailscale status --json | jq -r &#39;.Self.KeyExpiry // &quot;no-expiry&quot;&#39; | logger -t tailscale-expiry
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a># Check Tailscale key expiration every Monday
+<a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>0 9 * * 1 tailscale status --json | jq -r &#39;.Self.KeyExpiry // &quot;no-expiry&quot;&#39; | logger -t tailscale-expiry
 </code></pre></div>
 <hr />
 <h2 id="current-system-state">Current system state<a class="headerlink" href="#current-system-state" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>┌─────────────────────────────────────────────┐
-<a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>│              INTERNET                       │
-<a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>│                  ❌                         │
-<a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a>│    Port 22 closed / not accessible          │
-<a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>│    No public ports                          │
-<a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a>└─────────────────────────────────────────────┘
-<a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a>
-<a id="__codelineno-36-8" name="__codelineno-36-8" href="#__codelineno-36-8"></a>┌─────────────────────────────────────────────┐
-<a id="__codelineno-36-9" name="__codelineno-36-9" href="#__codelineno-36-9"></a>│         VPS (Hetzner/other)                  │
-<a id="__codelineno-36-10" name="__codelineno-36-10" href="#__codelineno-36-10"></a>│  Public IP: xxx.xxx.xxx.xxx (NOT used)      │
-<a id="__codelineno-36-11" name="__codelineno-36-11" href="#__codelineno-36-11"></a>│  Tailscale IP: 100.x.x.x (only path)        │
-<a id="__codelineno-36-12" name="__codelineno-36-12" href="#__codelineno-36-12"></a>│  Tag: tag:vps                               │
-<a id="__codelineno-36-13" name="__codelineno-36-13" href="#__codelineno-36-13"></a>│  ┌─────────────────────────────────────┐    │
-<a id="__codelineno-36-14" name="__codelineno-36-14" href="#__codelineno-36-14"></a>│  │  SSH listening on 100.x.x.x:22      │    │
-<a id="__codelineno-36-15" name="__codelineno-36-15" href="#__codelineno-36-15"></a>│  │  Firewall: deny all incoming        │    │
-<a id="__codelineno-36-16" name="__codelineno-36-16" href="#__codelineno-36-16"></a>│  │  ACLs: only owner can access        │    │
-<a id="__codelineno-36-17" name="__codelineno-36-17" href="#__codelineno-36-17"></a>│  └─────────────────────────────────────┘    │
-<a id="__codelineno-36-18" name="__codelineno-36-18" href="#__codelineno-36-18"></a>└─────────────────────────────────────────────┘
-<a id="__codelineno-36-19" name="__codelineno-36-19" href="#__codelineno-36-19"></a>          ▲
-<a id="__codelineno-36-20" name="__codelineno-36-20" href="#__codelineno-36-20"></a>          │ Tailscale VPN (WireGuard encryption)
-<a id="__codelineno-36-21" name="__codelineno-36-21" href="#__codelineno-36-21"></a>          │ Verified ACLs
-<a id="__codelineno-36-22" name="__codelineno-36-22" href="#__codelineno-36-22"></a>          ▼
-<a id="__codelineno-36-23" name="__codelineno-36-23" href="#__codelineno-36-23"></a>┌─────────────────────────────────────────────┐
-<a id="__codelineno-36-24" name="__codelineno-36-24" href="#__codelineno-36-24"></a>│         YOUR DEVICE (owner)                 │
-<a id="__codelineno-36-25" name="__codelineno-36-25" href="#__codelineno-36-25"></a>│  Tailscale IP: 100.y.y.y                    │
-<a id="__codelineno-36-26" name="__codelineno-36-26" href="#__codelineno-36-26"></a>│  Can: SSH to VPS, access port 3000          │
-<a id="__codelineno-36-27" name="__codelineno-36-27" href="#__codelineno-36-27"></a>└─────────────────────────────────────────────┘
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>┌─────────────────────────────────────────────┐
+<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>│              INTERNET                       │
+<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>│                  ❌                         │
+<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a>│    Port 22 closed / not accessible          │
+<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>│    No public ports                          │
+<a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a>└─────────────────────────────────────────────┘
+<a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a>
+<a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a>┌─────────────────────────────────────────────┐
+<a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a>│         VPS (Hetzner/other)                  │
+<a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a>│  Public IP: xxx.xxx.xxx.xxx (NOT used)      │
+<a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a>│  Tailscale IP: 100.x.x.x (only path)        │
+<a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a>│  Tag: tag:vps                               │
+<a id="__codelineno-37-13" name="__codelineno-37-13" href="#__codelineno-37-13"></a>│  ┌─────────────────────────────────────┐    │
+<a id="__codelineno-37-14" name="__codelineno-37-14" href="#__codelineno-37-14"></a>│  │  SSH listening on 100.x.x.x:22      │    │
+<a id="__codelineno-37-15" name="__codelineno-37-15" href="#__codelineno-37-15"></a>│  │  Firewall: deny all incoming        │    │
+<a id="__codelineno-37-16" name="__codelineno-37-16" href="#__codelineno-37-16"></a>│  │  ACLs: only owner can access        │    │
+<a id="__codelineno-37-17" name="__codelineno-37-17" href="#__codelineno-37-17"></a>│  └─────────────────────────────────────┘    │
+<a id="__codelineno-37-18" name="__codelineno-37-18" href="#__codelineno-37-18"></a>└─────────────────────────────────────────────┘
+<a id="__codelineno-37-19" name="__codelineno-37-19" href="#__codelineno-37-19"></a>          ▲
+<a id="__codelineno-37-20" name="__codelineno-37-20" href="#__codelineno-37-20"></a>          │ Tailscale VPN (WireGuard encryption)
+<a id="__codelineno-37-21" name="__codelineno-37-21" href="#__codelineno-37-21"></a>          │ Verified ACLs
+<a id="__codelineno-37-22" name="__codelineno-37-22" href="#__codelineno-37-22"></a>          ▼
+<a id="__codelineno-37-23" name="__codelineno-37-23" href="#__codelineno-37-23"></a>┌─────────────────────────────────────────────┐
+<a id="__codelineno-37-24" name="__codelineno-37-24" href="#__codelineno-37-24"></a>│         YOUR DEVICE (owner)                 │
+<a id="__codelineno-37-25" name="__codelineno-37-25" href="#__codelineno-37-25"></a>│  Tailscale IP: 100.y.y.y                    │
+<a id="__codelineno-37-26" name="__codelineno-37-26" href="#__codelineno-37-26"></a>│  Can: SSH to VPS, access port 3000          │
+<a id="__codelineno-37-27" name="__codelineno-37-27" href="#__codelineno-37-27"></a>└─────────────────────────────────────────────┘
 </code></pre></div>
 <hr />
 <h2 id="useful-tailscale-commands">Useful Tailscale commands<a class="headerlink" href="#useful-tailscale-commands" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="c1"># View all devices in your network</span>
-<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>tailscale<span class="w"> </span>status
-<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>
-<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="c1"># View your Tailscale IP</span>
-<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>tailscale<span class="w"> </span>ip<span class="w"> </span>-4
-<a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a>
-<a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a><span class="c1"># Ping another device by name</span>
-<a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a>tailscale<span class="w"> </span>ping<span class="w"> </span>vps-name
-<a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a>
-<a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a><span class="c1"># View Tailscale logs</span>
-<a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a>sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>tailscaled<span class="w"> </span>-f
-<a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a>
-<a id="__codelineno-37-13" name="__codelineno-37-13" href="#__codelineno-37-13"></a><span class="c1"># Disconnect temporarily</span>
-<a id="__codelineno-37-14" name="__codelineno-37-14" href="#__codelineno-37-14"></a>tailscale<span class="w"> </span>down
-<a id="__codelineno-37-15" name="__codelineno-37-15" href="#__codelineno-37-15"></a>
-<a id="__codelineno-37-16" name="__codelineno-37-16" href="#__codelineno-37-16"></a><span class="c1"># Reconnect</span>
-<a id="__codelineno-37-17" name="__codelineno-37-17" href="#__codelineno-37-17"></a>tailscale<span class="w"> </span>up
-<a id="__codelineno-37-18" name="__codelineno-37-18" href="#__codelineno-37-18"></a>
-<a id="__codelineno-37-19" name="__codelineno-37-19" href="#__codelineno-37-19"></a><span class="c1"># View current configuration</span>
-<a id="__codelineno-37-20" name="__codelineno-37-20" href="#__codelineno-37-20"></a>tailscale<span class="w"> </span>debug<span class="w"> </span>prefs
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="c1"># View all devices in your network</span>
+<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>tailscale<span class="w"> </span>status
+<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a><span class="c1"># View your Tailscale IP</span>
+<a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>tailscale<span class="w"> </span>ip<span class="w"> </span>-4
+<a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>
+<a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a><span class="c1"># Ping another device by name</span>
+<a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a>tailscale<span class="w"> </span>ping<span class="w"> </span>vps-name
+<a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a>
+<a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a><span class="c1"># View Tailscale logs</span>
+<a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a>sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>tailscaled<span class="w"> </span>-f
+<a id="__codelineno-38-12" name="__codelineno-38-12" href="#__codelineno-38-12"></a>
+<a id="__codelineno-38-13" name="__codelineno-38-13" href="#__codelineno-38-13"></a><span class="c1"># Disconnect temporarily</span>
+<a id="__codelineno-38-14" name="__codelineno-38-14" href="#__codelineno-38-14"></a>tailscale<span class="w"> </span>down
+<a id="__codelineno-38-15" name="__codelineno-38-15" href="#__codelineno-38-15"></a>
+<a id="__codelineno-38-16" name="__codelineno-38-16" href="#__codelineno-38-16"></a><span class="c1"># Reconnect</span>
+<a id="__codelineno-38-17" name="__codelineno-38-17" href="#__codelineno-38-17"></a>tailscale<span class="w"> </span>up
+<a id="__codelineno-38-18" name="__codelineno-38-18" href="#__codelineno-38-18"></a>
+<a id="__codelineno-38-19" name="__codelineno-38-19" href="#__codelineno-38-19"></a><span class="c1"># View current configuration</span>
+<a id="__codelineno-38-20" name="__codelineno-38-20" href="#__codelineno-38-20"></a>tailscale<span class="w"> </span>debug<span class="w"> </span>prefs
 </code></pre></div>
 <hr />
 <h2 id="upload-files-to-the-vps">Upload files to the VPS<a class="headerlink" href="#upload-files-to-the-vps" title="Permanent link">&para;</a></h2>
 <p>Now that you only have access via Tailscale, use these commands to transfer files:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="c1"># Upload a file</span>
-<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>scp<span class="w"> </span>file.txt<span class="w"> </span>openclaw@&lt;YOUR_TAILSCALE_IP&gt;:~/workspace/
-<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>
-<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a><span class="c1"># Upload a folder</span>
-<a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>scp<span class="w"> </span>-r<span class="w"> </span>my-folder/<span class="w"> </span>openclaw@&lt;YOUR_TAILSCALE_IP&gt;:~/workspace/
-<a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>
-<a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a><span class="c1"># Sync folder (more efficient for updates)</span>
-<a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a>rsync<span class="w"> </span>-avz<span class="w"> </span>my-folder/<span class="w"> </span>openclaw@&lt;YOUR_TAILSCALE_IP&gt;:~/workspace/my-folder/
-<a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a>
-<a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a><span class="c1"># Download file from VPS</span>
-<a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a>scp<span class="w"> </span>openclaw@&lt;YOUR_TAILSCALE_IP&gt;:~/workspace/result.txt<span class="w"> </span>./
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="c1"># Upload a file</span>
+<a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>scp<span class="w"> </span>file.txt<span class="w"> </span>openclaw@&lt;YOUR_TAILSCALE_IP&gt;:~/workspace/
+<a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>
+<a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a><span class="c1"># Upload a folder</span>
+<a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a>scp<span class="w"> </span>-r<span class="w"> </span>my-folder/<span class="w"> </span>openclaw@&lt;YOUR_TAILSCALE_IP&gt;:~/workspace/
+<a id="__codelineno-39-6" name="__codelineno-39-6" href="#__codelineno-39-6"></a>
+<a id="__codelineno-39-7" name="__codelineno-39-7" href="#__codelineno-39-7"></a><span class="c1"># Sync folder (more efficient for updates)</span>
+<a id="__codelineno-39-8" name="__codelineno-39-8" href="#__codelineno-39-8"></a>rsync<span class="w"> </span>-avz<span class="w"> </span>my-folder/<span class="w"> </span>openclaw@&lt;YOUR_TAILSCALE_IP&gt;:~/workspace/my-folder/
+<a id="__codelineno-39-9" name="__codelineno-39-9" href="#__codelineno-39-9"></a>
+<a id="__codelineno-39-10" name="__codelineno-39-10" href="#__codelineno-39-10"></a><span class="c1"># Download file from VPS</span>
+<a id="__codelineno-39-11" name="__codelineno-39-11" href="#__codelineno-39-11"></a>scp<span class="w"> </span>openclaw@&lt;YOUR_TAILSCALE_IP&gt;:~/workspace/result.txt<span class="w"> </span>./
 </code></pre></div>
 <hr />
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="error-tailscale-not-running">Error: "Tailscale not running"<a class="headerlink" href="#error-tailscale-not-running" title="Permanent link">&para;</a></h3>
 <p><strong>Cause</strong>: The tailscaled service is not active.</p>
 <p><strong>Solution</strong>:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>tailscaled
-<a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>tailscaled
-<a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>tailscale<span class="w"> </span>up
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>tailscaled
+<a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>tailscaled
+<a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>tailscale<span class="w"> </span>up
 </code></pre></div></p>
 <h3 id="error-not-authorized-when-using-tags">Error: "Not authorized" when using tags<a class="headerlink" href="#error-not-authorized-when-using-tags" title="Permanent link">&para;</a></h3>
 <p><strong>Cause</strong>: ACLs don't allow the tag or you're not the tag owner.</p>
@@ -2668,17 +2774,77 @@ For personal devices, keep expiration active.</p>
 <h3 id="error-connection-timed-out-via-tailscale">Error: "Connection timed out" via Tailscale<a class="headerlink" href="#error-connection-timed-out-via-tailscale" title="Permanent link">&para;</a></h3>
 <p><strong>Cause</strong>: Local or network firewall blocking WireGuard.</p>
 <p><strong>Solution</strong>:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="c1"># Verify tailscaled is listening</span>
-<a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-ulnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>tailscale
-<a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>
-<a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a><span class="c1"># Check connectivity</span>
-<a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a>tailscale<span class="w"> </span>netcheck
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="c1"># Verify tailscaled is listening</span>
+<a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-ulnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>tailscale
+<a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a>
+<a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a><span class="c1"># Check connectivity</span>
+<a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a>tailscale<span class="w"> </span>netcheck
 </code></pre></div></p>
-<h3 id="lost-public-ssh-access-and-tailscale-isnt-working">Lost public SSH access and Tailscale isn't working<a class="headerlink" href="#lost-public-ssh-access-and-tailscale-isnt-working" title="Permanent link">&para;</a></h3>
+<h3 id="ssh-still-accessible-on-public-ip-after-setting-listenaddress">SSH still accessible on public IP after setting ListenAddress<a class="headerlink" href="#ssh-still-accessible-on-public-ip-after-setting-listenaddress" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: Ubuntu 24.04 uses <code>ssh.socket</code> (systemd socket activation) which listens on <code>0.0.0.0:22</code> and ignores <code>ListenAddress</code>.</p>
 <p><strong>Solution</strong>:
-1. Access via the VPS provider's web console (Hetzner/DigitalOcean have VNC)
-2. Revert ListenAddress changes in <code>/etc/ssh/sshd_config.d/99-hardening.conf</code>
-3. <code>sudo systemctl restart sshd</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="c1"># Check if ssh.socket is active</span>
+<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>systemctl<span class="w"> </span>is-active<span class="w"> </span>ssh.socket
+<a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>
+<a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a><span class="c1"># If active, disable it and switch to traditional service</span>
+<a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>disable<span class="w"> </span>--now<span class="w"> </span>ssh.socket
+<a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>ssh.service
+<a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/run/sshd
+<a id="__codelineno-42-8" name="__codelineno-42-8" href="#__codelineno-42-8"></a>sudo<span class="w"> </span><span class="nb">kill</span><span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>/run/sshd.pid<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-42-9" name="__codelineno-42-9" href="#__codelineno-42-9"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>ssh
+<a id="__codelineno-42-10" name="__codelineno-42-10" href="#__codelineno-42-10"></a>
+<a id="__codelineno-42-11" name="__codelineno-42-11" href="#__codelineno-42-11"></a><span class="c1"># Verify it now only listens on Tailscale IP</span>
+<a id="__codelineno-42-12" name="__codelineno-42-12" href="#__codelineno-42-12"></a>ss<span class="w"> </span>-tln<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>:22
+</code></pre></div></p>
+<h3 id="error-cannot-bind-any-address-or-address-already-in-use">Error: "Cannot bind any address" or "Address already in use"<a class="headerlink" href="#error-cannot-bind-any-address-or-address-already-in-use" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: After disabling <code>ssh.socket</code>, leftover sshd processes from socket activation are still holding the port.</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="c1"># Kill leftover sshd process</span>
+<a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a>sudo<span class="w"> </span><span class="nb">kill</span><span class="w"> </span><span class="k">$(</span>cat<span class="w"> </span>/run/sshd.pid<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>ssh
+</code></pre></div></p>
+<h3 id="error-missing-privilege-separation-directory-runsshd">Error: "Missing privilege separation directory: /run/sshd"<a class="headerlink" href="#error-missing-privilege-separation-directory-runsshd" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: The <code>/run/sshd</code> directory is normally created by <code>ssh.socket</code>. After disabling it, the directory doesn't exist.</p>
+<p><strong>Solution</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/run/sshd
+<a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>ssh
+</code></pre></div></p>
+<h3 id="lost-access-public-ssh-closed-and-tailscale-is-down">Lost access: public SSH closed and Tailscale is down<a class="headerlink" href="#lost-access-public-ssh-closed-and-tailscale-is-down" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: You ran <code>tailscale down</code> or Tailscale stopped while public SSH was already closed. The VPS console login won't work either if your user has no password (SSH key-only authentication).</p>
+<p><strong>Solution — Hetzner Rescue Mode:</strong></p>
+<ol>
+<li>In Hetzner Cloud panel → your server → <strong>Rescue</strong> tab → <strong>Enable Rescue &amp; Power Cycle</strong></li>
+<li>Copy the <strong>root password</strong> shown in the panel</li>
+<li>Go to the <strong>Power</strong> tab → <strong>Power cycle</strong> the server (it will boot into rescue)</li>
+<li>From your local machine, remove the old host key and connect:
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>ssh-keygen<span class="w"> </span>-R<span class="w"> </span>&lt;YOUR_PUBLIC_IP&gt;
+<a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a>ssh<span class="w"> </span>root@&lt;YOUR_PUBLIC_IP&gt;
+</code></pre></div>
+    Use the rescue root password from step 2.</li>
+<li>Mount your disk and bring Tailscale back up:
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="c1"># Mount the server&#39;s root filesystem</span>
+<a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>mount<span class="w"> </span>/dev/sda1<span class="w"> </span>/mnt
+<a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a>
+<a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a><span class="c1"># Chroot into your system</span>
+<a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a>mount<span class="w"> </span>--bind<span class="w"> </span>/dev<span class="w"> </span>/mnt/dev
+<a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a>mount<span class="w"> </span>--bind<span class="w"> </span>/proc<span class="w"> </span>/mnt/proc
+<a id="__codelineno-46-7" name="__codelineno-46-7" href="#__codelineno-46-7"></a>mount<span class="w"> </span>--bind<span class="w"> </span>/sys<span class="w"> </span>/mnt/sys
+<a id="__codelineno-46-8" name="__codelineno-46-8" href="#__codelineno-46-8"></a>chroot<span class="w"> </span>/mnt
+<a id="__codelineno-46-9" name="__codelineno-46-9" href="#__codelineno-46-9"></a>
+<a id="__codelineno-46-10" name="__codelineno-46-10" href="#__codelineno-46-10"></a><span class="c1"># Bring Tailscale back up</span>
+<a id="__codelineno-46-11" name="__codelineno-46-11" href="#__codelineno-46-11"></a>tailscale<span class="w"> </span>up<span class="w"> </span>--advertise-tags<span class="o">=</span>tag:vps
+</code></pre></div></li>
+<li>After re-authenticating, exit chroot and reboot into normal mode:
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a><span class="nb">exit</span>
+<a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a>umount<span class="w"> </span>-R<span class="w"> </span>/mnt
+<a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a>reboot
+</code></pre></div></li>
+<li>In Hetzner panel → <strong>Rescue</strong> tab → <strong>Disable Rescue</strong> so the next reboot is normal.</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Hetzner Cloud Firewall</p>
+<p>Rescue mode boots a different OS that ignores UFW, but it still respects the <strong>Hetzner Cloud Firewall</strong>. If SSH to rescue is refused, go to the <strong>Firewalls</strong> tab and temporarily add an inbound rule allowing TCP port 22.</p>
+</div>
 <hr />
 <h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
 <table>
