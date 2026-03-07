@@ -127,7 +127,7 @@ users:
   - name: openclaw
     groups: sudo
     shell: /bin/bash
-    sudo: ALL=(ALL) ALL
+    sudo: ALL=(ALL) NOPASSWD:ALL
     ssh_authorized_keys:
       - ssh-ed25519 AAAAC3... YOUR_PUBLIC_KEY_HERE
 
@@ -158,12 +158,23 @@ runcmd:
   - systemctl start fail2ban
   - systemctl enable unattended-upgrades
   - timedatectl set-timezone America/New_York
-  # Remove NOPASSWD after initial provisioning is complete
-  - sed -i 's/ALL=(ALL) NOPASSWD:ALL/ALL=(ALL) ALL/' /etc/sudoers.d/90-cloud-init-users
 ```
 
-!!! warning "Do not use NOPASSWD in production"
-    The cloud-init configuration above uses `ALL=(ALL) ALL` (with password) instead of `NOPASSWD:ALL`. If you need passwordless sudo during provisioning, add it temporarily and ensure the `runcmd` step at the end removes it. Leaving `NOPASSWD` permanently means any process running as `openclaw` can escalate to root without a password prompt.
+!!! warning "Remove NOPASSWD after initial setup"
+    Cloud-init uses `NOPASSWD` so you can run `sudo` immediately after first login (there is no password set yet). After completing sections 3-5, you **must** secure this:
+
+    ```bash
+    # 1. Set a strong password for the openclaw user
+    sudo passwd openclaw
+
+    # 2. Remove passwordless sudo
+    sudo sed -i 's/ALL=(ALL) NOPASSWD:ALL/ALL=(ALL) ALL/' /etc/sudoers.d/90-cloud-init-users
+
+    # 3. Verify sudo now requires password (open a new SSH session)
+    sudo whoami  # Should prompt for password
+    ```
+
+    Leaving `NOPASSWD` permanently means any process running as `openclaw` can escalate to root without a password prompt.
 
 !!! warning "Replace the SSH key"
     Replace `ssh-ed25519 AAAAC3... YOUR_PUBLIC_KEY_HERE` with your actual public key (`cat ~/.ssh/id_ed25519.pub`).

@@ -31,3 +31,6 @@ Thumbs.db
 *.pem
 secrets/
 credentials/
+
+# Local deployment notes
+.deployment/
