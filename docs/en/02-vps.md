@@ -127,9 +127,17 @@ users:
   - name: openclaw
     groups: sudo
     shell: /bin/bash
-    sudo: ALL=(ALL) NOPASSWD:ALL
+    sudo: ALL=(ALL) ALL
     ssh_authorized_keys:
       - ssh-ed25519 AAAAC3... YOUR_PUBLIC_KEY_HERE
+
+# --- Set initial password for sudo (change on first login) ---
+chpasswd:
+  expire: true
+  users:
+    - name: openclaw
+      password: CHANGE_ME_ON_FIRST_LOGIN
+      type: text
 
 # --- Disable root SSH ---
 disable_root: true
@@ -163,21 +171,14 @@ runcmd:
 !!! tip "Timezone: use YOUR timezone, not the datacenter's"
     Set the timezone to where **you** are, not where the server is located. This way logs and timestamps match your local time, making monitoring and debugging easier.
 
-!!! warning "Remove NOPASSWD after initial setup"
-    Cloud-init uses `NOPASSWD` so you can run `sudo` immediately after first login (there is no password set yet). After completing sections 3-5, you **must** secure this:
+!!! danger "Replace the initial password"
+    The `chpasswd` section sets a temporary password so that `sudo` works from the first login. On your **first SSH session**, change it immediately:
 
     ```bash
-    # 1. Set a strong password for the openclaw user
-    sudo passwd openclaw
-
-    # 2. Remove passwordless sudo
-    sudo sed -i 's/ALL=(ALL) NOPASSWD:ALL/ALL=(ALL) ALL/' /etc/sudoers.d/90-cloud-init-users
-
-    # 3. Verify sudo now requires password (open a new SSH session)
-    sudo whoami  # Should prompt for password
+    sudo passwd openclaw  # Set a strong password
     ```
 
-    Leaving `NOPASSWD` permanently means any process running as `openclaw` can escalate to root without a password prompt.
+    `expire: true` forces the password change on first console login. Via SSH key login this is not enforced automatically, so **change it manually**.
 
 !!! warning "Replace the SSH key"
     Replace `ssh-ed25519 AAAAC3... YOUR_PUBLIC_KEY_HERE` with your actual public key (`cat ~/.ssh/id_ed25519.pub`).
