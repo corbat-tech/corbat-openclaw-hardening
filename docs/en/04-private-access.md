@@ -572,7 +572,7 @@ crontab -e
 └─────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────┐
-│              YOUR VPS                       │
+│         VPS (Hetzner/other)                  │
 │  Public IP: xxx.xxx.xxx.xxx (NOT used)      │
 │  Tailscale IP: 100.x.x.x (only path)        │
 │  Tag: tag:vps                               │

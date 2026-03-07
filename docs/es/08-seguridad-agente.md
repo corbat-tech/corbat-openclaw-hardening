@@ -24,24 +24,60 @@ Al terminar esta sección tendrás:
 
 ---
 
-## OWASP Agentic Top 10 2026
+## Marcos de referencia de seguridad
+
+### OWASP Agentic Top 10 2026
 
 El [OWASP Top 10 for Agentic Applications 2026](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/) identifica los principales riesgos de seguridad en sistemas de agentes AI.
+
+### NIST AI Agent Standards Initiative (febrero 2026)
+
+El [NIST lanzó en febrero 2026](https://www.nist.gov/news-events/news/2026/02/announcing-ai-agent-standards-initiative-interoperable-and-secure) la "AI Agent Standards Initiative" para establecer estándares de interoperabilidad y seguridad en frameworks de agentes AI. Esta guía se alinea con sus principios fundamentales:
+
+- **Identidad y autenticación** de agentes (implementado via Tailscale ACLs)
+- **Aislamiento de ejecución** (implementado via sandbox + systemd)
+- **Auditabilidad** de acciones (implementado via auditd + logging)
+- **Control humano** sobre acciones críticas (implementado via human-in-the-loop)
 
 ### Resumen de riesgos y mitigaciones
 
 | # | Riesgo | Descripción | Mitigación en esta guía |
 |---|--------|-------------|-------------------------|
 | **AA1** | Agentic Injection | Prompts maliciosos que manipulan al agente | Input validation, guardrails |
-| **AA2** | Sensitive Data Exposure | Filtración de secrets en outputs | Output filtering, .env protegido |
+| **AA2** | Sensitive Data Exposure | Filtración de secrets en outputs | Output filtering, SecretRef |
 | **AA3** | Improper Output Handling | Outputs no sanitizados ejecutados | Sanitización, skill allowlist |
 | **AA4** | Excessive Agency | Agente con demasiados permisos | Principio mínimo privilegio |
 | **AA5** | Tool Misuse | Uso indebido de herramientas | Skills con allowlist estricta |
 | **AA6** | Insecure Memory | Memoria persistente comprometida | Memoria aislada, cifrada |
-| **AA7** | Insufficient Identity | Falta de autenticación en APIs | ACLs Tailscale, tokens seguros |
+| **AA7** | Insufficient Identity | Falta de autenticación en APIs | ACLs Tailscale, Gateway TLS pairing |
 | **AA8** | Unsafe Agentic Actions | Acciones irreversibles sin confirmación | Human-in-the-loop |
 | **AA9** | Poor Multi-Agent Security | Comunicación insegura entre agentes | N/A (single agent) |
-| **AA10** | Missing Audit Logs | Falta de trazabilidad | Auditd, logging completo |
+| **AA10** | Missing Audit Logs | Falta de trazabilidad | Auditd, `openclaw security audit` |
+
+---
+
+## Amenazas recientes: ClawHub y ClawJacked
+
+### ClawHub Supply Chain Attack (febrero 2026)
+
+!!! danger "El mayor ataque de cadena de suministro contra agentes AI"
+    1,184+ skills maliciosos (~20% del registro ClawHub) fueron descubiertos distribuyendo malware. Ver [sección 5](05-openclaw.md) para detalles completos.
+
+**Mitigaciones implementadas en esta guía:**
+
+- Sandbox mode `"all"` containeriza toda ejecución de herramientas
+- Allowlist de skills restringe qué herramientas puede usar el agente
+- `openclaw security audit` detecta skills comprometidos
+
+### ClawJacked (WebSocket hijacking)
+
+Vulnerabilidad que permite a sitios web maliciosos secuestrar agentes OpenClaw locales enviando comandos via WebSocket al Gateway.
+
+**Mitigaciones:**
+
+- `gateway.host: "127.0.0.1"` — Gateway solo accesible en loopback
+- `gateway.tls.pairing: true` — Conexiones autenticadas con TLS pairing
+- Acceso via Tailscale elimina exposición del Gateway a la red local
 
 ---
 
@@ -186,6 +222,7 @@ nano ~/openclaw/config/settings.yaml
 ```
 
 ```yaml
+# Agregar a config/settings.yaml (crear si no existe)
 # --- Seguridad de inputs (OWASP AA1) ---
 input_validation:
   enabled: true
@@ -390,6 +427,7 @@ if __name__ == "__main__":
 ### Configurar filtering en settings
 
 ```yaml
+# Agregar a config/settings.yaml (crear si no existe)
 # --- Filtering de outputs (OWASP AA2) ---
 output_filtering:
   enabled: true
@@ -414,7 +452,7 @@ La memoria persistente del agente puede contener datos sensibles de conversacion
 ### Configurar almacenamiento seguro de memoria
 
 ```yaml
-# En config/settings.yaml
+# Agregar a config/settings.yaml (crear si no existe)
 
 memory:
   enabled: true
@@ -485,12 +523,13 @@ grep -rE "(sk-|api[_-]?key|password|secret)" ~/openclaw/workspace/.memory/ 2>/de
 
 ### Verificar configuración de skills
 
-La configuración de skills en `config/skills.json` implementa el principio de mínimo privilegio.
+La configuración de skills en `config/skills.json` (crear si es necesario, o usar la sección `tools` en `openclaw.json`) implementa el principio de mínimo privilegio.
 
 Ejecuta esta verificación:
 
 ```bash
 # Verificar que shell está deshabilitado
+# Usar config/skills.json si lo creaste, o verificar openclaw.json
 cat ~/openclaw/config/skills.json | grep -A2 '"shell"'
 
 # Verificar allowlist de HTTP
@@ -797,7 +836,7 @@ Añade:
 ### Configurar acciones que requieren confirmación
 
 ```yaml
-# En config/settings.yaml
+# Agregar a config/settings.yaml (crear si no existe)
 
 # --- Human-in-the-loop (OWASP AA8) ---
 human_approval:

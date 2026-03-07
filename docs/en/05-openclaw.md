@@ -7,9 +7,25 @@
 > **Required level**: Intermediate
 
 !!! info "OpenClaw requirements"
-    OpenClaw requires **Node.js 22 or higher**. This guide uses the official recommended installation.
+    OpenClaw requires **Node.js 22 or higher**. This guide is updated for **OpenClaw v2026.3.x**.
 
     Refer to the [official documentation](https://docs.openclaw.ai/start/getting-started) for the most up-to-date instructions.
+
+!!! danger "Security alert: ClawHub incident (February 2026)"
+    In February 2026, the **largest supply chain attack against AI agent infrastructure** to date was discovered:
+
+    - **1,184+ malicious skills** (~20% of the ClawHub registry) distributed malware (AMOS stealer) and reverse shells
+    - Skills disguised as legitimate crypto/trading tools
+    - Another vulnerability ("ClawJacked") allowed malicious websites to hijack local agents via WebSocket
+
+    **Mandatory measures:**
+
+    - **Never install skills without auditing the source code first**
+    - Run new skills **always in sandbox** with minimal permissions
+    - Use `openclaw security audit` after every skill installation
+    - Verify the author and contribution history before trusting
+
+    Sources: [The Hacker News](https://thehackernews.com/2026/02/researchers-find-341-malicious-clawhub.html), [Snyk - ToxicSkills](https://snyk.io/blog/toxicskills-malicious-ai-agent-skills-clawhub/)
 
 ## Prerequisites
 
@@ -207,7 +223,7 @@ openclaw --version
 
 **Expected output:**
 ```
-openclaw v1.x.x
+openclaw v2026.3.x
 ```
 
 ### Method 2: Installation with official script
@@ -253,6 +269,43 @@ openclaw status
 openclaw doctor
 ```
 
+### Built-in security tools (v2026.3.x)
+
+OpenClaw includes native security tools that you should run after installation:
+
+```bash
+# Security audit of configuration and environment
+openclaw security audit
+
+# Audit with automatic remediation
+openclaw security audit --fix
+
+# Verify effective sandbox policies
+openclaw sandbox explain
+
+# Health check and auto-healing
+openclaw doctor
+```
+
+!!! success "Run `openclaw security audit --fix` after every configuration change"
+    This tool verifies permissions, Gateway configuration, sandbox mode, and known vulnerabilities.
+
+### Update channels
+
+OpenClaw offers three update channels:
+
+```bash
+# View current channel
+openclaw update --channel
+
+# Change channel (recommended: stable for production)
+openclaw update --channel stable
+
+# Other available channels:
+# openclaw update --channel beta    # New features, possible bugs
+# openclaw update --channel dev     # Development, NOT for production
+```
+
 ---
 
 ## Configuration files
@@ -289,12 +342,15 @@ nano ~/.openclaw/openclaw.json
 
   "agent": {
     "model": "anthropic/claude-sonnet-4-5",
-    "thinking": "high"
+    "thinking": "adaptive"
   },
 
   "gateway": {
     "port": 18789,
     "host": "127.0.0.1",
+    "tls": {
+      "pairing": true
+    },
     "tailscale": {
       "mode": "off"
     }
@@ -304,7 +360,7 @@ nano ~/.openclaw/openclaw.json
     "defaults": {
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
-        "mode": "always"
+        "mode": "all"
       }
     }
   },
@@ -312,7 +368,7 @@ nano ~/.openclaw/openclaw.json
   "dmPolicy": "pairing",
 
   "security": {
-    "allowlist": [],
+    "allowFrom": [],
     "elevated": {
       "enabled": false
     }
@@ -321,12 +377,54 @@ nano ~/.openclaw/openclaw.json
 ```
 
 !!! danger "Critical security configuration"
-    - `host: "127.0.0.1"` — Only listens on localhost
-    - `sandbox.mode: "always"` — All sessions in sandbox
-    - `dmPolicy: "pairing"` — Requires approval code for DMs
+    - `host: "127.0.0.1"` — Only listens on localhost (never `0.0.0.0`)
+    - `sandbox.mode: "all"` — **All** tool execution containerized (most secure level)
+    - `tls.pairing: true` — Gateway connections authenticated with TLS pairing (protects against ClawJacked)
+    - `dmPolicy: "pairing"` — Requires pairing code for unknown contacts
+    - `allowFrom: []` — List of trusted message sources (add as needed)
     - `elevated.enabled: false` — Don't allow elevated commands
+    - `thinking: "adaptive"` — Adaptive reasoning level (default in v2026.3.x for Claude 4.6)
 
-### Create environment variables file
+!!! info "Sandbox 'all' vs 'always'"
+    Starting with OpenClaw v2026.2.x, mode `"all"` replaces `"always"` and containerizes **all** tool execution (including the main thread). It is the most secure mode for production.
+
+### Configure credentials with SecretRef (RECOMMENDED)
+
+Starting with OpenClaw v2026.3.x, the **SecretRef** mechanism allows managing credentials securely without plaintext `.env` files. Supports up to 64 targets.
+
+```bash
+# Add API key securely (stored encrypted)
+openclaw secrets set ANTHROPIC_API_KEY
+# It will prompt for the value interactively (not shown on screen)
+
+# Verify it was saved
+openclaw secrets list
+
+# Use in openclaw.json with SecretRef
+```
+
+In `openclaw.json`, reference secrets like this:
+
+```json
+{
+  "agent": {
+    "model": "anthropic/claude-sonnet-4-5",
+    "apiKey": { "$secretRef": "ANTHROPIC_API_KEY" }
+  }
+}
+```
+
+!!! success "SecretRef vs .env"
+    | Feature | SecretRef | .env |
+    |---|---|---|
+    | Storage | Encrypted on disk | Plaintext |
+    | Prompt injection risk | Low | High (agent can read the file) |
+    | Shell history leakage | No | Yes (if using `export`) |
+    | Rotation | `openclaw secrets set` | Edit file manually |
+
+### Alternative: .env file (legacy method)
+
+If you prefer the traditional method or your OpenClaw version does not support SecretRef:
 
 ```bash
 nano ~/openclaw/.env
@@ -373,6 +471,15 @@ ls -la ~/openclaw/.env
 ```
 -rw------- 1 openclaw openclaw 512 Feb  1 10:00 /home/openclaw/openclaw/.env
 ```
+
+!!! warning ".env file limitations"
+    Plaintext `.env` files are vulnerable to:
+
+    - **Prompt injection** — a compromised agent can try to read the file
+    - **Log leakage** — variables expand in shell history
+    - **Access by other processes** — any user process can read it
+
+    Use **SecretRef** when possible.
 
 ### Configure SOUL.md (agent identity)
 
@@ -479,7 +586,7 @@ Add or modify the sandbox section:
     "defaults": {
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
-        "mode": "always",
+        "mode": "all",
         "allowedTools": [
           "bash",
           "read",
@@ -499,8 +606,8 @@ Add or modify the sandbox section:
 }
 ```
 
-!!! warning "Sandbox mode 'always'"
-    According to the [OpenClaw security documentation](https://docs.openclaw.ai/gateway/security), the sandbox isolates tool execution in Docker. The `always` mode is the most secure for servers.
+!!! warning "Sandbox mode 'all'"
+    According to the [OpenClaw security documentation](https://docs.openclaw.ai/gateway/security), the sandbox isolates tool execution in Docker. Mode `all` is the most secure for servers, containerizing all tool execution including the main thread.
 
 ### Configure DM Policy (message security)
 
@@ -510,7 +617,7 @@ OpenClaw can receive messages from channels like Telegram, Discord, etc. Configu
 {
   "dmPolicy": "pairing",
   "security": {
-    "allowlist": []
+    "allowFrom": []
   }
 }
 ```
@@ -535,12 +642,13 @@ openclaw pairing approve telegram ABC123
 ### Verify it only listens on localhost
 
 ```bash
-# Load environment variables
-export $(grep -v '^#' ~/openclaw/.env | xargs)
-
-# Run the Gateway manually
-openclaw gateway --port 18789 --verbose
+# Run the Gateway manually with environment variables loaded inline
+# This avoids leaking secrets into the shell environment and /proc/*/environ
+env $(grep -v '^#' ~/openclaw/.env | xargs) openclaw gateway --port 18789 --verbose
 ```
+
+!!! warning "Do not use `export` to load secrets"
+    Avoid the pattern `export $(grep -v '^#' .env | xargs)`. Using `export` injects all secrets into the shell environment, where they persist for the lifetime of the session and are readable via `/proc/*/environ` by any process running as the same user. The `env` pattern above limits the variables to the single command invocation. For production, the systemd `EnvironmentFile` directive (shown below in the service configuration) is the preferred method — it loads variables directly into the service without exposing them to interactive shells.
 
 In **another SSH terminal**, verify:
 
@@ -625,6 +733,7 @@ ProtectHome=read-only
 ReadWritePaths=/home/openclaw/openclaw/workspace
 ReadWritePaths=/home/openclaw/openclaw/logs
 ReadWritePaths=/home/openclaw/.openclaw
+ReadWritePaths=/var/run/docker.sock
 # Private temp (isolated)
 PrivateTmp=true
 
@@ -638,8 +747,6 @@ AmbientCapabilities=
 # --- Isolate network ---
 # Only allow IPv4, IPv6, and Unix sockets
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
-# Don't allow creating raw sockets
-CapabilityBoundingSet=~CAP_NET_RAW
 
 # --- Restrict syscalls ---
 # Only syscalls needed for normal services
@@ -954,7 +1061,7 @@ sudo systemctl daemon-reload
 !!! warning "Backup before removing"
     Before removing `~/.openclaw` or `~/openclaw`, make sure you have a backup of:
 
-    - `~/.openclaw/.env` (API keys)
+    - `~/openclaw/.env` (API keys)
     - `~/.openclaw/openclaw.json` (configuration)
     - `~/openclaw/workspace/` (work data)
 

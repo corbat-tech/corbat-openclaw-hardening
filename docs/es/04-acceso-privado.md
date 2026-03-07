@@ -572,7 +572,7 @@ crontab -e
 └─────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────┐
-│              VPS HOSTINGER                  │
+│              VPS (Hetzner/otro)              │
 │  IP pública: xxx.xxx.xxx.xxx (NO usada)     │
 │  IP Tailscale: 100.x.x.x (única vía)        │
 │  Tag: tag:vps                               │

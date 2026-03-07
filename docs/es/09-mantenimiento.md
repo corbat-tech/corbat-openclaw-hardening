@@ -55,6 +55,24 @@ sudo systemctl status unattended-upgrades
 cat /var/log/unattended-upgrades/unattended-upgrades.log | tail -50
 ```
 
+### Canonical Livepatch (parches de kernel sin reboot)
+
+!!! tip "Recomendado: parches de kernel en caliente"
+    [Canonical Livepatch](https://ubuntu.com/security/livepatch) aplica parches de seguridad al kernel **sin necesidad de reiniciar**. Complementa `unattended-upgrades` (que cubre paquetes pero no el kernel en ejecución).
+
+```bash
+# Activar Livepatch (gratis para uso personal, hasta 5 máquinas)
+sudo snap install canonical-livepatch
+sudo canonical-livepatch enable <TU_TOKEN>
+```
+
+Obtén tu token en [ubuntu.com/security/livepatch](https://ubuntu.com/security/livepatch) (login con Ubuntu One).
+
+```bash
+# Verificar estado
+sudo canonical-livepatch status --verbose
+```
+
 ### Actualizaciones manuales
 
 Para actualizaciones completas (no solo seguridad):
@@ -77,7 +95,7 @@ sudo apt autoremove -y
 ```
 
 !!! warning "Reiniciar si es necesario"
-    Después de actualizar el kernel:
+    Después de actualizar el kernel (si no usas Livepatch):
     ```bash
     # Verificar si hay reinicio pendiente
     [ -f /var/run/reboot-required ] && echo "Reinicio necesario"
@@ -129,14 +147,20 @@ sudo tailscale up --advertise-tags=tag:vps --reset
 ```bash
 # Backup de configuración
 cp ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.backup.$(date +%Y%m%d)
-cp ~/.openclaw/.env ~/.openclaw/.env.backup.$(date +%Y%m%d)
+cp ~/openclaw/.env ~/openclaw/.env.backup.$(date +%Y%m%d)
 ```
 
 ### Actualizar OpenClaw
 
 ```bash
-# Actualizar OpenClaw globalmente
+# Verificar canal actual
+openclaw update --channel
+
+# Actualizar OpenClaw (canal estable)
 npm install -g openclaw@latest
+
+# O usar el comando nativo de actualización
+openclaw update
 
 # Verificar versión instalada
 openclaw --version
@@ -154,12 +178,21 @@ sudo systemctl status openclaw
 # Verificar versión
 openclaw --version
 
+# Ejecutar diagnóstico completo
+openclaw doctor
+
+# Ejecutar auditoría de seguridad
+openclaw security audit
+
 # Ver logs por errores
 sudo journalctl -u openclaw -n 50
 
-# Verificar puntuación de seguridad (no debe empeorar)
+# Verificar puntuación de seguridad systemd (no debe empeorar)
 systemd-analyze security openclaw.service
 ```
+
+!!! warning "Revisa las notas de versión antes de actualizar"
+    OpenClaw v2026.3.x introdujo **breaking changes**. Consulta las [release notes](https://github.com/openclaw/openclaw/releases/) antes de actualizar. Haz siempre backup de la configuración primero.
 
 ---
 
@@ -182,10 +215,10 @@ systemd-analyze security openclaw.service
 
 ```bash
 # Backup de .env actual
-cp ~/.openclaw/.env ~/.openclaw/.env.backup.$(date +%Y%m%d)
+cp ~/openclaw/.env ~/openclaw/.env.backup.$(date +%Y%m%d)
 
 # Editar .env
-nano ~/.openclaw/.env
+nano ~/openclaw/.env
 
 # Reemplazar la key antigua por la nueva
 # Ejemplo: ANTHROPIC_API_KEY=sk-ant-NUEVA_KEY_AQUI
@@ -327,7 +360,7 @@ nano ~/.ssh/config
 | Archivo/Directorio | Criticidad | Frecuencia |
 |--------------------|------------|------------|
 | `~/.openclaw/openclaw.json` | Crítica | Semanal |
-| `~/.openclaw/.env` | Crítica | Semanal |
+| `~/openclaw/.env` | Crítica | Semanal |
 | `~/openclaw/workspace/` | Media | Diario (si hay datos) |
 | SSH keys (`.ssh/`) | Alta | Después de rotación |
 | Configuración systemd | Media | Después de cambios |
@@ -357,12 +390,12 @@ echo "Creando backup: $BACKUP_NAME"
 
 # Backup de configuración OpenClaw (cifrado)
 echo "- Backup de configuración OpenClaw..."
-if [ -f "$HOME/.openclaw/.env" ]; then
-    gpg --symmetric --cipher-algo AES256 -o "$BACKUP_PATH/env.gpg" "$HOME/.openclaw/.env"
+if [ -f "$HOME/openclaw/.env" ]; then
+    gpg --symmetric --cipher-algo AES256 -o "$BACKUP_PATH/env.gpg" "$HOME/openclaw/.env"
 fi
 cp "$HOME/.openclaw/openclaw.json" "$BACKUP_PATH/" 2>/dev/null || true
-cp "$HOME/.openclaw/SOUL.md" "$BACKUP_PATH/" 2>/dev/null || true
-cp "$HOME/.openclaw/TOOLS.md" "$BACKUP_PATH/" 2>/dev/null || true
+cp "$HOME/.openclaw/workspace/SOUL.md" "$BACKUP_PATH/" 2>/dev/null || true
+cp "$HOME/.openclaw/workspace/TOOLS.md" "$BACKUP_PATH/" 2>/dev/null || true
 
 # Backup de scripts de mantenimiento
 echo "- Backup de scripts..."
@@ -580,13 +613,13 @@ mkdir -p ~/openclaw/{workspace,logs,scripts}
 
 # Restaurar configuración OpenClaw
 cp /tmp/openclaw_backup_*/openclaw.json ~/.openclaw/
-cp /tmp/openclaw_backup_*/SOUL.md ~/.openclaw/ 2>/dev/null || true
-cp /tmp/openclaw_backup_*/TOOLS.md ~/.openclaw/ 2>/dev/null || true
+cp /tmp/openclaw_backup_*/SOUL.md ~/.openclaw/workspace/ 2>/dev/null || true
+cp /tmp/openclaw_backup_*/TOOLS.md ~/.openclaw/workspace/ 2>/dev/null || true
 cp -r /tmp/openclaw_backup_*/scripts/* ~/openclaw/scripts/ 2>/dev/null || true
 
 # Restaurar .env (descifrar)
-gpg -d /tmp/openclaw_backup_*/env.gpg > ~/.openclaw/.env
-chmod 600 ~/.openclaw/.env
+gpg -d /tmp/openclaw_backup_*/env.gpg > ~/openclaw/.env
+chmod 600 ~/openclaw/.env
 
 # Restaurar servicio systemd
 sudo cp /tmp/openclaw_backup_*/openclaw.service /etc/systemd/system/

@@ -121,7 +121,8 @@ MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,h
 
 # --- 5.2.6 - Key Exchange seguros ---
 # Solo algoritmos de intercambio de claves seguros
-KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
+# Incluye sntrup761x25519-sha512 para resistencia post-cuántica (recomendado desde abril 2025)
+KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
 
 # --- 5.2.7 - Banner de advertencia ---
 Banner /etc/issue.net
@@ -180,8 +181,8 @@ PubkeyAuthentication yes
 
 # --- Configuración adicional de seguridad ---
 
-# Desactivar TCP forwarding (previene túneles no autorizados)
-AllowTcpForwarding no
+# Allow local forwarding only (needed for OpenClaw access via SSH tunnel)
+AllowTcpForwarding local
 AllowAgentForwarding no
 
 # Desactivar túneles
@@ -200,9 +201,9 @@ sudo tee /etc/issue.net << 'EOF'
 ***************************************************************************
                             SISTEMA PRIVADO
 
-  El acceso no autorizado esta prohibido. Todas las actividades son
-  monitoreadas y registradas. El uso de este sistema implica aceptacion
-  de las politicas de seguridad.
+  El acceso no autorizado está prohibido. Todas las actividades son
+  monitoreadas y registradas. El uso de este sistema implica aceptación
+  de las políticas de seguridad.
 
   Unauthorized access is prohibited. All activities are monitored and
   logged. Use of this system implies acceptance of security policies.
@@ -367,7 +368,7 @@ backend = systemd
 enabled = true
 port = ssh
 filter = sshd
-logpath = /var/log/auth.log
+# No se necesita logpath: el backend systemd (configurado en [DEFAULT]) lee desde journald
 maxretry = 3
 bantime = 86400
 EOF
@@ -395,6 +396,48 @@ Status for the jail: sshd
    |- Total banned:     0
    `- Banned IP list:
 ```
+
+---
+
+## Alternativa: CrowdSec (protección colaborativa)
+
+!!! tip "CrowdSec vs Fail2Ban"
+    CrowdSec es una alternativa moderna a Fail2Ban con inteligencia de amenazas comunitaria.
+
+    | Característica | Fail2Ban | CrowdSec |
+    |---|---|---|
+    | **Recursos** | Muy bajos | Moderados |
+    | **Intel comunitaria** | No | Sí (blocklists compartidas) |
+    | **Detección** | Reactiva (log-based) | Proactiva (behavioral) |
+    | **Mejor para** | VPS simple, bajo tráfico | Producción, multi-servidor |
+    | **Integración nftables** | Via acciones | Nativa |
+
+    **Para un VPS personal con OpenClaw**, Fail2Ban es suficiente. Considera CrowdSec si planeas escalar o necesitas protección proactiva.
+
+### Instalar CrowdSec (opcional, alternativa a Fail2Ban)
+
+```bash
+# Download and inspect the install script first
+curl -sO https://install.crowdsec.net/install.sh
+less install.sh  # Review the script
+sudo bash install.sh
+rm install.sh
+
+# Instalar CrowdSec
+sudo apt install -y crowdsec crowdsec-firewall-bouncer-nftables
+
+# Verificar instalación
+sudo cscli version
+
+# Ver decisiones activas (IPs bloqueadas)
+sudo cscli decisions list
+
+# Ver alertas
+sudo cscli alerts list
+```
+
+!!! warning "No uses Fail2Ban y CrowdSec simultáneamente para SSH"
+    Elige uno u otro para evitar conflictos. Si instalas CrowdSec, desactiva la jail SSH de Fail2Ban.
 
 ---
 
@@ -650,6 +693,9 @@ net.ipv6.conf.default.accept_ra = 0
 EOF
 ```
 
+!!! note "Compatibilidad con Tailscale"
+    Si planeas usar este VPS como subnet router o exit node de Tailscale, cambia `ip_forward` a `1`. Para un despliegue estándar de OpenClaw (el alcance de esta guía), `0` es correcto.
+
 ### Aplicar configuración
 
 ```bash
@@ -788,6 +834,34 @@ sudo fail2ban-client set sshd unbanip <TU_IP>
 
 !!! info "El puerto SSH público es temporal"
     En el siguiente paso configuraremos Tailscale y **eliminaremos** el acceso SSH público.
+
+---
+
+## Eliminar sudo del usuario openclaw
+
+!!! danger "Principio de mínimo privilegio"
+    El usuario `openclaw` fue añadido al grupo `sudo` para realizar la configuración inicial en las secciones 3-5. Una vez completada toda la configuración (incluyendo Tailscale en la sección 4 y OpenClaw en la sección 5), el acceso sudo debe eliminarse. Un usuario de agente AI con sudo permanente es un riesgo crítico — cualquier compromiso del agente otorga acceso root completo.
+
+Tras completar todos los pasos de configuración de las secciones 3 a 5, elimina el acceso sudo del usuario `openclaw`:
+
+```bash
+# Ejecutar desde una sesión root o admin separada, NO como el usuario openclaw
+sudo deluser openclaw sudo
+```
+
+Verifica el cambio:
+
+```bash
+id openclaw
+```
+
+**Salida esperada (sin grupo `sudo`):**
+```
+uid=1001(openclaw) gid=1001(openclaw) groups=1001(openclaw)
+```
+
+!!! warning "Mantén una sesión de recuperación"
+    Antes de eliminar sudo, asegúrate de tener otra forma de administrar el sistema (por ejemplo, acceso root vía la consola del proveedor VPS u otro usuario admin con sudo). Si necesitas realizar tareas administrativas más adelante, puedes re-añadir temporalmente el acceso sudo desde esa sesión de recuperación.
 
 ---
 

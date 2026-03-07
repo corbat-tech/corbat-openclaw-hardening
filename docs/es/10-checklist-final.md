@@ -213,7 +213,7 @@ else
 fi
 
 # .env con permisos 600
-ENV_PERMS=$(stat -c "%a" /home/openclaw/.openclaw/.env 2>/dev/null || stat -c "%a" ~/.openclaw/.env 2>/dev/null)
+ENV_PERMS=$(stat -c "%a" /home/openclaw/openclaw/.env 2>/dev/null || stat -c "%a" ~/openclaw/.env 2>/dev/null)
 if [ "$ENV_PERMS" = "600" ]; then
     check ".env permisos 600" "pass"
 else
@@ -246,7 +246,7 @@ fi
 
 if [ -f "$CONFIG_FILE" ]; then
     # Sandbox mode activo
-    if grep -q '"sandbox"' "$CONFIG_FILE" && grep -A2 '"sandbox"' "$CONFIG_FILE" | grep -q '"mode":\s*"always"'; then
+    if grep -q '"sandbox"' "$CONFIG_FILE" && grep -A2 '"sandbox"' "$CONFIG_FILE" | grep -q '"mode":\s*"all"'; then
         check "Sandbox mode activo" "pass"
     else
         check "Sandbox mode activo" "fail" "critical"
@@ -267,14 +267,21 @@ if [ -f "$CONFIG_FILE" ]; then
     else
         check "Gateway host = 127.0.0.1" "fail" "critical"
     fi
+
+    # Gateway TLS pairing
+    if grep -q '"pairing":\s*true' "$CONFIG_FILE"; then
+        check "Gateway TLS pairing habilitado" "pass"
+    else
+        check "Gateway TLS pairing habilitado" "warn"
+    fi
 else
     check "Archivo openclaw.json existe" "fail"
 fi
 
 # Verificar TOOLS.md (allowlist de herramientas)
-TOOLS_FILE="/home/openclaw/.openclaw/TOOLS.md"
+TOOLS_FILE="/home/openclaw/.openclaw/workspace/TOOLS.md"
 if [ ! -f "$TOOLS_FILE" ]; then
-    TOOLS_FILE="$HOME/.openclaw/TOOLS.md"
+    TOOLS_FILE="$HOME/.openclaw/workspace/TOOLS.md"
 fi
 
 if [ -f "$TOOLS_FILE" ]; then
@@ -362,15 +369,16 @@ chmod +x ~/openclaw/scripts/verificar_seguridad.sh
 | 2.3 | PermitEmptyPasswords | `sudo sshd -T \| grep permitemptypasswords` | no | ⬜ |
 | 2.4 | MaxAuthTries | `sudo sshd -T \| grep maxauthtries` | ≤ 4 | ⬜ |
 | 2.5 | X11Forwarding | `sudo sshd -T \| grep x11forwarding` | no | ⬜ |
-| 2.6 | AllowTcpForwarding | `sudo sshd -T \| grep allowtcpforwarding` | no | ⬜ |
+| 2.6 | AllowTcpForwarding | `sudo sshd -T \| grep allowtcpforwarding` | local | ⬜ |
 | 2.7 | LogLevel | `sudo sshd -T \| grep loglevel` | VERBOSE | ⬜ |
 | 2.8 | ClientAliveInterval | `sudo sshd -T \| grep clientaliveinterval` | > 0 | ⬜ |
 | 2.9 | LoginGraceTime | `sudo sshd -T \| grep logingracetime` | ≤ 60 | ⬜ |
 | 2.10 | AllowUsers | `sudo sshd -T \| grep allowusers` | openclaw | ⬜ |
 | 2.11 | Banner | `sudo sshd -T \| grep banner` | /etc/issue.net | ⬜ |
 | 2.12 | Ciphers seguros | `sudo sshd -T \| grep ciphers` | Sin arcfour, 3des | ⬜ |
-| 2.13 | Permisos sshd_config | `stat -c %a /etc/ssh/sshd_config` | 600 | ⬜ |
-| 2.14 | Propietario sshd_config | `stat -c %U:%G /etc/ssh/sshd_config` | root:root | ⬜ |
+| 2.13 | KexAlgorithms post-cuántico | `sudo sshd -T \| grep kexalgorithms` | Incluye sntrup761 | ⬜ |
+| 2.14 | Permisos sshd_config | `stat -c %a /etc/ssh/sshd_config` | 600 | ⬜ |
+| 2.15 | Propietario sshd_config | `stat -c %U:%G /etc/ssh/sshd_config` | root:root | ⬜ |
 
 ### 3. Tailscale
 
@@ -393,8 +401,8 @@ chmod +x ~/openclaw/scripts/verificar_seguridad.sh
 |---|---------|--------------|--------|
 | 4.1 | Directorio estructura correcta | `ls ~/.openclaw/` | ⬜ |
 | 4.2 | openclaw.json existe | `ls ~/.openclaw/openclaw.json` | ⬜ |
-| 4.3 | .env existe y permisos 600 | `stat -c %a ~/.openclaw/.env` = 600 | ⬜ |
-| 4.4 | .env propietario correcto | `stat -c %U ~/.openclaw/.env` = openclaw | ⬜ |
+| 4.3 | .env existe y permisos 600 | `stat -c %a ~/openclaw/.env` = 600 | ⬜ |
+| 4.4 | .env propietario correcto | `stat -c %U ~/openclaw/.env` = openclaw | ⬜ |
 | 4.5 | Gateway host = 127.0.0.1 | `grep host ~/.openclaw/openclaw.json` | ⬜ |
 | 4.6 | OpenClaw escucha localhost:18789 | `ss -tlnp \| grep 18789` = 127.0.0.1 | ⬜ |
 | 4.7 | No escucha en 0.0.0.0 | `ss -tlnp \| grep 18789` ≠ 0.0.0.0 | ⬜ |
@@ -408,12 +416,15 @@ chmod +x ~/openclaw/scripts/verificar_seguridad.sh
 | # | Control | Verificación | Estado |
 |---|---------|--------------|--------|
 | 5.1 | openclaw.json existe | `ls ~/.openclaw/openclaw.json` | ⬜ |
-| 5.2 | Sandbox mode = always | `grep sandbox ~/.openclaw/openclaw.json` | ⬜ |
+| 5.2 | Sandbox mode = all | `grep sandbox ~/.openclaw/openclaw.json` | ⬜ |
 | 5.3 | dmPolicy = pairing o closed | `grep dmPolicy ~/.openclaw/openclaw.json` | ⬜ |
-| 5.4 | TOOLS.md (allowlist) existe | `ls ~/.openclaw/TOOLS.md` | ⬜ |
-| 5.5 | SOUL.md (límites) existe | `ls ~/.openclaw/SOUL.md` | ⬜ |
-| 5.6 | No hay herramientas peligrosas | Revisar TOOLS.md manualmente | ⬜ |
-| 5.7 | Límites de operaciones en SOUL | Revisar SOUL.md manualmente | ⬜ |
+| 5.4 | Gateway TLS pairing activo | `grep tls ~/.openclaw/openclaw.json` | ⬜ |
+| 5.5 | TOOLS.md (allowlist) existe | `ls ~/.openclaw/workspace/TOOLS.md` | ⬜ |
+| 5.6 | SOUL.md (límites) existe | `ls ~/.openclaw/workspace/SOUL.md` | ⬜ |
+| 5.7 | No hay herramientas peligrosas | Revisar TOOLS.md manualmente | ⬜ |
+| 5.8 | `openclaw security audit` sin errores | `openclaw security audit` | ⬜ |
+| 5.9 | SecretRef configurado (no .env plano) | `openclaw secrets list` | ⬜ |
+| 5.10 | Canal de actualización = stable | `openclaw update --channel` | ⬜ |
 
 ### 6. Seguridad del Agente (OWASP Agentic)
 

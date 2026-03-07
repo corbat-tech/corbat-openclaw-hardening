@@ -27,15 +27,24 @@ By the end of this section you will have:
 
 | Provider | Recommended plan | RAM | CPU | Disk | Price | Notes |
 |----------|------------------|-----|-----|------|-------|-------|
-| **[Hetzner](https://www.hetzner.com/cloud)** | CX22 | 4 GB | 2 vCPU | 40 GB | ~$5/month | ⭐ Best performance/price |
-| **[DigitalOcean](https://www.digitalocean.com)** | Basic Droplet | 4 GB | 2 vCPU | 80 GB | ~$12/month | ⭐ Great documentation |
-| [Vultr](https://www.vultr.com) | Cloud Compute | 4 GB | 2 vCPU | 80 GB | ~$12/month | Many datacenters |
-| [Linode](https://www.linode.com) | Shared CPU | 4 GB | 2 vCPU | 80 GB | ~$12/month | Reliable |
-| [Contabo](https://contabo.com/en/vps/) | VPS S | 8 GB | 4 vCPU | 100 GB | ~$6/month | Budget option, slower support |
+| **[Hetzner](https://www.hetzner.com/cloud)** | CPX22 | 4 GB | 2 vCPU | 40 GB NVMe | ~$8/month | **Recommended** -- Best performance/price |
+| [Hostinger](https://www.hostinger.com/vps) | KVM 2 | 8 GB | 2 vCPU | 100 GB | ~$8/month | Alternative for beginners (hPanel) |
+| [DigitalOcean](https://www.digitalocean.com) | Basic Droplet | 4 GB | 2 vCPU | 80 GB | ~$24/month | Good documentation, full ecosystem |
+| [Vultr](https://www.vultr.com) | Cloud Compute | 4 GB | 2 vCPU | 80 GB | ~$24/month | Many global datacenters |
+| [Contabo](https://contabo.com/en/vps/) | VPS S | 8 GB | 4 vCPU | 100 GB | ~$5/month | Budget option, worse support |
 
-!!! tip "Recommendation"
-    **Hetzner** offers the best performance per dollar and has datacenters in Europe and US.
-    **DigitalOcean** has excellent documentation and beginner-friendly interface.
+!!! tip "Recommendation: Hetzner Cloud"
+    **Hetzner** is the primary choice in this guide because of:
+
+    - **60% cheaper** than DigitalOcean/Vultr for equivalent specs
+    - **Free cloud firewall** -- additional perimeter security layer (see below)
+    - **Cloud-init** -- automated provisioning from first boot
+    - **GDPR-compliant** -- German company, EU data centers
+    - **20 TB monthly traffic** included (vs 4 TB on DigitalOcean)
+    - **NVMe RAID10** -- 40.9k IOPS, excellent disk performance
+    - **AMD EPYC** -- ~939 Geekbench 6 single-core
+
+    **Hostinger** is still a good alternative for beginners (more guided hPanel interface, 1-click OpenClaw templates).
 
 !!! warning "Avoid"
     - Providers without established reputation
@@ -43,6 +52,9 @@ By the end of this section you will have:
     - "Unlimited" VPS or with excessive shared resources
 
     A compromised VPS = your AI agent compromised.
+
+!!! note "Note on Hetzner pricing"
+    Hetzner prices will increase by 30-37% starting April 2026 (CPX22 from ~$6 to ~$8/month). Even so, they remain significantly cheaper than the competition.
 
 ---
 
@@ -55,6 +67,108 @@ By the end of this section you will have:
 | Disk | 40 GB | 80 GB | 160 GB |
 | OS | Ubuntu 22.04 LTS | **Ubuntu 24.04 LTS** | Ubuntu 24.04 LTS |
 | Network | 1 Gbps | 1 Gbps | 10 Gbps |
+
+---
+
+## Hetzner Cloud Firewall (perimeter security layer)
+
+!!! success "Hetzner exclusive -- free defense layer"
+    Hetzner offers **stateful firewalls at the infrastructure level** at no additional cost.
+    This adds a security layer **before** traffic reaches your VPS (defense in depth).
+
+### Create firewall before the VPS
+
+1. Go to [console.hetzner.cloud](https://console.hetzner.cloud) -> **Firewalls** -> **Create Firewall**
+2. Name: `openclaw-fw`
+3. Configure the rules:
+
+| Direction | Protocol | Port | Source | Description |
+|-----------|----------|------|--------|-------------|
+| **Inbound** | TCP | 22 | Any | SSH (temporary, will be closed after Tailscale) |
+| **Outbound** | TCP | 443 | Any | HTTPS (LLM APIs) |
+| **Outbound** | TCP | 80 | Any | HTTP (updates) |
+| **Outbound** | UDP | 41641 | Any | Tailscale (WireGuard) |
+| **Outbound** | UDP | 53 | Any | DNS |
+
+!!! info "Inbound deny-all by default"
+    Hetzner Cloud Firewall has an **implicit deny-all policy** for inbound traffic.
+    Only explicitly allowed traffic reaches the server.
+
+4. In the **Apply to** tab, select the server you will create next.
+
+### Double-layer firewall architecture
+
+```
+Internet -> [Hetzner Cloud Firewall] -> [UFW on VPS] -> [OpenClaw Sandbox]
+             Layer 1: Perimeter          Layer 2: Host    Layer 3: App
+             (deny-all inbound)          (deny-all inbound) (sandbox "all")
+```
+
+!!! tip "After configuring Tailscale"
+    Once Tailscale is running (section 4), go back to the Hetzner firewall and **remove the inbound SSH rule (port 22)**. All communication will go through the Tailscale WireGuard tunnel.
+
+---
+
+## Cloud-init (automated provisioning on Hetzner)
+
+!!! tip "Optional but recommended"
+    If you use Hetzner, you can automate the initial VPS configuration with cloud-init.
+    This ensures reproducible and hardened provisioning from the first boot.
+
+When creating the VPS on Hetzner, in the **Cloud config** section, paste this YAML:
+
+```yaml
+#cloud-config
+# OpenClaw VPS - Hardened initial provisioning
+# Reference: https://community.hetzner.com/tutorials/basic-cloud-config/
+
+# --- Create openclaw user ---
+users:
+  - name: openclaw
+    groups: sudo
+    shell: /bin/bash
+    sudo: ALL=(ALL) ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3... YOUR_PUBLIC_KEY_HERE
+
+# --- Disable root SSH ---
+disable_root: true
+ssh_pwauth: false
+
+# --- Automatic updates ---
+package_update: true
+package_upgrade: true
+packages:
+  - ufw
+  - fail2ban
+  - unattended-upgrades
+  - auditd
+  - aide
+  - curl
+  - git
+  - gnupg
+
+# --- Configure UFW ---
+runcmd:
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow ssh
+  - ufw --force enable
+  - systemctl enable fail2ban
+  - systemctl start fail2ban
+  - systemctl enable unattended-upgrades
+  - timedatectl set-timezone America/New_York
+  # Remove NOPASSWD after initial provisioning is complete
+  - sed -i 's/ALL=(ALL) NOPASSWD:ALL/ALL=(ALL) ALL/' /etc/sudoers.d/90-cloud-init-users
+```
+
+!!! warning "Do not use NOPASSWD in production"
+    The cloud-init configuration above uses `ALL=(ALL) ALL` (with password) instead of `NOPASSWD:ALL`. If you need passwordless sudo during provisioning, add it temporarily and ensure the `runcmd` step at the end removes it. Leaving `NOPASSWD` permanently means any process running as `openclaw` can escalate to root without a password prompt.
+
+!!! warning "Replace the SSH key"
+    Replace `ssh-ed25519 AAAAC3... YOUR_PUBLIC_KEY_HERE` with your actual public key (`cat ~/.ssh/id_ed25519.pub`).
+
+If you use cloud-init, you can skip the "First access" and "Update system" sections because they will have already run automatically. Go directly to [Section 3](03-system-security.md) for full SSH hardening.
 
 ---
 
@@ -275,7 +389,7 @@ Save this information in a secure place (password manager):
 
 | Data | Value | Notes |
 |------|-------|-------|
-| Provider | _______________ | Hetzner, DigitalOcean, etc. |
+| Provider | _______________ | Hetzner, Hostinger, etc. |
 | Public IP | `___.___.___.___` | You'll stop using this later |
 | Temporary user | `root` | Only for initial setup |
 | Datacenter | _______________ | For reference |

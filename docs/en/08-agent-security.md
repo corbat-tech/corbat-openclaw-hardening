@@ -24,24 +24,60 @@ By the end of this section you will have:
 
 ---
 
-## OWASP Agentic Top 10 2026
+## Security frameworks
+
+### OWASP Agentic Top 10 2026
 
 The [OWASP Top 10 for Agentic Applications 2026](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/) identifies the main security risks in AI agent systems.
+
+### NIST AI Agent Standards Initiative (February 2026)
+
+The [NIST launched in February 2026](https://www.nist.gov/news-events/news/2026/02/announcing-ai-agent-standards-initiative-interoperable-and-secure) the "AI Agent Standards Initiative" to establish interoperability and security standards for AI agent frameworks. This guide aligns with its core principles:
+
+- **Agent identity and authentication** (implemented via Tailscale ACLs)
+- **Execution isolation** (implemented via sandbox + systemd)
+- **Action auditability** (implemented via auditd + logging)
+- **Human control** over critical actions (implemented via human-in-the-loop)
 
 ### Summary of risks and mitigations
 
 | # | Risk | Description | Mitigation in this guide |
 |---|------|-------------|--------------------------|
 | **AA1** | Agentic Injection | Malicious prompts that manipulate the agent | Input validation, guardrails |
-| **AA2** | Sensitive Data Exposure | Secret leakage in outputs | Output filtering, protected .env |
+| **AA2** | Sensitive Data Exposure | Secret leakage in outputs | Output filtering, SecretRef |
 | **AA3** | Improper Output Handling | Unsanitized outputs executed | Sanitization, skill allowlist |
 | **AA4** | Excessive Agency | Agent with too many permissions | Least privilege principle |
 | **AA5** | Tool Misuse | Improper use of tools | Skills with strict allowlist |
 | **AA6** | Insecure Memory | Compromised persistent memory | Isolated, encrypted memory |
-| **AA7** | Insufficient Identity | Lack of authentication in APIs | Tailscale ACLs, secure tokens |
+| **AA7** | Insufficient Identity | Lack of authentication in APIs | Tailscale ACLs, Gateway TLS pairing |
 | **AA8** | Unsafe Agentic Actions | Irreversible actions without confirmation | Human-in-the-loop |
 | **AA9** | Poor Multi-Agent Security | Insecure communication between agents | N/A (single agent) |
-| **AA10** | Missing Audit Logs | Lack of traceability | Auditd, complete logging |
+| **AA10** | Missing Audit Logs | Lack of traceability | Auditd, `openclaw security audit` |
+
+---
+
+## Recent threats: ClawHub and ClawJacked
+
+### ClawHub Supply Chain Attack (February 2026)
+
+!!! danger "The largest supply chain attack against AI agents"
+    1,184+ malicious skills (~20% of the ClawHub registry) were discovered distributing malware. See [section 5](05-openclaw.md) for full details.
+
+**Mitigations implemented in this guide:**
+
+- Sandbox mode `"all"` containerizes all tool execution
+- Skills allowlist restricts which tools the agent can use
+- `openclaw security audit` detects compromised skills
+
+### ClawJacked (WebSocket hijacking)
+
+Vulnerability that allows malicious websites to hijack local OpenClaw agents by sending commands via WebSocket to the Gateway.
+
+**Mitigations:**
+
+- `gateway.host: "127.0.0.1"` -- Gateway only accessible on loopback
+- `gateway.tls.pairing: true` -- Connections authenticated with TLS pairing
+- Access via Tailscale eliminates Gateway exposure to the local network
 
 ---
 
@@ -186,6 +222,7 @@ nano ~/openclaw/config/settings.yaml
 ```
 
 ```yaml
+# Add to config/settings.yaml (create if needed)
 # --- Input security (OWASP AA1) ---
 input_validation:
   enabled: true
@@ -390,6 +427,7 @@ if __name__ == "__main__":
 ### Configure filtering in settings
 
 ```yaml
+# Add to config/settings.yaml (create if needed)
 # --- Output filtering (OWASP AA2) ---
 output_filtering:
   enabled: true
@@ -414,7 +452,7 @@ The agent's persistent memory may contain sensitive data from previous conversat
 ### Configure secure memory storage
 
 ```yaml
-# In config/settings.yaml
+# Add to config/settings.yaml (create if needed)
 
 memory:
   enabled: true
@@ -485,12 +523,13 @@ grep -rE "(sk-|api[_-]?key|password|secret)" ~/openclaw/workspace/.memory/ 2>/de
 
 ### Verify skill configuration
 
-The skill configuration in `config/skills.json` implements the principle of least privilege.
+The skill configuration in `config/skills.json` (create if needed, or use the `tools` section in `openclaw.json`) implements the principle of least privilege.
 
 Run this verification:
 
 ```bash
 # Verify that shell is disabled
+# Use config/skills.json if you created it, or check openclaw.json
 cat ~/openclaw/config/skills.json | grep -A2 '"shell"'
 
 # Verify HTTP allowlist
@@ -797,7 +836,7 @@ Add:
 ### Configure actions that require confirmation
 
 ```yaml
-# In config/settings.yaml
+# Add to config/settings.yaml (create if needed)
 
 # --- Human-in-the-loop (OWASP AA8) ---
 human_approval:

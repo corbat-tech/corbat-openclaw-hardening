@@ -44,6 +44,18 @@ Ataque que intenta adivinar credenciales probando múltiples combinaciones de fo
 
 ## C
 
+### ClawHub
+Registro de skills (herramientas) de la comunidad OpenClaw. En febrero 2026, se descubrió que ~20% de los skills eran maliciosos (incidente ToxicSkills).
+
+### ClawJacked
+Vulnerabilidad que permite a sitios web maliciosos secuestrar agentes OpenClaw locales enviando comandos via WebSocket al Gateway. Se mitiga con TLS pairing y binding a loopback.
+
+### Cloud-init
+Herramienta estándar para la configuración automática de instancias cloud en su primer arranque. Usa archivos YAML para definir usuarios, paquetes, comandos y configuraciones.
+
+### CrowdSec
+Alternativa moderna a Fail2ban con inteligencia de amenazas comunitaria. Comparte blocklists de IPs maliciosas entre todos los usuarios de la red CrowdSec.
+
 ### CIS Benchmark
 Guías de configuración segura publicadas por el Center for Internet Security, reconocidas como estándar de la industria.
 
@@ -146,6 +158,9 @@ Práctica de reemplazar periódicamente claves y credenciales por nuevas.
 
 ## L
 
+### Livepatch
+Servicio de Canonical que aplica parches de seguridad al kernel de Linux en caliente, sin necesidad de reiniciar el servidor.
+
 ### LLM (Large Language Model)
 Modelo de inteligencia artificial entrenado en grandes cantidades de texto, capaz de generar y entender lenguaje natural.
 
@@ -242,6 +257,9 @@ Usuario administrador en sistemas Unix/Linux con acceso total al sistema.
 ### Sandboxing
 Técnica de aislamiento que restringe el acceso de un programa a recursos del sistema.
 
+### SecretRef
+Mecanismo nativo de OpenClaw (v2026.3.x+) para gestionar credenciales de forma segura. Almacena secrets cifrados en disco y los referencia en la configuración con `{ "$secretRef": "NOMBRE" }`.
+
 ### Secrets
 Información confidencial como contraseñas, API keys, tokens, etc.
 
@@ -252,7 +270,7 @@ Interfaz de línea de comandos del sistema operativo (bash, zsh, etc.).
 Capacidades o herramientas que un agente AI puede utilizar para interactuar con su entorno. En OpenClaw, las skills incluyen acceso a filesystem, git, HTTP client, shell, etc. Se configuran mediante allowlists para limitar qué acciones puede realizar el agente.
 
 ### Soul (configuración)
-Archivo de configuración (típicamente soul.yaml) que define la identidad, personalidad y límites de comportamiento de un agente AI. Establece restricciones como qué acciones están prohibidas y cómo debe responder el agente.
+Archivo de configuración (típicamente SOUL.md) que define la identidad, personalidad y límites de comportamiento de un agente AI. Establece restricciones como qué acciones están prohibidas y cómo debe responder el agente.
 
 ### SSH (Secure Shell)
 Protocolo criptográfico para acceso remoto seguro a sistemas.

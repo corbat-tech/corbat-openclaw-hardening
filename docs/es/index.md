@@ -86,9 +86,10 @@ Un servidor privado con OpenClaw que:
 │  │  │  │  └─> SSH solo por Tailscale IP          │    │  │  │
 │  │  │  │  └─> ACLs zero-trust                    │    │  │  │
 │  │  │  │  ┌─────────────────────────────────┐    │    │  │  │
-│  │  │  │  │  Capa 3: Systemd Sandboxing     │    │    │  │  │
+│  │  │  │  │  Capa 3: Systemd + Sandbox      │    │    │  │  │
 │  │  │  │  │  └─> OpenClaw en localhost      │    │    │  │  │
-│  │  │  │  │  └─> ProtectSystem=strict       │    │    │  │  │
+│  │  │  │  │  └─> Sandbox mode "all"         │    │    │  │  │
+│  │  │  │  │  └─> Gateway TLS pairing        │    │    │  │  │
 │  │  │  │  │  └─> Skills con allowlist       │    │    │  │  │
 │  │  │  │  └─────────────────────────────────┘    │    │  │  │
 │  │  │  └─────────────────────────────────────────┘    │  │  │
@@ -143,10 +144,11 @@ Según [investigaciones de seguridad](https://blogs.cisco.com/ai/personal-ai-age
 
 | Riesgo | Descripción | Mitigación en esta guía |
 |--------|-------------|-------------------------|
-| **Filtración de API keys** | El agente puede exponer credenciales | `.env` con chmod 600, output filtering |
+| **Filtración de API keys** | El agente puede exponer credenciales | SecretRef, output filtering |
 | **Prompt injection** | Inputs maliciosos manipulan al agente | Input validation, guardrails |
-| **Skills vulnerables** | 26% de skills tienen vulnerabilidades | Allowlist estricta, revisión de código |
-| **Acceso excesivo** | Filesystem/shell sin límites | Mínimo privilegio, paths específicos |
+| **Skills maliciosos (ClawHub)** | 20% de skills en ClawHub eran malware | Allowlist estricta, `openclaw security audit` |
+| **ClawJacked (WebSocket)** | Sitios web secuestran agentes locales | Gateway TLS pairing, binding loopback |
+| **Acceso excesivo** | Filesystem/shell sin límites | Sandbox "all", mínimo privilegio |
 
 ---
 
@@ -158,7 +160,10 @@ Según [investigaciones de seguridad](https://blogs.cisco.com/ai/personal-ai-age
     - ❌ Usar contraseñas en SSH
     - ❌ Dar acceso completo al filesystem
     - ❌ Instalarlo en tu máquina personal de trabajo
-    - ❌ Instalar skills sin revisar su código
+    - ❌ Instalar skills de ClawHub sin revisar su código (20% eran malware)
+    - ❌ Conectar tu email personal al agente (crea uno dedicado)
+    - ❌ Usar `dmPolicy: "open"` (permite comandos de cualquiera)
+    - ❌ Desactivar sandbox (`mode: "off"`)
     - ❌ Usar `curl | bash` sin verificar el script
     - ❌ Dejar ACLs de Tailscale en "permit all"
 
@@ -197,12 +202,17 @@ Según [investigaciones de seguridad](https://blogs.cisco.com/ai/personal-ai-age
 
 - [OpenClaw - Documentación oficial](https://docs.openclaw.ai/)
 - [OpenClaw - Seguridad](https://docs.openclaw.ai/gateway/security)
+- [OpenClaw - Hardening Guide (Nebius)](https://nebius.com/blog/posts/openclaw-security)
 - [CIS Ubuntu Linux 24.04 LTS Benchmark](https://www.cisecurity.org/benchmark/ubuntu_linux)
 - [Tailscale Security Hardening](https://tailscale.com/kb/1196/security-hardening)
 - [OWASP Top 10 for Agentic Applications 2026](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)
 - [OWASP Top 10 for LLM Applications 2025](https://genai.owasp.org/resource/owasp-top-10-for-llm-applications-2025/)
+- [NIST AI Agent Standards Initiative (2026)](https://www.nist.gov/news-events/news/2026/02/announcing-ai-agent-standards-initiative-interoperable-and-secure)
 - [systemd Hardening](https://www.freedesktop.org/software/systemd/man/systemd.exec.html#Sandboxing)
 - [Cisco - Riesgos de agentes AI personales](https://blogs.cisco.com/ai/personal-ai-agents-like-openclaw-are-a-security-nightmare)
+- [ClawHub Supply Chain Attack (The Hacker News)](https://thehackernews.com/2026/02/researchers-find-341-malicious-clawhub.html)
+- [Hetzner Cloud Review 2026 (Better Stack)](https://betterstack.com/community/guides/web-servers/hetzner-cloud-review/)
+- [SSH Hardening Guides (ssh-audit)](https://www.sshaudit.com/hardening_guides.html)
 
 ---
 

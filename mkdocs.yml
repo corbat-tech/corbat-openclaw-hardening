@@ -58,7 +58,7 @@ plugins:
               - 4. Acceso privado (Tailscale): 04-acceso-privado.md
               - 5. Instalar OpenClaw: 05-openclaw.md
               - 6. APIs de LLM: 06-llm-apis.md
-              - 7. Casos de uso: 07-casos-uso.md
+              - 7. Casos de uso y herramientas: 07-casos-uso.md
             - Seguridad avanzada:
               - 8. Seguridad del agente: 08-seguridad-agente.md
               - 9. Mantenimiento: 09-mantenimiento.md
@@ -90,7 +90,7 @@ nav:
     - 4. Private access (Tailscale): 04-private-access.md
     - 5. Install OpenClaw: 05-openclaw.md
     - 6. LLM APIs: 06-llm-apis.md
-    - 7. Use cases: 07-use-cases.md
+    - 7. Use cases & tools: 07-use-cases.md
   - Advanced Security:
     - 8. Agent security: 08-agent-security.md
     - 9. Maintenance: 09-maintenance.md

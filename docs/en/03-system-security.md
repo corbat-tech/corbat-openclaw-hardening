@@ -121,7 +121,8 @@ MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512,h
 
 # --- 5.2.6 - Secure Key Exchange ---
 # Only secure key exchange algorithms
-KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
+# Includes sntrup761x25519-sha512 for post-quantum resistance (recommended since April 2025)
+KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
 
 # --- 5.2.7 - Warning banner ---
 Banner /etc/issue.net
@@ -180,8 +181,8 @@ PubkeyAuthentication yes
 
 # --- Additional security configuration ---
 
-# Disable TCP forwarding (prevents unauthorized tunnels)
-AllowTcpForwarding no
+# Allow local forwarding only (needed for OpenClaw access via SSH tunnel)
+AllowTcpForwarding local
 AllowAgentForwarding no
 
 # Disable tunnels
@@ -363,7 +364,7 @@ backend = systemd
 enabled = true
 port = ssh
 filter = sshd
-logpath = /var/log/auth.log
+# No logpath needed: systemd backend (set in [DEFAULT]) reads from journald
 maxretry = 3
 bantime = 86400
 EOF
@@ -391,6 +392,48 @@ Status for the jail: sshd
    |- Total banned:     0
    `- Banned IP list:
 ```
+
+---
+
+## Alternative: CrowdSec (collaborative protection)
+
+!!! tip "CrowdSec vs Fail2Ban"
+    CrowdSec is a modern alternative to Fail2Ban with community threat intelligence.
+
+    | Feature | Fail2Ban | CrowdSec |
+    |---|---|---|
+    | **Resources** | Very low | Moderate |
+    | **Community intel** | No | Yes (shared blocklists) |
+    | **Detection** | Reactive (log-based) | Proactive (behavioral) |
+    | **Best for** | Simple VPS, low traffic | Production, multi-server |
+    | **nftables integration** | Via actions | Native |
+
+    **For a personal VPS with OpenClaw**, Fail2Ban is sufficient. Consider CrowdSec if you plan to scale or need proactive protection.
+
+### Install CrowdSec (optional, alternative to Fail2Ban)
+
+```bash
+# Download and inspect the install script first
+curl -sO https://install.crowdsec.net/install.sh
+less install.sh  # Review the script
+sudo bash install.sh
+rm install.sh
+
+# Install CrowdSec
+sudo apt install -y crowdsec crowdsec-firewall-bouncer-nftables
+
+# Verify installation
+sudo cscli version
+
+# View active decisions (blocked IPs)
+sudo cscli decisions list
+
+# View alerts
+sudo cscli alerts list
+```
+
+!!! warning "Do not use Fail2Ban and CrowdSec simultaneously for SSH"
+    Choose one or the other to avoid conflicts. If you install CrowdSec, disable the SSH jail in Fail2Ban.
 
 ---
 
@@ -646,6 +689,9 @@ net.ipv6.conf.default.accept_ra = 0
 EOF
 ```
 
+!!! note "Tailscale compatibility"
+    If you plan to use this VPS as a Tailscale subnet router or exit node, change `ip_forward` to `1`. For a standard OpenClaw deployment (the scope of this guide), `0` is correct.
+
 ### Apply configuration
 
 ```bash
@@ -784,6 +830,34 @@ sudo fail2ban-client set sshd unbanip <YOUR_IP>
 
 !!! info "Public SSH port is temporary"
     In the next step we'll configure Tailscale and **remove** public SSH access.
+
+---
+
+## Remove sudo from openclaw user
+
+!!! danger "Principle of least privilege"
+    The `openclaw` user was added to the `sudo` group to perform the initial setup in sections 3-5. Once all setup is complete (including Tailscale in section 4 and OpenClaw in section 5), sudo access should be removed. An AI agent user with permanent sudo is a critical risk — any compromise of the agent grants full root access.
+
+After completing all setup steps in sections 3 through 5, remove sudo access from the `openclaw` user:
+
+```bash
+# Run this from a separate root or admin session, NOT as the openclaw user
+sudo deluser openclaw sudo
+```
+
+Verify the change:
+
+```bash
+id openclaw
+```
+
+**Expected output (no `sudo` group):**
+```
+uid=1001(openclaw) gid=1001(openclaw) groups=1001(openclaw)
+```
+
+!!! warning "Keep a recovery session"
+    Before removing sudo, make sure you have another way to administer the system (e.g., root access via the VPS provider's console or another admin user with sudo). If you need to perform administrative tasks later, you can temporarily re-add sudo access from that recovery session.
 
 ---
 

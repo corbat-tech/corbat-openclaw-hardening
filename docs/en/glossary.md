@@ -50,8 +50,20 @@ Secure configuration guides published by the Center for Internet Security, recog
 ### Cipher
 Cryptographic algorithm used to encrypt data. In SSH, it defines how communication is encrypted.
 
+### ClawHub
+Community skills (tools) registry for OpenClaw. In February 2026, it was discovered that ~20% of the skills were malicious (ToxicSkills incident).
+
+### ClawJacked
+Vulnerability that allows malicious websites to hijack local OpenClaw agents by sending commands via WebSocket to the Gateway. Mitigated with TLS pairing and loopback binding.
+
 ### CLI (Command Line Interface)
 Command line interface, where the user interacts with the system through text.
+
+### Cloud-init
+Standard tool for automatic configuration of cloud instances on first boot. Uses YAML files to define users, packages, commands, and configurations.
+
+### CrowdSec
+Modern alternative to Fail2ban with community threat intelligence. Shares blocklists of malicious IPs among all CrowdSec network users.
 
 ---
 
@@ -145,6 +157,9 @@ Practice of periodically replacing keys and credentials with new ones.
 ---
 
 ## L
+
+### Livepatch
+Canonical service that applies security patches to the Linux kernel live, without needing to restart the server.
 
 ### LLM (Large Language Model)
 Artificial intelligence model trained on large amounts of text, capable of generating and understanding natural language.
@@ -245,6 +260,9 @@ Isolation technique that restricts a program's access to system resources.
 ### Secrets
 Confidential information such as passwords, API keys, tokens, etc.
 
+### SecretRef
+Native OpenClaw mechanism (v2026.3.x+) for managing credentials securely. Stores encrypted secrets on disk and references them in configuration with `{ "$secretRef": "NAME" }`.
+
 ### Shell
 Operating system command line interface (bash, zsh, etc.).
 
@@ -252,7 +270,7 @@ Operating system command line interface (bash, zsh, etc.).
 Capabilities or tools that an AI agent can use to interact with its environment. In OpenClaw, skills include filesystem access, git, HTTP client, shell, etc. They are configured using allowlists to limit what actions the agent can perform.
 
 ### Soul (configuration)
-Configuration file (typically soul.yaml) that defines the identity, personality, and behavior limits of an AI agent. It establishes restrictions such as which actions are prohibited and how the agent should respond.
+Configuration file (typically SOUL.md) that defines the identity, personality, and behavior limits of an AI agent. It establishes restrictions such as which actions are prohibited and how the agent should respond.
 
 ### SSH (Secure Shell)
 Cryptographic protocol for secure remote system access.

@@ -28,14 +28,14 @@ Al terminar esta sección tendrás:
 
 ---
 
-## Comparativa de proveedores (2026)
+## Comparativa de proveedores (marzo 2026)
 
 | Proveedor | Modelo recomendado | Calidad | Precio | Mejor para |
 |-----------|-------------------|---------|--------|------------|
 | **Kimi/Moonshot** | Kimi K2.5 | ⭐⭐⭐⭐⭐ | **GRATIS** | Empezar sin coste |
+| **Anthropic** | Claude Sonnet 4.6 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | Razonamiento complejo, coding |
+| **Anthropic** | Claude Opus 4.6 | ⭐⭐⭐⭐⭐⭐ | ⭐⭐ | Máxima calidad |
 | **OpenAI** | GPT-5 mini | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | Uso general, estable |
-| **Anthropic** | Claude Sonnet 4.5 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | Razonamiento complejo |
-| **Anthropic** | Claude Opus 4.5 | ⭐⭐⭐⭐⭐⭐ | ⭐⭐ | Máxima calidad |
 | **DeepSeek** | DeepSeek V3 | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Alto volumen, bajo coste |
 | **Google** | Gemini Flash | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | Alto volumen |
 
@@ -55,13 +55,13 @@ Al terminar esta sección tendrás:
 
 ### Desarrollo / uso diario
 
-- **Modelo:** Claude Sonnet 4.5 o GPT-5 mini
+- **Modelo:** Claude Sonnet 4.6 o GPT-5 mini
 - **Presupuesto:** 30-50€/mes
 - **Por qué:** Buen equilibrio calidad/coste
 
 ### Producción / uso intensivo
 
-- **Modelo:** Claude Sonnet 4.5 (principal) + DeepSeek V3 (tareas simples)
+- **Modelo:** Claude Sonnet 4.6 (principal) + DeepSeek V3 (tareas simples)
 - **Presupuesto:** 80-150€/mes
 - **Por qué:** Calidad para tareas complejas, bajo coste para volumen
 
@@ -193,7 +193,52 @@ Revisa el uso periódicamente:
 
 ## Seguridad de API Keys
 
-### Permisos del archivo .env
+!!! danger "No almacenes API keys en archivos `.env` de texto plano si puedes evitarlo"
+    Los archivos `.env` son vulnerables a prompt injection, se filtran en shell history y logs, y cualquier proceso del usuario puede leerlos.
+
+### Opción 1: SecretRef de OpenClaw (RECOMENDADO)
+
+A partir de v2026.3.x, OpenClaw incluye **SecretRef** para gestión segura de credenciales:
+
+```bash
+# Almacenar API key de forma segura (cifrada en disco)
+openclaw secrets set ANTHROPIC_API_KEY
+# Introduce el valor de forma interactiva (no se muestra en pantalla)
+
+# Listar secrets almacenados
+openclaw secrets list
+
+# Eliminar un secret
+openclaw secrets delete ANTHROPIC_API_KEY
+```
+
+En `openclaw.json`, referencia los secrets:
+```json
+{
+  "agent": {
+    "apiKey": { "$secretRef": "ANTHROPIC_API_KEY" }
+  }
+}
+```
+
+### Opción 2: lkr (LLM Key Ring)
+
+[lkr](https://github.com/yotta/lkr) es una herramienta de cifrado client-side para API keys:
+
+```bash
+# Instalar lkr
+npm install -g lkr
+
+# Almacenar key (cifrada con XChaCha20-Poly1305)
+lkr set ANTHROPIC_API_KEY
+
+# Usar en scripts
+export ANTHROPIC_API_KEY=$(lkr get ANTHROPIC_API_KEY)
+```
+
+### Opción 3: Archivo .env (legacy)
+
+Si debes usar `.env`, aplica permisos restrictivos:
 
 ```bash
 # Verificar que .env tiene permisos restrictivos
@@ -209,7 +254,7 @@ chmod 600 ~/openclaw/.env
 Verifica que tu configuración de logging no imprime las API keys:
 
 ```yaml
-# En config/settings.yaml
+# En config/settings.yaml (crear si no existe)
 logging:
   level: "info"
   redact_secrets: true  # Importante
