@@ -225,21 +225,8 @@ cat > ~/.openclaw/openclaw.json << OCEOF
       }
     }
   },
-  "dmPolicy": "pairing",
-  "security": {
-    "allowFrom": [],
-    "elevated": {
-      "enabled": false
-    }
-  },
   "tools": {
-    "profile": "messaging",
-    "blocked": [
-      "browser",
-      "canvas",
-      "nodes",
-      "cron"
-    ]
+    "profile": "messaging"
   },
   "messages": {
     "ackReactionScope": "group-mentions"
@@ -261,9 +248,7 @@ cat > ~/.openclaw/openclaw.json << OCEOF
       "mode": "token",
       "token": "${GATEWAY_TOKEN}"
     },
-    "tls": {
-      "pairing": true
-    },
+    "tls": {},
     "tailscale": {
       "mode": "off",
       "resetOnExit": false
@@ -365,6 +350,8 @@ Group=openclaw
 WorkingDirectory=/home/openclaw
 Environment=PATH=${NODE_PATH}:/usr/local/bin:/usr/bin:/bin
 Environment=NVM_DIR=/home/openclaw/.nvm
+Environment=NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache
+Environment=OPENCLAW_NO_RESPAWN=1
 
 ExecStart=${OPENCLAW_BIN} gateway --port 18789
 Restart=on-failure
@@ -410,6 +397,8 @@ SyslogIdentifier=openclaw
 [Install]
 WantedBy=multi-user.target
 SVCEOF
+
+mkdir -p /var/tmp/openclaw-compile-cache
 
 sudo systemctl daemon-reload
 sudo systemctl enable openclaw

@@ -372,52 +372,61 @@ nano ~/.openclaw/openclaw.json
 
 ```json
 {
-  "$schema": "https://openclaw.ai/schemas/config.json",
-
-  "agent": {
-    "model": "anthropic/claude-sonnet-4-5",
-    "thinking": "adaptive"
-  },
-
-  "gateway": {
-    "port": 18789,
-    "host": "127.0.0.1",
-    "tls": {
-      "pairing": true
-    },
-    "tailscale": {
-      "mode": "off"
-    }
-  },
-
   "agents": {
     "defaults": {
+      "model": {
+        "primary": "kimi-coding/k2p5"
+      },
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
         "mode": "all"
+      },
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
       }
     }
   },
-
-  "dmPolicy": "pairing",
-
-  "security": {
-    "allowFrom": [],
-    "elevated": {
-      "enabled": false
+  "tools": {
+    "profile": "messaging"
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token"
+    },
+    "tls": {},
+    "tailscale": {
+      "mode": "off"
+    },
+    "nodes": {
+      "denyCommands": [
+        "camera.snap", "camera.clip", "screen.record",
+        "contacts.add", "calendar.add", "reminders.add", "sms.send"
+      ]
     }
   }
 }
 ```
 
 !!! danger "Configuración de seguridad crítica"
-    - `host: "127.0.0.1"` — Solo escucha en localhost (nunca `0.0.0.0`)
+    - `bind: "loopback"` — Solo escucha en localhost (nunca `0.0.0.0`)
     - `sandbox.mode: "all"` — **Toda** ejecución de herramientas containerizada (nivel más seguro)
-    - `tls.pairing: true` — Conexiones Gateway autenticadas con TLS pairing (protege contra ClawJacked)
-    - `dmPolicy: "pairing"` — Requiere código de emparejamiento para contactos desconocidos
-    - `allowFrom: []` — Lista de fuentes de mensajes confiables (añadir según necesidad)
-    - `elevated.enabled: false` — No permitir comandos elevados
-    - `thinking: "adaptive"` — Nivel de razonamiento adaptativo (default en v2026.3.x para Claude 4.6)
+    - `auth.mode: "token"` — Acceso al Gateway requiere token de autenticación
+    - `session.dmScope: "per-channel-peer"` — Aísla sesiones DM para prevenir filtración de contexto
+    - `nodes.denyCommands` — Bloquea comandos peligrosos de nodos (cámara, contactos, SMS)
+    - `tls: {}` — TLS habilitado con valores por defecto
+
+!!! warning "Eliminado en v2026.3.x"
+    Las claves `dmPolicy`, `security` y `tools.blocked` a nivel raíz **no son reconocidas** por OpenClaw 2026.3.x. La política de DM se configura por canal cuando los añades. Ejecuta `openclaw doctor` para validar tu config.
 
 !!! info "Sandbox 'all' vs 'always'"
     A partir de OpenClaw v2026.2.x, el modo `"all"` reemplaza a `"always"` y containeriza **toda** ejecución de herramientas (incluyendo el hilo principal). Es el modo más seguro para producción.
@@ -645,18 +654,9 @@ Añade o modifica la sección de sandbox:
 
 ### Configurar DM Policy (seguridad de mensajes)
 
-OpenClaw puede recibir mensajes de canales como Telegram, Discord, etc. Configura la política de DMs para requerir aprobación:
+OpenClaw puede recibir mensajes de canales como Telegram, Discord, etc. La política de DMs se configura **por canal** cuando los añades (no a nivel raíz). El valor por defecto es `"pairing"` que requiere aprobación.
 
-```json
-{
-  "dmPolicy": "pairing",
-  "security": {
-    "allowFrom": []
-  }
-}
-```
-
-Con `dmPolicy: "pairing"`, los remitentes desconocidos reciben un código de emparejamiento que debes aprobar:
+Con `dmPolicy: "pairing"` en un canal, los remitentes desconocidos reciben un código de emparejamiento que debes aprobar:
 
 ```bash
 # Ver códigos de emparejamiento pendientes
@@ -738,6 +738,8 @@ WorkingDirectory=/home/openclaw
 
 # --- Cargar variables de entorno ---
 EnvironmentFile=/home/openclaw/openclaw/.env
+Environment=NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache
+Environment=OPENCLAW_NO_RESPAWN=1
 
 # --- Comando de inicio ---
 # IMPORTANTE: Primero encuentra la ruta correcta ejecutando: which openclaw

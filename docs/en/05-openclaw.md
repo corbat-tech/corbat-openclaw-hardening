@@ -372,52 +372,61 @@ nano ~/.openclaw/openclaw.json
 
 ```json
 {
-  "$schema": "https://openclaw.ai/schemas/config.json",
-
-  "agent": {
-    "model": "anthropic/claude-sonnet-4-5",
-    "thinking": "adaptive"
-  },
-
-  "gateway": {
-    "port": 18789,
-    "host": "127.0.0.1",
-    "tls": {
-      "pairing": true
-    },
-    "tailscale": {
-      "mode": "off"
-    }
-  },
-
   "agents": {
     "defaults": {
+      "model": {
+        "primary": "kimi-coding/k2p5"
+      },
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
         "mode": "all"
+      },
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
       }
     }
   },
-
-  "dmPolicy": "pairing",
-
-  "security": {
-    "allowFrom": [],
-    "elevated": {
-      "enabled": false
+  "tools": {
+    "profile": "messaging"
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token"
+    },
+    "tls": {},
+    "tailscale": {
+      "mode": "off"
+    },
+    "nodes": {
+      "denyCommands": [
+        "camera.snap", "camera.clip", "screen.record",
+        "contacts.add", "calendar.add", "reminders.add", "sms.send"
+      ]
     }
   }
 }
 ```
 
 !!! danger "Critical security configuration"
-    - `host: "127.0.0.1"` — Only listens on localhost (never `0.0.0.0`)
+    - `bind: "loopback"` — Only listens on localhost (never `0.0.0.0`)
     - `sandbox.mode: "all"` — **All** tool execution containerized (most secure level)
-    - `tls.pairing: true` — Gateway connections authenticated with TLS pairing (protects against ClawJacked)
-    - `dmPolicy: "pairing"` — Requires pairing code for unknown contacts
-    - `allowFrom: []` — List of trusted message sources (add as needed)
-    - `elevated.enabled: false` — Don't allow elevated commands
-    - `thinking: "adaptive"` — Adaptive reasoning level (default in v2026.3.x for Claude 4.6)
+    - `auth.mode: "token"` — Gateway access requires authentication token
+    - `session.dmScope: "per-channel-peer"` — Isolates DM sessions to prevent context leakage
+    - `nodes.denyCommands` — Blocks dangerous node commands (camera, contacts, SMS)
+    - `tls: {}` — TLS enabled with defaults
+
+!!! warning "Removed in v2026.3.x"
+    The keys `dmPolicy`, `security`, and `tools.blocked` at root level are **not recognized** by OpenClaw 2026.3.x. DM policy is configured per channel when you add channels. Run `openclaw doctor` to validate your config.
 
 !!! info "Sandbox 'all' vs 'always'"
     Starting with OpenClaw v2026.2.x, mode `"all"` replaces `"always"` and containerizes **all** tool execution (including the main thread). It is the most secure mode for production.
@@ -645,18 +654,9 @@ Add or modify the sandbox section:
 
 ### Configure DM Policy (message security)
 
-OpenClaw can receive messages from channels like Telegram, Discord, etc. Configure the DM policy to require approval:
+OpenClaw can receive messages from channels like Telegram, Discord, etc. DM policy is configured **per channel** when you add them (not at root level). The default is `"pairing"` which requires approval.
 
-```json
-{
-  "dmPolicy": "pairing",
-  "security": {
-    "allowFrom": []
-  }
-}
-```
-
-With `dmPolicy: "pairing"`, unknown senders receive a pairing code that you must approve:
+With `dmPolicy: "pairing"` on a channel, unknown senders receive a pairing code that you must approve:
 
 ```bash
 # View pending pairing codes
@@ -738,6 +738,8 @@ WorkingDirectory=/home/openclaw
 
 # --- Load environment variables ---
 EnvironmentFile=/home/openclaw/openclaw/.env
+Environment=NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache
+Environment=OPENCLAW_NO_RESPAWN=1
 
 # --- Start command ---
 # IMPORTANT: First find the correct path by running: which openclaw
