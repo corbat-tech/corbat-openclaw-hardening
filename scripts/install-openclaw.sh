@@ -92,6 +92,29 @@ fi
 info "OpenClaw version: $(openclaw --version 2>/dev/null || echo 'installed')"
 
 # =============================================================================
+# 5.2b Install Docker (required for sandbox mode)
+# =============================================================================
+
+info "=== Installing Docker (for sandbox isolation) ==="
+
+if command -v docker &>/dev/null; then
+    info "Docker already installed: $(docker --version)"
+else
+    info "Installing Docker..."
+    sudo apt-get install -y docker.io
+    info "Docker installed."
+fi
+
+# Add openclaw user to docker group
+if id -nG openclaw | grep -qw docker; then
+    info "User openclaw already in docker group."
+else
+    sudo usermod -aG docker openclaw
+    info "Added openclaw to docker group."
+    warn "Docker group will take effect after next login or service restart."
+fi
+
+# =============================================================================
 # 5.3 Create directory structure
 # =============================================================================
 
@@ -181,6 +204,41 @@ PCONF
 esac
 
 # =============================================================================
+# 5.4b Configure Telegram channel (optional)
+# =============================================================================
+
+echo ""
+echo "========================================================"
+echo "  TELEGRAM CHANNEL (optional)"
+echo "========================================================"
+echo ""
+echo "  To connect Telegram, you need a bot token from @BotFather."
+echo "  1) Open Telegram → search @BotFather"
+echo "  2) Send /newbot → follow prompts"
+echo "  3) Copy the token (format: 123456789:ABCdef...)"
+echo ""
+ask "Enter Telegram bot token (or press Enter to skip): "
+read -r TELEGRAM_TOKEN
+
+if [ -n "$TELEGRAM_TOKEN" ]; then
+    CHANNELS_CONFIG=$(cat <<CHCONF
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "${TELEGRAM_TOKEN}",
+      "dmPolicy": "pairing"
+    }
+  },
+CHCONF
+    )
+    info "Telegram configured with dmPolicy: pairing"
+    info "After first message, approve pairing with: openclaw pairing approve telegram <CODE>"
+else
+    CHANNELS_CONFIG=""
+    info "Skipped. Add Telegram later by editing ~/.openclaw/openclaw.json"
+fi
+
+# =============================================================================
 # 5.5 Generate gateway token
 # =============================================================================
 
@@ -195,6 +253,7 @@ info "=== Writing hardened openclaw.json ==="
 
 cat > ~/.openclaw/openclaw.json << OCEOF
 {
+  ${CHANNELS_CONFIG}
   "auth": {
     "profiles": {
       "${PROVIDER}:default": {
@@ -214,7 +273,7 @@ cat > ~/.openclaw/openclaw.json << OCEOF
       },
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
-        "mode": "off"
+        "mode": "all"
       },
       "compaction": {
         "mode": "safeguard"
@@ -226,7 +285,9 @@ cat > ~/.openclaw/openclaw.json << OCEOF
     }
   },
   "tools": {
-    "profile": "messaging"
+    "profile": "coding",
+    "allow": ["group:web"],
+    "deny": ["group:automation", "process"]
   },
   "messages": {
     "ackReactionScope": "group-mentions"
@@ -425,8 +486,13 @@ echo "  Config:         ~/.openclaw/openclaw.json"
 echo "  Workspace:      ~/openclaw/workspace"
 echo "  Gateway:        127.0.0.1:18789"
 echo "  Gateway token:  ${GATEWAY_TOKEN}"
-echo "  Sandbox:        all (fully containerized)"
+echo "  Sandbox:        all (Docker containerized)"
+echo "  Docker:         $(docker --version 2>/dev/null || echo 'not found')"
 echo "  Bind:           loopback only"
+echo "  Tools:          coding + web (automation/process blocked)"
+if [ -n "$TELEGRAM_TOKEN" ]; then
+echo "  Telegram:       configured (dmPolicy: pairing)"
+fi
 echo ""
 echo "  SAVE YOUR GATEWAY TOKEN — you'll need it for remote access."
 echo ""
@@ -435,12 +501,18 @@ echo "  1. Configure your API key:"
 echo "     openclaw models auth add"
 echo "  2. Start the service:"
 echo "     sudo systemctl start openclaw"
-echo "  3. Check status:"
+echo "  3. Check status (wait ~2 min for gateway to start):"
 echo "     sudo systemctl status openclaw"
 echo "  4. Access from your Mac (via SSH tunnel):"
 echo "     ssh -L 18789:127.0.0.1:18789 openclaw@<TAILSCALE_IP>"
-echo "     Then open: http://localhost:18789"
+echo "     Then open: http://127.0.0.1:18789/?#token=\${GATEWAY_TOKEN}"
+if [ -n "$TELEGRAM_TOKEN" ]; then
+echo "  5. Send a message to your bot in Telegram"
+echo "     Then approve pairing: openclaw pairing approve telegram <CODE>"
+echo "  6. Run security audit:"
+else
 echo "  5. Run security audit:"
+fi
 echo "     openclaw security audit"
 echo ""
 echo "  To view logs:"

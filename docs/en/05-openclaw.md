@@ -276,6 +276,22 @@ bash /tmp/openclaw-install.sh
 rm /tmp/openclaw-install.sh
 ```
 
+### Install Docker (required for sandbox)
+
+Docker is required for sandbox mode `all` — the recommended security setting:
+
+```bash
+sudo apt install -y docker.io
+sudo usermod -aG docker openclaw
+
+# Reconnect SSH for the group change to take effect
+exit
+# Then reconnect: ssh openclaw@<TAILSCALE_IP>
+
+# Verify Docker works
+docker ps
+```
+
 ### Initialize OpenClaw (onboarding)
 
 ```bash
@@ -391,7 +407,9 @@ nano ~/.openclaw/openclaw.json
     }
   },
   "tools": {
-    "profile": "messaging"
+    "profile": "coding",
+    "allow": ["group:web"],
+    "deny": ["group:automation", "process"]
   },
   "session": {
     "dmScope": "per-channel-peer"
@@ -647,10 +665,23 @@ Add or modify the sandbox section:
 !!! warning "Sandbox mode 'all' requires Docker"
     Mode `all` containerizes all tool execution in Docker — it is the most secure for servers. **Docker must be installed** or the agent will fail with: `Sandbox mode requires Docker, but the "docker" command was not found`.
 
-    If you don't want Docker, set `"mode": "off"`. The systemd hardening (ProtectSystem, NoNewPrivileges, etc.) still provides strong isolation.
+    Install Docker:
+
+    ```bash
+    sudo apt install -y docker.io
+    sudo usermod -aG docker openclaw
+    # Reconnect SSH for group to take effect
+    ```
+
+    If you cannot use Docker, set `"mode": "off"` and add compensating tool restrictions:
 
     ```json
-    "sandbox": { "mode": "off" }
+    "sandbox": { "mode": "off" },
+    "tools": {
+      "profile": "coding",
+      "allow": ["group:web"],
+      "deny": ["group:automation", "process"]
+    }
     ```
 
 ### Configure DM Policy (message security)
