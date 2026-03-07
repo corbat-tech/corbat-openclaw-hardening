@@ -542,7 +542,7 @@ ls -la ~/openclaw/.env
 SOUL.md define quién es tu agente, qué puede hacer y cómo se comporta. OpenClaw inyecta este archivo en el contexto del agente en cada interacción.
 
 ```bash
-nano ~/.openclaw/workspace/SOUL.md
+nano ~/openclaw/workspace/SOUL.md
 ```
 
 #### Secciones recomendadas
@@ -610,6 +610,16 @@ Profesional, conciso, directo.
     - `SOUL.md` — Identidad y restricciones del agente
     - `TOOLS.md` — Configuración de herramientas disponibles
     - `AGENTS.md` — Definición de agentes especializados
+
+!!! warning "Ruta correcta para SOUL.md"
+    Estos archivos deben estar en el **directorio workspace** configurado en `agents.defaults.workspace`, **no** en `~/.openclaw/workspace/`. Con nuestra configuración, la ruta correcta es:
+
+    ```
+    ~/openclaw/workspace/SOUL.md
+    ```
+
+    Si el agente ignora tu SOUL.md, verifica que la ruta coincide con tu configuración:
+    `grep workspace ~/.openclaw/openclaw.json`
 
 ### Configurar TOOLS.md (herramientas)
 

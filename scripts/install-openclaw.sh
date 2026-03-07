@@ -356,7 +356,7 @@ chmod 600 ~/openclaw/.env 2>/dev/null || true
 
 info "=== Creating SOUL.md ==="
 
-cat > ~/.openclaw/workspace/SOUL.md << 'SOUL'
+cat > ~/openclaw/workspace/SOUL.md << 'SOUL'
 # OpenClaw Assistant
 
 ## Identity

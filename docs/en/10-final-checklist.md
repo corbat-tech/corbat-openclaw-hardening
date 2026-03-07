@@ -419,8 +419,8 @@ chmod +x ~/openclaw/scripts/verify_security.sh
 | 5.2 | Sandbox mode = all | `grep sandbox ~/.openclaw/openclaw.json` | ⬜ |
 | 5.3 | dmPolicy = pairing or closed | `grep dmPolicy ~/.openclaw/openclaw.json` | ⬜ |
 | 5.4 | Gateway TLS pairing active | `grep tls ~/.openclaw/openclaw.json` | ⬜ |
-| 5.5 | TOOLS.md (allowlist) exists | `ls ~/.openclaw/workspace/TOOLS.md` | ⬜ |
-| 5.6 | SOUL.md (limits) exists | `ls ~/.openclaw/workspace/SOUL.md` | ⬜ |
+| 5.5 | TOOLS.md (allowlist) exists | `ls ~/openclaw/workspace/TOOLS.md` | ⬜ |
+| 5.6 | SOUL.md (limits) exists | `ls ~/openclaw/workspace/SOUL.md` | ⬜ |
 | 5.7 | No dangerous tools | Review TOOLS.md manually | ⬜ |
 | 5.8 | `openclaw security audit` no errors | `openclaw security audit` | ⬜ |
 | 5.9 | SecretRef configured (no plaintext .env) | `openclaw secrets list` | ⬜ |
