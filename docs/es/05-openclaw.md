@@ -754,6 +754,34 @@ openclaw pairing approve telegram <CODIGO>
 
 Después de aprobarlo, envía otro mensaje — el bot debería responder.
 
+**Paso 5 — Restringir acceso solo a tu cuenta:**
+
+Busca tu ID de Telegram — envía cualquier mensaje a **@raw_data_bot** en Telegram, te mostrará tu ID numérico.
+
+Luego edita la config:
+
+```bash
+nano ~/.openclaw/openclaw.json
+```
+
+Añade `allowFrom` al canal de Telegram con tu ID:
+
+```json
+"channels": {
+  "telegram": {
+    "enabled": true,
+    "botToken": "TU_TOKEN",
+    "dmPolicy": "pairing",
+    "allowFrom": ["TU_TELEGRAM_ID"]
+  }
+}
+```
+
+Reinicia: `sudo systemctl restart openclaw`
+
+!!! danger "Siempre configura allowFrom"
+    Sin `allowFrom`, cualquiera que encuentre tu bot puede solicitar pairing. Con `allowFrom`, solo tu cuenta puede interactuar — el resto es ignorado silenciosamente.
+
 !!! note "El wizard `openclaw channels add`"
     El wizard interactivo (`openclaw channels add`) puede no guardar la config correctamente. Si falla, usa el método manual de JSON descrito arriba — es más fiable.
 

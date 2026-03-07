@@ -221,12 +221,25 @@ ask "Enter Telegram bot token (or press Enter to skip): "
 read -r TELEGRAM_TOKEN
 
 if [ -n "$TELEGRAM_TOKEN" ]; then
+    echo ""
+    ask "Enter your Telegram user ID (send a message to @raw_data_bot to find it, or press Enter to skip): "
+    read -r TELEGRAM_USER_ID
+
+    if [ -n "$TELEGRAM_USER_ID" ]; then
+        ALLOW_FROM="\"allowFrom\": [\"${TELEGRAM_USER_ID}\"],"
+    else
+        ALLOW_FROM=""
+        warn "No allowFrom set — anyone can request pairing. Set it later in ~/.openclaw/openclaw.json"
+    fi
+
     CHANNELS_CONFIG=$(cat <<CHCONF
   "channels": {
     "telegram": {
       "enabled": true,
       "botToken": "${TELEGRAM_TOKEN}",
-      "dmPolicy": "pairing"
+      "dmPolicy": "pairing",
+      ${ALLOW_FROM}
+      "groupPolicy": "allowlist"
     }
   },
 CHCONF
