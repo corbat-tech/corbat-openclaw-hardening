@@ -1,0 +1,2370 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Secure OpenClaw installation guide for VPS - CIS Benchmark, Tailscale Hardening, OWASP Agentic Top 10">
+      
+      
+        <meta name="author" content="CORBAT">
+      
+      
+        <link rel="canonical" href="https://corbat.github.io/corbat-openclaw-hardening/es/02-vps/">
+      
+      
+        <link rel="prev" href="../01-preparacion/">
+      
+      
+        <link rel="next" href="../03-seguridad-sistema/">
+      
+      
+        
+          <link rel="alternate" href="../../02-vps/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="es">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>2. Contratar VPS - OpenClaw en VPS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#2-contratar-vps" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../" title="OpenClaw en VPS" class="md-header__button md-logo" aria-label="OpenClaw en VPS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenClaw en VPS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2. Contratar VPS
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Seleccionar idioma">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../02-vps/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="es" class="md-select__link">
+              Español
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/corbat/corbat-openclaw-hardening" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    corbat-openclaw-hardening
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="OpenClaw en VPS" class="md-nav__button md-logo" aria-label="OpenClaw en VPS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenClaw en VPS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/corbat/corbat-openclaw-hardening" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    corbat-openclaw-hardening
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de instalación
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de instalación
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-preparacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Preparación
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Contratar VPS
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Contratar VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerrequisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerrequisitos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proveedores-recomendados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proveedores recomendados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisitos-minimos-del-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisitos mínimos del VPS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hetzner-cloud-firewall-capa-de-seguridad-perimetral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hetzner Cloud Firewall (capa de seguridad perimetral)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Hetzner Cloud Firewall (capa de seguridad perimetral)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crear-firewall-antes-del-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crear firewall antes del VPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arquitectura-de-firewall-de-doble-capa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arquitectura de firewall de doble capa
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cloud-init-provisionamiento-automatico-en-hetzner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cloud-init (provisionamiento automático en Hetzner)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crear-el-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crear el VPS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Crear el VPS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-sistema-operativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Sistema operativo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-ubicacion-del-datacenter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Ubicación del datacenter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-clave-ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Clave SSH
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-contrasena-root-si-la-piden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Contraseña root (si la piden)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#primer-acceso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primer acceso
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Primer acceso">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#conectar-como-root" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conectar como root
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verificar-integridad-del-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar integridad del sistema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verificar integridad del sistema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verificar-sistema-operativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar sistema operativo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-usuarios-existentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar usuarios existentes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-procesos-en-ejecucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar procesos en ejecución
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-conexiones-de-red" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar conexiones de red
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configurar-timezone-y-locale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar timezone y locale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configurar timezone y locale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configurar-timezone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar timezone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configurar-locale-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar locale (opcional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#actualizar-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizar sistema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Actualizar sistema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reiniciar-si-es-necesario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reiniciar si es necesario
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#datos-a-guardar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Datos a guardar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-connection-refused" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Connection refused"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-permission-denied-publickey" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Permission denied (publickey)"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-host-key-verification-failed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Host key verification failed"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#el-sistema-esta-muy-lento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        El sistema está muy lento
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resumen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resumen
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-seguridad-sistema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Seguridad del sistema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-acceso-privado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Acceso privado (Tailscale)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-openclaw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Instalar OpenClaw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-llm-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. APIs de LLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-casos-uso/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Casos de uso y herramientas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seguridad avanzada
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Seguridad avanzada
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-seguridad-agente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Seguridad del agente
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-mantenimiento/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Mantenimiento
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-checklist-final/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Checklist final
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referencia
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referencia
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glosario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glosario
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerrequisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerrequisitos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proveedores-recomendados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proveedores recomendados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisitos-minimos-del-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requisitos mínimos del VPS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hetzner-cloud-firewall-capa-de-seguridad-perimetral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hetzner Cloud Firewall (capa de seguridad perimetral)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Hetzner Cloud Firewall (capa de seguridad perimetral)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crear-firewall-antes-del-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crear firewall antes del VPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arquitectura-de-firewall-de-doble-capa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arquitectura de firewall de doble capa
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cloud-init-provisionamiento-automatico-en-hetzner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cloud-init (provisionamiento automático en Hetzner)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crear-el-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crear el VPS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Crear el VPS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-sistema-operativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Sistema operativo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-ubicacion-del-datacenter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Ubicación del datacenter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-clave-ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Clave SSH
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-contrasena-root-si-la-piden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Contraseña root (si la piden)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#primer-acceso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Primer acceso
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Primer acceso">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#conectar-como-root" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conectar como root
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verificar-integridad-del-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar integridad del sistema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verificar integridad del sistema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verificar-sistema-operativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar sistema operativo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-usuarios-existentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar usuarios existentes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-procesos-en-ejecucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar procesos en ejecución
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-conexiones-de-red" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar conexiones de red
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configurar-timezone-y-locale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar timezone y locale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configurar timezone y locale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configurar-timezone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar timezone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configurar-locale-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar locale (opcional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#actualizar-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizar sistema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Actualizar sistema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reiniciar-si-es-necesario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reiniciar si es necesario
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#datos-a-guardar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Datos a guardar
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-connection-refused" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Connection refused"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-permission-denied-publickey" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Permission denied (publickey)"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-host-key-verification-failed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Host key verification failed"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#el-sistema-esta-muy-lento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        El sistema está muy lento
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resumen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resumen
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="2-contratar-vps">2. Contratar VPS<a class="headerlink" href="#2-contratar-vps" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>TL;DR</strong>: Crear un VPS con Ubuntu 24.04 LTS, verificar la integridad de la imagen, configurar timezone y realizar actualización inicial.</p>
+<p><strong>Tiempo estimado</strong>: 10-15 minutos</p>
+<p><strong>Nivel requerido</strong>: Principiante</p>
+</blockquote>
+<h2 id="prerrequisitos">Prerrequisitos<a class="headerlink" href="#prerrequisitos" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[ ] Sección 1 (Preparación) completada</li>
+<li>[ ] Clave SSH generada (<code>~/.ssh/id_ed25519.pub</code>)</li>
+<li>[ ] Cuenta en proveedor VPS con método de pago</li>
+</ul>
+<h2 id="objetivos">Objetivos<a class="headerlink" href="#objetivos" title="Permanent link">&para;</a></h2>
+<p>Al terminar esta sección tendrás:</p>
+<ul>
+<li>VPS creado con Ubuntu 24.04 LTS</li>
+<li>Acceso SSH como root funcionando</li>
+<li>Sistema actualizado</li>
+<li>Timezone configurado</li>
+</ul>
+<hr />
+<h2 id="proveedores-recomendados">Proveedores recomendados<a class="headerlink" href="#proveedores-recomendados" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Proveedor</th>
+<th>Plan recomendado</th>
+<th>RAM</th>
+<th>CPU</th>
+<th>Disco</th>
+<th>Precio</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><a href="https://www.hetzner.com/cloud">Hetzner</a></strong></td>
+<td>CPX22</td>
+<td>4 GB</td>
+<td>2 vCPU</td>
+<td>40 GB NVMe</td>
+<td>~8€/mes</td>
+<td>⭐ <strong>Recomendado</strong> — Mejor rendimiento/precio</td>
+</tr>
+<tr>
+<td><a href="https://www.hostinger.es/vps">Hostinger</a></td>
+<td>KVM 2</td>
+<td>8 GB</td>
+<td>2 vCPU</td>
+<td>100 GB</td>
+<td>~8€/mes</td>
+<td>Alternativa para principiantes (hPanel)</td>
+</tr>
+<tr>
+<td><a href="https://www.digitalocean.com">DigitalOcean</a></td>
+<td>Basic Droplet</td>
+<td>4 GB</td>
+<td>2 vCPU</td>
+<td>80 GB</td>
+<td>~24$/mes</td>
+<td>Buena documentación, ecosistema completo</td>
+</tr>
+<tr>
+<td><a href="https://www.vultr.com">Vultr</a></td>
+<td>Cloud Compute</td>
+<td>4 GB</td>
+<td>2 vCPU</td>
+<td>80 GB</td>
+<td>~24$/mes</td>
+<td>Muchos datacenters globales</td>
+</tr>
+<tr>
+<td><a href="https://contabo.com/en/vps/">Contabo</a></td>
+<td>VPS S</td>
+<td>8 GB</td>
+<td>4 vCPU</td>
+<td>100 GB</td>
+<td>~5€/mes</td>
+<td>Económico, peor soporte</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Recomendación: Hetzner Cloud</p>
+<p><strong>Hetzner</strong> es la opción principal de esta guía por:</p>
+<ul>
+<li><strong>60% más barato</strong> que DigitalOcean/Vultr para specs equivalentes</li>
+<li><strong>Firewall cloud gratuito</strong> — capa de seguridad perimetral adicional (ver más abajo)</li>
+<li><strong>Cloud-init</strong> — provisionamiento automatizado desde el primer boot</li>
+<li><strong>GDPR-compliant</strong> — empresa alemana, data centers en EU</li>
+<li><strong>20 TB de tráfico</strong> mensual incluido (vs 4 TB en DigitalOcean)</li>
+<li><strong>NVMe RAID10</strong> — 40.9k IOPS, rendimiento de disco excelente</li>
+<li><strong>AMD EPYC</strong> — ~939 Geekbench 6 single-core</li>
+</ul>
+<p><strong>Hostinger</strong> sigue siendo buena alternativa para principiantes (interfaz hPanel más guiada, templates 1-click de OpenClaw).</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Evita</p>
+<ul>
+<li>Proveedores sin reputación establecida</li>
+<li>Ofertas demasiado baratas (&lt; 3€/mes)</li>
+<li>VPS "ilimitados" o con recursos compartidos excesivos</li>
+</ul>
+<p>Un VPS comprometido = tu agente AI comprometido.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Nota sobre precios Hetzner</p>
+<p>Los precios de Hetzner subirán un 30-37% a partir de abril 2026 (CPX22 de ~6€ a ~8€/mes). Aun así, siguen siendo significativamente más baratos que la competencia.</p>
+</div>
+<hr />
+<h2 id="requisitos-minimos-del-vps">Requisitos mínimos del VPS<a class="headerlink" href="#requisitos-minimos-del-vps" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Recurso</th>
+<th>Mínimo</th>
+<th>Recomendado</th>
+<th>Para uso intensivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RAM</td>
+<td>4 GB</td>
+<td>8 GB</td>
+<td>16 GB</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>1 vCPU</td>
+<td>2 vCPU</td>
+<td>4 vCPU</td>
+</tr>
+<tr>
+<td>Disco</td>
+<td>40 GB</td>
+<td>80 GB</td>
+<td>160 GB</td>
+</tr>
+<tr>
+<td>SO</td>
+<td>Ubuntu 22.04 LTS</td>
+<td><strong>Ubuntu 24.04 LTS</strong></td>
+<td>Ubuntu 24.04 LTS</td>
+</tr>
+<tr>
+<td>Red</td>
+<td>1 Gbps</td>
+<td>1 Gbps</td>
+<td>10 Gbps</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="hetzner-cloud-firewall-capa-de-seguridad-perimetral">Hetzner Cloud Firewall (capa de seguridad perimetral)<a class="headerlink" href="#hetzner-cloud-firewall-capa-de-seguridad-perimetral" title="Permanent link">&para;</a></h2>
+<div class="admonition success">
+<p class="admonition-title">Exclusivo de Hetzner — capa gratuita de defensa</p>
+<p>Hetzner ofrece firewalls <strong>stateful a nivel de infraestructura</strong> sin coste adicional.
+Esto añade una capa de seguridad <strong>antes</strong> de que el tráfico llegue a tu VPS (defensa en profundidad).</p>
+</div>
+<h3 id="crear-firewall-antes-del-vps">Crear firewall antes del VPS<a class="headerlink" href="#crear-firewall-antes-del-vps" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Ve a <a href="https://console.hetzner.cloud">console.hetzner.cloud</a> → <strong>Firewalls</strong> → <strong>Create Firewall</strong></li>
+<li>Nombre: <code>openclaw-fw</code></li>
+<li>Configura las reglas:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Dirección</th>
+<th>Protocolo</th>
+<th>Puerto</th>
+<th>Origen</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Inbound</strong></td>
+<td>TCP</td>
+<td>22</td>
+<td>Any</td>
+<td>SSH (temporal, se cerrará tras Tailscale)</td>
+</tr>
+<tr>
+<td><strong>Outbound</strong></td>
+<td>TCP</td>
+<td>443</td>
+<td>Any</td>
+<td>HTTPS (APIs de LLM)</td>
+</tr>
+<tr>
+<td><strong>Outbound</strong></td>
+<td>TCP</td>
+<td>80</td>
+<td>Any</td>
+<td>HTTP (updates)</td>
+</tr>
+<tr>
+<td><strong>Outbound</strong></td>
+<td>UDP</td>
+<td>41641</td>
+<td>Any</td>
+<td>Tailscale (WireGuard)</td>
+</tr>
+<tr>
+<td><strong>Outbound</strong></td>
+<td>UDP</td>
+<td>53</td>
+<td>Any</td>
+<td>DNS</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Inbound deny-all por defecto</p>
+<p>Hetzner Cloud Firewall tiene una política <strong>deny-all implícita</strong> para inbound.
+Solo el tráfico explícitamente permitido llega al servidor.</p>
+</div>
+<ol>
+<li>En la pestaña <strong>Apply to</strong>, selecciona el servidor que crearás a continuación.</li>
+</ol>
+<h3 id="arquitectura-de-firewall-de-doble-capa">Arquitectura de firewall de doble capa<a class="headerlink" href="#arquitectura-de-firewall-de-doble-capa" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Internet → [Hetzner Cloud Firewall] → [UFW en el VPS] → [OpenClaw Sandbox]
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>             Capa 1: Perimetral          Capa 2: Host       Capa 3: App
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>             (deny-all inbound)          (deny-all inbound)  (sandbox &quot;all&quot;)
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Después de configurar Tailscale</p>
+<p>Una vez que Tailscale esté funcionando (sección 4), vuelve al firewall de Hetzner y <strong>elimina la regla inbound de SSH (puerto 22)</strong>. Toda la comunicación pasará por el túnel WireGuard de Tailscale.</p>
+</div>
+<hr />
+<h2 id="cloud-init-provisionamiento-automatico-en-hetzner">Cloud-init (provisionamiento automático en Hetzner)<a class="headerlink" href="#cloud-init-provisionamiento-automatico-en-hetzner" title="Permanent link">&para;</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Opcional pero recomendado</p>
+<p>Si usas Hetzner, puedes automatizar la configuración inicial del VPS con cloud-init.
+Esto asegura un provisionamiento reproducible y hardened desde el primer boot.</p>
+</div>
+<p>Al crear el VPS en Hetzner, en la sección <strong>Cloud config</strong>, pega este YAML:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">#cloud-config</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1"># OpenClaw VPS - Provisionamiento hardened inicial</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Referencia: https://community.hetzner.com/tutorials/basic-cloud-config/</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1"># --- Crear usuario openclaw ---</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nt">users</span><span class="p">:</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">openclaw</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="nt">groups</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sudo</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nt">shell</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/bin/bash</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="nt">sudo</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ALL=(ALL) ALL</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="nt">ssh_authorized_keys</span><span class="p">:</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ssh-ed25519 AAAAC3... TU_CLAVE_PUBLICA_AQUI</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="c1"># --- Deshabilitar root SSH ---</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="nt">disable_root</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="nt">ssh_pwauth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="c1"># --- Actualizaciones automáticas ---</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="nt">package_update</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="nt">package_upgrade</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="nt">packages</span><span class="p">:</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ufw</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fail2ban</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unattended-upgrades</span>
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">auditd</span>
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aide</span>
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">curl</span>
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">git</span>
+<a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gnupg</span>
+<a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>
+<a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="c1"># --- Configurar UFW ---</span>
+<a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="nt">runcmd</span><span class="p">:</span>
+<a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ufw default deny incoming</span>
+<a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ufw default allow outgoing</span>
+<a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ufw allow ssh</span>
+<a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ufw --force enable</span>
+<a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">systemctl enable fail2ban</span>
+<a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">systemctl start fail2ban</span>
+<a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">systemctl enable unattended-upgrades</span>
+<a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">timedatectl set-timezone Europe/Madrid</span>
+<a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a><span class="w">  </span><span class="c1"># Eliminar NOPASSWD tras completar el provisionamiento inicial</span>
+<a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sed -i &#39;s/ALL=(ALL) NOPASSWD:ALL/ALL=(ALL) ALL/&#39; /etc/sudoers.d/90-cloud-init-users</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">No uses NOPASSWD en producción</p>
+<p>La configuración de cloud-init anterior usa <code>ALL=(ALL) ALL</code> (con contraseña) en lugar de <code>NOPASSWD:ALL</code>. Si necesitas sudo sin contraseña durante el provisionamiento, añádelo temporalmente y asegúrate de que el paso <code>runcmd</code> al final lo elimine. Dejar <code>NOPASSWD</code> permanentemente significa que cualquier proceso ejecutándose como <code>openclaw</code> puede escalar a root sin solicitar contraseña.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Reemplaza la clave SSH</p>
+<p>Sustituye <code>ssh-ed25519 AAAAC3... TU_CLAVE_PUBLICA_AQUI</code> con tu clave pública real (<code>cat ~/.ssh/id_ed25519.pub</code>).</p>
+</div>
+<p>Si usas cloud-init, puedes saltar las secciones de "Primer acceso" y "Actualizar sistema" porque ya se habrán ejecutado automáticamente. Ve directamente a la <a href="../03-seguridad-sistema/">Sección 3</a> para el hardening completo de SSH.</p>
+<hr />
+<h2 id="crear-el-vps">Crear el VPS<a class="headerlink" href="#crear-el-vps" title="Permanent link">&para;</a></h2>
+<p>Los pasos son similares en todos los proveedores:</p>
+<h3 id="1-sistema-operativo">1. Sistema operativo<a class="headerlink" href="#1-sistema-operativo" title="Permanent link">&para;</a></h3>
+<p>Selecciona: <strong>Ubuntu 24.04 LTS</strong> (o la LTS más reciente disponible)</p>
+<div class="admonition info">
+<p class="admonition-title">¿Por qué Ubuntu LTS?</p>
+<ul>
+<li>Soporte de seguridad por 5+ años</li>
+<li>Amplia documentación</li>
+<li>Compatible con la mayoría de software</li>
+<li>Actualizaciones de seguridad automáticas</li>
+</ul>
+</div>
+<h3 id="2-ubicacion-del-datacenter">2. Ubicación del datacenter<a class="headerlink" href="#2-ubicacion-del-datacenter" title="Permanent link">&para;</a></h3>
+<p>Elige el datacenter más cercano a ti para menor latencia:</p>
+<table>
+<thead>
+<tr>
+<th>Tu ubicación</th>
+<th>Datacenter recomendado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>España</td>
+<td>Alemania (Frankfurt) o Países Bajos</td>
+</tr>
+<tr>
+<td>México/Centroamérica</td>
+<td>USA (Dallas, Miami)</td>
+</tr>
+<tr>
+<td>Sudamérica</td>
+<td>USA (Miami) o Brasil</td>
+</tr>
+<tr>
+<td>UK</td>
+<td>Londres o Países Bajos</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-clave-ssh">3. Clave SSH<a class="headerlink" href="#3-clave-ssh" title="Permanent link">&para;</a></h3>
+<p>Durante la creación del VPS, añade tu clave SSH pública:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># En tu máquina local, copia la clave pública</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>cat<span class="w"> </span>~/.ssh/id_ed25519.pub
+</code></pre></div>
+<p><strong>Salida esperada:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... openclaw-vps-2026
+</code></pre></div></p>
+<p>Copia el contenido <strong>completo</strong> (empieza con <code>ssh-ed25519...</code>) y pégalo en el campo "SSH Key" del proveedor.</p>
+<h3 id="4-contrasena-root-si-la-piden">4. Contraseña root (si la piden)<a class="headerlink" href="#4-contrasena-root-si-la-piden" title="Permanent link">&para;</a></h3>
+<p>Algunos proveedores piden una contraseña root. Ponla fuerte pero <strong>no la usarás</strong> — accederás solo por SSH con clave.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Generar contraseña aleatoria (guárdala por si acaso)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>openssl<span class="w"> </span>rand<span class="w"> </span>-base64<span class="w"> </span><span class="m">20</span>
+</code></pre></div>
+<hr />
+<h2 id="primer-acceso">Primer acceso<a class="headerlink" href="#primer-acceso" title="Permanent link">&para;</a></h2>
+<p>Una vez creado el VPS (puede tardar 1-5 minutos), el proveedor te mostrará la <strong>IP pública</strong>.</p>
+<h3 id="conectar-como-root">Conectar como root<a class="headerlink" href="#conectar-como-root" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Conectar por SSH (la primera vez preguntará si confías en el host)</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>ssh<span class="w"> </span>root@&lt;TU_IP_PUBLICA&gt;
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Si usaste una clave SSH en ubicación no-default:</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>ssh<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_ed25519<span class="w"> </span>root@&lt;TU_IP_PUBLICA&gt;
+</code></pre></div>
+<p><strong>Primera conexión - verificar fingerprint:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>The authenticity of host &#39;xxx.xxx.xxx.xxx&#39; can&#39;t be established.
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>ED25519 key fingerprint is SHA256:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+</code></pre></div></p>
+<div class="admonition tip">
+<p class="admonition-title">Verificar fingerprint</p>
+<p>Algunos proveedores muestran el fingerprint en su panel. Compáralo antes de escribir "yes".</p>
+</div>
+<hr />
+<h2 id="verificar-integridad-del-sistema">Verificar integridad del sistema<a class="headerlink" href="#verificar-integridad-del-sistema" title="Permanent link">&para;</a></h2>
+<p>Antes de configurar nada, verifica que el VPS tiene una imagen limpia.</p>
+<h3 id="verificar-sistema-operativo">Verificar sistema operativo<a class="headerlink" href="#verificar-sistema-operativo" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Verificar que es Ubuntu oficial</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>cat<span class="w"> </span>/etc/os-release
+</code></pre></div>
+<p><strong>Salida esperada:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>PRETTY_NAME=&quot;Ubuntu 24.04 LTS&quot;
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>NAME=&quot;Ubuntu&quot;
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>VERSION_ID=&quot;24.04&quot;
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>VERSION=&quot;24.04 LTS (Noble Numbat)&quot;
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>...
+</code></pre></div></p>
+<h3 id="verificar-usuarios-existentes">Verificar usuarios existentes<a class="headerlink" href="#verificar-usuarios-existentes" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Ver usuarios con shell de login</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>cat<span class="w"> </span>/etc/passwd<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;:/bin/(bash|sh|zsh)</span>$<span class="s2">&quot;</span>
+</code></pre></div>
+<p><strong>Salida esperada (solo root y usuarios del sistema):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>root:x:0:0:root:/root:/bin/bash
+</code></pre></div></p>
+<div class="admonition danger">
+<p class="admonition-title">Si ves usuarios desconocidos</p>
+<p>Si hay usuarios que no reconoces (no son root ni cuentas del sistema como nobody, daemon, etc.), contacta al proveedor o destruye el VPS y crea uno nuevo.</p>
+</div>
+<h3 id="verificar-procesos-en-ejecucion">Verificar procesos en ejecución<a class="headerlink" href="#verificar-procesos-en-ejecucion" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Ver procesos ordenados por uso de memoria</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>ps<span class="w"> </span>aux<span class="w"> </span>--sort<span class="o">=</span>-%mem<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+</code></pre></div>
+<p>Deberías ver solo procesos del sistema (systemd, sshd, etc.). No debería haber servicios web, mineros de crypto, u otros procesos sospechosos.</p>
+<h3 id="verificar-conexiones-de-red">Verificar conexiones de red<a class="headerlink" href="#verificar-conexiones-de-red" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Ver puertos escuchando</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>ss<span class="w"> </span>-tlnp
+</code></pre></div>
+<p><strong>Salida esperada (solo SSH):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>State   Recv-Q  Send-Q  Local Address:Port  Peer Address:Port  Process
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>LISTEN  0       128     0.0.0.0:22          0.0.0.0:*          users:((&quot;sshd&quot;,pid=XXX,fd=3))
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>LISTEN  0       128     [::]:22             [::]:*             users:((&quot;sshd&quot;,pid=XXX,fd=4))
+</code></pre></div></p>
+<div class="admonition warning">
+<p class="admonition-title">Si ves otros puertos abiertos</p>
+<p>Algunos proveedores instalan agentes de monitoreo. Identifícalos antes de continuar.</p>
+</div>
+<hr />
+<h2 id="configurar-timezone-y-locale">Configurar timezone y locale<a class="headerlink" href="#configurar-timezone-y-locale" title="Permanent link">&para;</a></h2>
+<h3 id="configurar-timezone">Configurar timezone<a class="headerlink" href="#configurar-timezone" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Ver timezone actual</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>timedatectl
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="c1"># Listar timezones disponibles</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>timedatectl<span class="w"> </span>list-timezones<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;Europe|America&quot;</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="c1"># Configurar timezone (ejemplo: España peninsular)</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>sudo<span class="w"> </span>timedatectl<span class="w"> </span>set-timezone<span class="w"> </span>Europe/Madrid
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="c1"># Verificar</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>date
+</code></pre></div>
+<p><strong>Salida esperada:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Sat Feb  1 10:30:00 CET 2026
+</code></pre></div></p>
+<h3 id="configurar-locale-opcional">Configurar locale (opcional)<a class="headerlink" href="#configurar-locale-opcional" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Generar locale español (opcional)</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>sudo<span class="w"> </span>locale-gen<span class="w"> </span>es_ES.UTF-8
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1"># O mantener inglés (recomendado para logs legibles)</span>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>sudo<span class="w"> </span>locale-gen<span class="w"> </span>en_US.UTF-8
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="c1"># Verificar</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>locale
+</code></pre></div>
+<hr />
+<h2 id="actualizar-sistema">Actualizar sistema<a class="headerlink" href="#actualizar-sistema" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Actualizar lista de paquetes</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>apt<span class="w"> </span>update
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Aplicar actualizaciones</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>apt<span class="w"> </span>upgrade<span class="w"> </span>-y
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Paquetes retenidos</p>
+<p>Si ves "The following packages have been kept back", puedes ignorarlo por ahora o ejecutar:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>apt<span class="w"> </span>dist-upgrade<span class="w"> </span>-y
+</code></pre></div></p>
+</div>
+<h3 id="reiniciar-si-es-necesario">Reiniciar si es necesario<a class="headerlink" href="#reiniciar-si-es-necesario" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Verificar si hay reinicio pendiente</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span>/var/run/reboot-required<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Reinicio necesario&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;No requiere reinicio&quot;</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># Si es necesario, reiniciar</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>reboot
+</code></pre></div>
+<p>Espera 30-60 segundos y reconéctate:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>ssh<span class="w"> </span>root@&lt;TU_IP_PUBLICA&gt;
+</code></pre></div>
+<hr />
+<h2 id="datos-a-guardar">Datos a guardar<a class="headerlink" href="#datos-a-guardar" title="Permanent link">&para;</a></h2>
+<p>Guarda esta información en un lugar seguro (gestor de contraseñas):</p>
+<table>
+<thead>
+<tr>
+<th>Dato</th>
+<th>Valor</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Proveedor</td>
+<td><strong><em>_</em></strong><strong><em>_</em></strong>_</td>
+<td>Hetzner, Hostinger, etc.</td>
+</tr>
+<tr>
+<td>IP pública</td>
+<td><code>___.___.___.___</code></td>
+<td>La dejarás de usar después</td>
+</tr>
+<tr>
+<td>Usuario temporal</td>
+<td><code>root</code></td>
+<td>Solo para setup inicial</td>
+</tr>
+<tr>
+<td>Datacenter</td>
+<td><strong><em>_</em></strong><strong><em>_</em></strong>_</td>
+<td>Para referencia</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Esta IP pública la dejarás de usar</p>
+<p>Después de configurar Tailscale, solo accederás por la IP privada de Tailscale.</p>
+</div>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="error-connection-refused">Error: "Connection refused"<a class="headerlink" href="#error-connection-refused" title="Permanent link">&para;</a></h3>
+<p><strong>Causa:</strong> El VPS aún no ha terminado de iniciar o SSH no está corriendo.</p>
+<p><strong>Solución:</strong>
+- Espera 2-3 minutos
+- Verifica en el panel del proveedor que el VPS está "Running"
+- Algunos proveedores tienen consola web para acceder sin SSH</p>
+<h3 id="error-permission-denied-publickey">Error: "Permission denied (publickey)"<a class="headerlink" href="#error-permission-denied-publickey" title="Permanent link">&para;</a></h3>
+<p><strong>Causa:</strong> La clave SSH no está correctamente configurada.</p>
+<p><strong>Solución:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Verificar que usas la clave correcta</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>ssh<span class="w"> </span>-v<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_ed25519<span class="w"> </span>root@&lt;TU_IP_PUBLICA&gt;
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># El flag -v muestra debug info</span>
+</code></pre></div></p>
+<h3 id="error-host-key-verification-failed">Error: "Host key verification failed"<a class="headerlink" href="#error-host-key-verification-failed" title="Permanent link">&para;</a></h3>
+<p><strong>Causa:</strong> El fingerprint del servidor cambió (posible reinstalación o ataque MITM).</p>
+<p><strong>Solución:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># Si reinstalaste el VPS, eliminar la entrada antigua</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>ssh-keygen<span class="w"> </span>-R<span class="w"> </span>&lt;TU_IP_PUBLICA&gt;
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="c1"># Volver a conectar</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>ssh<span class="w"> </span>root@&lt;TU_IP_PUBLICA&gt;
+</code></pre></div></p>
+<div class="admonition danger">
+<p class="admonition-title">Si NO reinstalaste el VPS</p>
+<p>Un cambio de host key inesperado puede indicar un ataque man-in-the-middle.
+Contacta al proveedor antes de continuar.</p>
+</div>
+<h3 id="el-sistema-esta-muy-lento">El sistema está muy lento<a class="headerlink" href="#el-sistema-esta-muy-lento" title="Permanent link">&para;</a></h3>
+<p><strong>Causa:</strong> Puede ser un VPS oversold o problemas del datacenter.</p>
+<p><strong>Solución:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># Verificar recursos</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>free<span class="w"> </span>-h<span class="w">        </span><span class="c1"># Memoria</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>df<span class="w"> </span>-h<span class="w">          </span><span class="c1"># Disco</span>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>top<span class="w">            </span><span class="c1"># CPU y procesos</span>
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>
+<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="c1"># Si los recursos están bien pero sigue lento, contacta al proveedor</span>
+</code></pre></div></p>
+<hr />
+<h2 id="resumen">Resumen<a class="headerlink" href="#resumen" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Configuración</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VPS creado</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Ubuntu 24.04 LTS</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>SSH funcionando</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Imagen verificada</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Timezone configurado</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Sistema actualizado</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Siguiente:</strong> <a href="../03-seguridad-sistema/">3. Seguridad del sistema</a> — Crear usuario, hardening SSH, firewall.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/corbat" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

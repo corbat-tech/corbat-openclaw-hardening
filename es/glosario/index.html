@@ -1,0 +1,3955 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Secure OpenClaw installation guide for VPS - CIS Benchmark, Tailscale Hardening, OWASP Agentic Top 10">
+      
+      
+        <meta name="author" content="CORBAT">
+      
+      
+        <link rel="canonical" href="https://corbat.github.io/corbat-openclaw-hardening/es/glosario/">
+      
+      
+        <link rel="prev" href="../10-checklist-final/">
+      
+      
+      
+        
+          <link rel="alternate" href="/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="es">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Glosario - OpenClaw en VPS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#glosario" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../" title="OpenClaw en VPS" class="md-header__button md-logo" aria-label="OpenClaw en VPS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenClaw en VPS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Glosario
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Seleccionar idioma">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="es" class="md-select__link">
+              Español
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/corbat/corbat-openclaw-hardening" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    corbat-openclaw-hardening
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="OpenClaw en VPS" class="md-nav__button md-logo" aria-label="OpenClaw en VPS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenClaw en VPS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/corbat/corbat-openclaw-hardening" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    corbat-openclaw-hardening
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de instalación
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de instalación
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-preparacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Preparación
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-vps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Contratar VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-seguridad-sistema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Seguridad del sistema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-acceso-privado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Acceso privado (Tailscale)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-openclaw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Instalar OpenClaw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-llm-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. APIs de LLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-casos-uso/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Casos de uso y herramientas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seguridad avanzada
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Seguridad avanzada
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-seguridad-agente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Seguridad del agente
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-mantenimiento/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Mantenimiento
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-checklist-final/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Checklist final
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referencia
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referencia
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glosario
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glosario
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#acl-access-control-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ACL (Access Control List)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agente-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agente AI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aide-advanced-intrusion-detection-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AIDE (Advanced Intrusion Detection Environment)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#allowlist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Allowlist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apparmor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AppArmor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auditd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auditd
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="B">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#banner-ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Banner SSH
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#brute-force" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Brute-force
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clawhub" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ClawHub
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clawjacked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ClawJacked
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud-init" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cloud-init
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crowdsec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CrowdSec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cis-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CIS Benchmark
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cipher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cipher
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cli-command-line-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI (Command Line Interface)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="D">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#denylist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Denylist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disaster-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disaster Recovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="E">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ed25519" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ed25519
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables-env" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variables (.env)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="F">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fail2ban" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fail2ban
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#firewall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firewall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fingerprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fingerprint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="G">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gpg-gnu-privacy-guard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPG (GNU Privacy Guard)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardrails
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#h" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="H">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardening
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Host
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#https" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#human-in-the-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Human-in-the-loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity-provider-idp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity Provider (IdP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#j" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        J
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="J">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jit-just-in-time-compilation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JIT (Just-In-Time) Compilation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#k" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        K
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="K">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kex-key-exchange" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KEX (Key Exchange)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-rotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Rotation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="L">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#livepatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Livepatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm-large-language-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LLM (Large Language Model)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#localhost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Localhost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loglevel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LogLevel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lts-long-term-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LTS (Long Term Support)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="M">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mac-message-authentication-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MAC (Message Authentication Code)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mcp-model-context-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP (Model Context Protocol)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mfa2fa-multi-factor-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MFA/2FA (Multi-Factor Authentication)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mesh-vpn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mesh VPN
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="N">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nat-network-address-translation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NAT (Network Address Translation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nodejs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvm-node-version-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvm (Node Version Manager)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="O">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#output-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openclaw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenClaw
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#owasp-open-web-application-security-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OWASP (Open Web Application Security Project)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#p" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="P">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#passphrase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passphrase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#peer-to-peer-p2p" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Peer-to-peer (P2P)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pii-personally-identifiable-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PII (Personally Identifiable Information)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#port-forwarding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Port Forwarding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prompt-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prompt Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protocol
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="R">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limiting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redaction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sandboxing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sandboxing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secretref" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SecretRef
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secrets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skills" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skills
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#soul-configuracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Soul (configuración)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssh-secure-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSH (Secure Shell)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sudo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sudo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#systemd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Systemd
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syscall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Syscall
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#t" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="T">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tag-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tag (Tailscale)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tailnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tailnet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#u" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="U">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ufw-uncomplicated-firewall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UFW (Uncomplicated Firewall)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unattended-upgrades" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unattended Upgrades
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        V
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="V">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vpn-virtual-private-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VPN (Virtual Private Network)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vps-virtual-private-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VPS (Virtual Private Server)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#w" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="W">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wireguard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WireGuard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workspace
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#y" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Y
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Y">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#yaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        YAML
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#z" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Z
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Z">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zero-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zero-trust
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acronimos-frecuentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acrónimos frecuentes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="A">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#acl-access-control-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ACL (Access Control List)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agente-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agente AI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aide-advanced-intrusion-detection-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AIDE (Advanced Intrusion Detection Environment)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#allowlist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Allowlist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apparmor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AppArmor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auditd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auditd
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="B">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#banner-ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Banner SSH
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#brute-force" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Brute-force
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="C">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clawhub" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ClawHub
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clawjacked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ClawJacked
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud-init" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cloud-init
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crowdsec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CrowdSec
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cis-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CIS Benchmark
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cipher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cipher
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cli-command-line-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI (Command Line Interface)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#d" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="D">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#denylist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Denylist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disaster-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disaster Recovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="E">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ed25519" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ed25519
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables-env" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variables (.env)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#f" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        F
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="F">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fail2ban" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fail2ban
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#firewall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firewall
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fingerprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fingerprint
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="G">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gpg-gnu-privacy-guard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPG (GNU Privacy Guard)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Guardrails
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#h" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="H">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardening
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Host
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#https" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#human-in-the-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Human-in-the-loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#i" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        I
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="I">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity-provider-idp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity Provider (IdP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#j" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        J
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="J">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jit-just-in-time-compilation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JIT (Just-In-Time) Compilation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#k" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        K
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="K">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kex-key-exchange" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        KEX (Key Exchange)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-rotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Rotation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#l" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="L">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#livepatch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Livepatch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm-large-language-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LLM (Large Language Model)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#localhost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Localhost
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loglevel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LogLevel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lts-long-term-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LTS (Long Term Support)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="M">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mac-message-authentication-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MAC (Message Authentication Code)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mcp-model-context-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP (Model Context Protocol)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mfa2fa-multi-factor-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MFA/2FA (Multi-Factor Authentication)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mesh-vpn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mesh VPN
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#n" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="N">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nat-network-address-translation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NAT (Network Address Translation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nodejs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nvm-node-version-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        nvm (Node Version Manager)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#o" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        O
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="O">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#output-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openclaw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OpenClaw
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#owasp-open-web-application-security-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OWASP (Open Web Application Security Project)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#p" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        P
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="P">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#passphrase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Passphrase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#peer-to-peer-p2p" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Peer-to-peer (P2P)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pii-personally-identifiable-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PII (Personally Identifiable Information)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#port-forwarding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Port Forwarding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prompt-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prompt Injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protocol
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="R">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate Limiting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redaction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#root" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="S">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sandboxing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sandboxing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secretref" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SecretRef
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secrets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skills" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skills
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#soul-configuracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Soul (configuración)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssh-secure-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSH (Secure Shell)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sudo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sudo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#systemd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Systemd
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syscall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Syscall
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#t" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        T
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="T">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tag-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tag (Tailscale)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tailnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tailnet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Token
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#u" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        U
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="U">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ufw-uncomplicated-firewall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UFW (Uncomplicated Firewall)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unattended-upgrades" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unattended Upgrades
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#v" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        V
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="V">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vpn-virtual-private-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VPN (Virtual Private Network)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vps-virtual-private-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VPS (Virtual Private Server)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#w" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="W">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wireguard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WireGuard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workspace
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#y" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Y
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Y">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#yaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        YAML
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#z" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Z
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Z">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zero-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zero-trust
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#acronimos-frecuentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acrónimos frecuentes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="glosario">Glosario<a class="headerlink" href="#glosario" title="Permanent link">&para;</a></h1>
+<p>Definiciones de términos técnicos utilizados en esta guía.</p>
+<hr />
+<h2 id="a">A<a class="headerlink" href="#a" title="Permanent link">&para;</a></h2>
+<h3 id="acl-access-control-list">ACL (Access Control List)<a class="headerlink" href="#acl-access-control-list" title="Permanent link">&para;</a></h3>
+<p>Lista de reglas que define qué entidades pueden acceder a qué recursos. En Tailscale, las ACLs definen qué dispositivos pueden comunicarse entre sí.</p>
+<h3 id="agente-ai">Agente AI<a class="headerlink" href="#agente-ai" title="Permanent link">&para;</a></h3>
+<p>Software que utiliza inteligencia artificial para realizar tareas de forma autónoma, tomando decisiones basadas en su entorno y objetivos.</p>
+<h3 id="aide-advanced-intrusion-detection-environment">AIDE (Advanced Intrusion Detection Environment)<a class="headerlink" href="#aide-advanced-intrusion-detection-environment" title="Permanent link">&para;</a></h3>
+<p>Sistema de detección de intrusiones basado en host que monitorea cambios en archivos del sistema.</p>
+<h3 id="allowlist">Allowlist<a class="headerlink" href="#allowlist" title="Permanent link">&para;</a></h3>
+<p>Lista de elementos explícitamente permitidos. Más seguro que una denylist porque bloquea todo excepto lo especificado.</p>
+<h3 id="api-key">API Key<a class="headerlink" href="#api-key" title="Permanent link">&para;</a></h3>
+<p>Credencial secreta que identifica a una aplicación o usuario ante un servicio API.</p>
+<h3 id="apparmor">AppArmor<a class="headerlink" href="#apparmor" title="Permanent link">&para;</a></h3>
+<p>Sistema de control de acceso obligatorio (MAC) para Linux que restringe las capacidades de programas individuales.</p>
+<h3 id="auditd">Auditd<a class="headerlink" href="#auditd" title="Permanent link">&para;</a></h3>
+<p>Demonio de auditoría de Linux que registra eventos de seguridad del sistema.</p>
+<hr />
+<h2 id="b">B<a class="headerlink" href="#b" title="Permanent link">&para;</a></h2>
+<h3 id="backup">Backup<a class="headerlink" href="#backup" title="Permanent link">&para;</a></h3>
+<p>Copia de seguridad de datos importantes para poder recuperarlos en caso de pérdida.</p>
+<h3 id="banner-ssh">Banner SSH<a class="headerlink" href="#banner-ssh" title="Permanent link">&para;</a></h3>
+<p>Mensaje que se muestra a los usuarios antes de autenticarse por SSH, típicamente con advertencias legales.</p>
+<h3 id="brute-force">Brute-force<a class="headerlink" href="#brute-force" title="Permanent link">&para;</a></h3>
+<p>Ataque que intenta adivinar credenciales probando múltiples combinaciones de forma sistemática.</p>
+<hr />
+<h2 id="c">C<a class="headerlink" href="#c" title="Permanent link">&para;</a></h2>
+<h3 id="clawhub">ClawHub<a class="headerlink" href="#clawhub" title="Permanent link">&para;</a></h3>
+<p>Registro de skills (herramientas) de la comunidad OpenClaw. En febrero 2026, se descubrió que ~20% de los skills eran maliciosos (incidente ToxicSkills).</p>
+<h3 id="clawjacked">ClawJacked<a class="headerlink" href="#clawjacked" title="Permanent link">&para;</a></h3>
+<p>Vulnerabilidad que permite a sitios web maliciosos secuestrar agentes OpenClaw locales enviando comandos via WebSocket al Gateway. Se mitiga con TLS pairing y binding a loopback.</p>
+<h3 id="cloud-init">Cloud-init<a class="headerlink" href="#cloud-init" title="Permanent link">&para;</a></h3>
+<p>Herramienta estándar para la configuración automática de instancias cloud en su primer arranque. Usa archivos YAML para definir usuarios, paquetes, comandos y configuraciones.</p>
+<h3 id="crowdsec">CrowdSec<a class="headerlink" href="#crowdsec" title="Permanent link">&para;</a></h3>
+<p>Alternativa moderna a Fail2ban con inteligencia de amenazas comunitaria. Comparte blocklists de IPs maliciosas entre todos los usuarios de la red CrowdSec.</p>
+<h3 id="cis-benchmark">CIS Benchmark<a class="headerlink" href="#cis-benchmark" title="Permanent link">&para;</a></h3>
+<p>Guías de configuración segura publicadas por el Center for Internet Security, reconocidas como estándar de la industria.</p>
+<h3 id="cipher">Cipher<a class="headerlink" href="#cipher" title="Permanent link">&para;</a></h3>
+<p>Algoritmo criptográfico utilizado para cifrar datos. En SSH, define cómo se cifra la comunicación.</p>
+<h3 id="cli-command-line-interface">CLI (Command Line Interface)<a class="headerlink" href="#cli-command-line-interface" title="Permanent link">&para;</a></h3>
+<p>Interfaz de línea de comandos, donde el usuario interactúa con el sistema mediante texto.</p>
+<hr />
+<h2 id="d">D<a class="headerlink" href="#d" title="Permanent link">&para;</a></h2>
+<h3 id="denylist">Denylist<a class="headerlink" href="#denylist" title="Permanent link">&para;</a></h3>
+<p>Lista de elementos explícitamente bloqueados. Menos seguro que una allowlist porque permite todo excepto lo especificado.</p>
+<h3 id="disaster-recovery">Disaster Recovery<a class="headerlink" href="#disaster-recovery" title="Permanent link">&para;</a></h3>
+<p>Procedimientos para recuperar sistemas y datos después de un incidente grave.</p>
+<hr />
+<h2 id="e">E<a class="headerlink" href="#e" title="Permanent link">&para;</a></h2>
+<h3 id="ed25519">Ed25519<a class="headerlink" href="#ed25519" title="Permanent link">&para;</a></h3>
+<p>Algoritmo de firma digital moderno utilizado para claves SSH, más seguro y eficiente que RSA.</p>
+<h3 id="endpoint">Endpoint<a class="headerlink" href="#endpoint" title="Permanent link">&para;</a></h3>
+<p>Punto final de comunicación en una red, como un dispositivo o servicio.</p>
+<h3 id="environment-variables-env">Environment Variables (.env)<a class="headerlink" href="#environment-variables-env" title="Permanent link">&para;</a></h3>
+<p>Variables de entorno almacenadas en un archivo, típicamente usado para configuración sensible como API keys.</p>
+<hr />
+<h2 id="f">F<a class="headerlink" href="#f" title="Permanent link">&para;</a></h2>
+<h3 id="fail2ban">Fail2ban<a class="headerlink" href="#fail2ban" title="Permanent link">&para;</a></h3>
+<p>Software que protege contra ataques de fuerza bruta baneando IPs que muestran comportamiento malicioso.</p>
+<h3 id="firewall">Firewall<a class="headerlink" href="#firewall" title="Permanent link">&para;</a></h3>
+<p>Sistema que controla el tráfico de red entrante y saliente según reglas definidas.</p>
+<h3 id="fingerprint">Fingerprint<a class="headerlink" href="#fingerprint" title="Permanent link">&para;</a></h3>
+<p>Identificador único derivado criptográficamente de una clave, usado para verificar su autenticidad.</p>
+<hr />
+<h2 id="g">G<a class="headerlink" href="#g" title="Permanent link">&para;</a></h2>
+<h3 id="gpg-gnu-privacy-guard">GPG (GNU Privacy Guard)<a class="headerlink" href="#gpg-gnu-privacy-guard" title="Permanent link">&para;</a></h3>
+<p>Herramienta de cifrado que implementa el estándar OpenPGP para cifrado y firma de datos.</p>
+<h3 id="guardrails">Guardrails<a class="headerlink" href="#guardrails" title="Permanent link">&para;</a></h3>
+<p>Restricciones de seguridad que limitan el comportamiento de un sistema o agente AI.</p>
+<hr />
+<h2 id="h">H<a class="headerlink" href="#h" title="Permanent link">&para;</a></h2>
+<h3 id="hardening">Hardening<a class="headerlink" href="#hardening" title="Permanent link">&para;</a></h3>
+<p>Proceso de asegurar un sistema reduciendo su superficie de ataque mediante configuración restrictiva.</p>
+<h3 id="host">Host<a class="headerlink" href="#host" title="Permanent link">&para;</a></h3>
+<p>Computadora o servidor conectado a una red.</p>
+<h3 id="https">HTTPS<a class="headerlink" href="#https" title="Permanent link">&para;</a></h3>
+<p>HTTP Secure, protocolo de comunicación cifrada para la web.</p>
+<h3 id="human-in-the-loop">Human-in-the-loop<a class="headerlink" href="#human-in-the-loop" title="Permanent link">&para;</a></h3>
+<p>Patrón de diseño donde se requiere aprobación humana para ciertas acciones críticas.</p>
+<hr />
+<h2 id="i">I<a class="headerlink" href="#i" title="Permanent link">&para;</a></h2>
+<h3 id="identity-provider-idp">Identity Provider (IdP)<a class="headerlink" href="#identity-provider-idp" title="Permanent link">&para;</a></h3>
+<p>Servicio que autentica usuarios y proporciona información de identidad (Google, GitHub, etc.).</p>
+<h3 id="input-validation">Input Validation<a class="headerlink" href="#input-validation" title="Permanent link">&para;</a></h3>
+<p>Proceso de verificar que los datos de entrada cumplen con criterios esperados antes de procesarlos.</p>
+<hr />
+<h2 id="j">J<a class="headerlink" href="#j" title="Permanent link">&para;</a></h2>
+<h3 id="jit-just-in-time-compilation">JIT (Just-In-Time) Compilation<a class="headerlink" href="#jit-just-in-time-compilation" title="Permanent link">&para;</a></h3>
+<p>Técnica donde el código se compila durante la ejecución, usada por Node.js (V8).</p>
+<hr />
+<h2 id="k">K<a class="headerlink" href="#k" title="Permanent link">&para;</a></h2>
+<h3 id="kex-key-exchange">KEX (Key Exchange)<a class="headerlink" href="#kex-key-exchange" title="Permanent link">&para;</a></h3>
+<p>Algoritmo usado para intercambiar claves de cifrado de forma segura entre dos partes.</p>
+<h3 id="key-rotation">Key Rotation<a class="headerlink" href="#key-rotation" title="Permanent link">&para;</a></h3>
+<p>Práctica de reemplazar periódicamente claves y credenciales por nuevas.</p>
+<hr />
+<h2 id="l">L<a class="headerlink" href="#l" title="Permanent link">&para;</a></h2>
+<h3 id="livepatch">Livepatch<a class="headerlink" href="#livepatch" title="Permanent link">&para;</a></h3>
+<p>Servicio de Canonical que aplica parches de seguridad al kernel de Linux en caliente, sin necesidad de reiniciar el servidor.</p>
+<h3 id="llm-large-language-model">LLM (Large Language Model)<a class="headerlink" href="#llm-large-language-model" title="Permanent link">&para;</a></h3>
+<p>Modelo de inteligencia artificial entrenado en grandes cantidades de texto, capaz de generar y entender lenguaje natural.</p>
+<h3 id="localhost">Localhost<a class="headerlink" href="#localhost" title="Permanent link">&para;</a></h3>
+<p>Dirección de red (127.0.0.1) que se refiere al propio dispositivo.</p>
+<h3 id="loglevel">LogLevel<a class="headerlink" href="#loglevel" title="Permanent link">&para;</a></h3>
+<p>Configuración que determina cuánto detalle se registra en los logs (ERROR, WARN, INFO, DEBUG, VERBOSE).</p>
+<h3 id="lts-long-term-support">LTS (Long Term Support)<a class="headerlink" href="#lts-long-term-support" title="Permanent link">&para;</a></h3>
+<p>Versión de software con soporte extendido, típicamente 5 años para Ubuntu.</p>
+<hr />
+<h2 id="m">M<a class="headerlink" href="#m" title="Permanent link">&para;</a></h2>
+<h3 id="mac-message-authentication-code">MAC (Message Authentication Code)<a class="headerlink" href="#mac-message-authentication-code" title="Permanent link">&para;</a></h3>
+<p>Código que verifica tanto la integridad como la autenticidad de un mensaje.</p>
+<h3 id="mcp-model-context-protocol">MCP (Model Context Protocol)<a class="headerlink" href="#mcp-model-context-protocol" title="Permanent link">&para;</a></h3>
+<p>Protocolo estándar desarrollado por Anthropic que permite a los agentes AI conectarse e interactuar con herramientas y servicios externos de forma estandarizada. OpenClaw usa MCP para integrarse con 100+ servicios.</p>
+<h3 id="mfa2fa-multi-factor-authentication">MFA/2FA (Multi-Factor Authentication)<a class="headerlink" href="#mfa2fa-multi-factor-authentication" title="Permanent link">&para;</a></h3>
+<p>Autenticación que requiere múltiples formas de verificación (algo que sabes + algo que tienes).</p>
+<h3 id="mesh-vpn">Mesh VPN<a class="headerlink" href="#mesh-vpn" title="Permanent link">&para;</a></h3>
+<p>Red VPN donde todos los dispositivos pueden comunicarse directamente entre sí.</p>
+<hr />
+<h2 id="n">N<a class="headerlink" href="#n" title="Permanent link">&para;</a></h2>
+<h3 id="nat-network-address-translation">NAT (Network Address Translation)<a class="headerlink" href="#nat-network-address-translation" title="Permanent link">&para;</a></h3>
+<p>Técnica que permite a múltiples dispositivos compartir una dirección IP pública.</p>
+<h3 id="nodejs">Node.js<a class="headerlink" href="#nodejs" title="Permanent link">&para;</a></h3>
+<p>Entorno de ejecución de JavaScript en el servidor.</p>
+<h3 id="nvm-node-version-manager">nvm (Node Version Manager)<a class="headerlink" href="#nvm-node-version-manager" title="Permanent link">&para;</a></h3>
+<p>Herramienta para instalar y gestionar múltiples versiones de Node.js.</p>
+<hr />
+<h2 id="o">O<a class="headerlink" href="#o" title="Permanent link">&para;</a></h2>
+<h3 id="output-filtering">Output Filtering<a class="headerlink" href="#output-filtering" title="Permanent link">&para;</a></h3>
+<p>Proceso de revisar y sanitizar las salidas de un sistema antes de mostrarlas al usuario.</p>
+<h3 id="openclaw">OpenClaw<a class="headerlink" href="#openclaw" title="Permanent link">&para;</a></h3>
+<p>Framework open-source para ejecutar agentes de IA con acceso a herramientas (filesystem, git, APIs, shell). A diferencia de chatbots tradicionales, OpenClaw puede actuar en el sistema ejecutando comandos y modificando archivos.</p>
+<h3 id="owasp-open-web-application-security-project">OWASP (Open Web Application Security Project)<a class="headerlink" href="#owasp-open-web-application-security-project" title="Permanent link">&para;</a></h3>
+<p>Organización que publica estándares y guías de seguridad para aplicaciones.</p>
+<hr />
+<h2 id="p">P<a class="headerlink" href="#p" title="Permanent link">&para;</a></h2>
+<h3 id="passphrase">Passphrase<a class="headerlink" href="#passphrase" title="Permanent link">&para;</a></h3>
+<p>Contraseña larga, típicamente una frase, usada para proteger claves criptográficas.</p>
+<h3 id="peer-to-peer-p2p">Peer-to-peer (P2P)<a class="headerlink" href="#peer-to-peer-p2p" title="Permanent link">&para;</a></h3>
+<p>Arquitectura de red donde los dispositivos se comunican directamente sin servidor central.</p>
+<h3 id="pii-personally-identifiable-information">PII (Personally Identifiable Information)<a class="headerlink" href="#pii-personally-identifiable-information" title="Permanent link">&para;</a></h3>
+<p>Información que puede identificar a una persona específica.</p>
+<h3 id="port-forwarding">Port Forwarding<a class="headerlink" href="#port-forwarding" title="Permanent link">&para;</a></h3>
+<p>Técnica para redirigir tráfico de red de un puerto a otro.</p>
+<h3 id="prompt-injection">Prompt Injection<a class="headerlink" href="#prompt-injection" title="Permanent link">&para;</a></h3>
+<p>Ataque donde se manipula el prompt de un LLM para alterar su comportamiento.</p>
+<h3 id="protocol">Protocol<a class="headerlink" href="#protocol" title="Permanent link">&para;</a></h3>
+<p>Conjunto de reglas que define cómo se comunican los sistemas.</p>
+<hr />
+<h2 id="r">R<a class="headerlink" href="#r" title="Permanent link">&para;</a></h2>
+<h3 id="rate-limiting">Rate Limiting<a class="headerlink" href="#rate-limiting" title="Permanent link">&para;</a></h3>
+<p>Control que limita la frecuencia de operaciones para prevenir abuso.</p>
+<h3 id="redaction">Redaction<a class="headerlink" href="#redaction" title="Permanent link">&para;</a></h3>
+<p>Proceso de ocultar información sensible reemplazándola con marcadores.</p>
+<h3 id="root">Root<a class="headerlink" href="#root" title="Permanent link">&para;</a></h3>
+<p>Usuario administrador en sistemas Unix/Linux con acceso total al sistema.</p>
+<hr />
+<h2 id="s">S<a class="headerlink" href="#s" title="Permanent link">&para;</a></h2>
+<h3 id="sandboxing">Sandboxing<a class="headerlink" href="#sandboxing" title="Permanent link">&para;</a></h3>
+<p>Técnica de aislamiento que restringe el acceso de un programa a recursos del sistema.</p>
+<h3 id="secretref">SecretRef<a class="headerlink" href="#secretref" title="Permanent link">&para;</a></h3>
+<p>Mecanismo nativo de OpenClaw (v2026.3.x+) para gestionar credenciales de forma segura. Almacena secrets cifrados en disco y los referencia en la configuración con <code>{ "$secretRef": "NOMBRE" }</code>.</p>
+<h3 id="secrets">Secrets<a class="headerlink" href="#secrets" title="Permanent link">&para;</a></h3>
+<p>Información confidencial como contraseñas, API keys, tokens, etc.</p>
+<h3 id="shell">Shell<a class="headerlink" href="#shell" title="Permanent link">&para;</a></h3>
+<p>Interfaz de línea de comandos del sistema operativo (bash, zsh, etc.).</p>
+<h3 id="skills">Skills<a class="headerlink" href="#skills" title="Permanent link">&para;</a></h3>
+<p>Capacidades o herramientas que un agente AI puede utilizar para interactuar con su entorno. En OpenClaw, las skills incluyen acceso a filesystem, git, HTTP client, shell, etc. Se configuran mediante allowlists para limitar qué acciones puede realizar el agente.</p>
+<h3 id="soul-configuracion">Soul (configuración)<a class="headerlink" href="#soul-configuracion" title="Permanent link">&para;</a></h3>
+<p>Archivo de configuración (típicamente SOUL.md) que define la identidad, personalidad y límites de comportamiento de un agente AI. Establece restricciones como qué acciones están prohibidas y cómo debe responder el agente.</p>
+<h3 id="ssh-secure-shell">SSH (Secure Shell)<a class="headerlink" href="#ssh-secure-shell" title="Permanent link">&para;</a></h3>
+<p>Protocolo criptográfico para acceso remoto seguro a sistemas.</p>
+<h3 id="sudo">Sudo<a class="headerlink" href="#sudo" title="Permanent link">&para;</a></h3>
+<p>Comando que permite ejecutar acciones con privilegios de administrador.</p>
+<h3 id="systemd">Systemd<a class="headerlink" href="#systemd" title="Permanent link">&para;</a></h3>
+<p>Sistema de inicio y gestión de servicios en Linux moderno.</p>
+<h3 id="syscall">Syscall<a class="headerlink" href="#syscall" title="Permanent link">&para;</a></h3>
+<p>Llamada al sistema, la interfaz entre aplicaciones y el kernel del sistema operativo.</p>
+<hr />
+<h2 id="t">T<a class="headerlink" href="#t" title="Permanent link">&para;</a></h2>
+<h3 id="tag-tailscale">Tag (Tailscale)<a class="headerlink" href="#tag-tailscale" title="Permanent link">&para;</a></h3>
+<p>Etiqueta que agrupa dispositivos en Tailscale para aplicar ACLs.</p>
+<h3 id="tailnet">Tailnet<a class="headerlink" href="#tailnet" title="Permanent link">&para;</a></h3>
+<p>Red privada creada por Tailscale que conecta tus dispositivos.</p>
+<h3 id="tailscale">Tailscale<a class="headerlink" href="#tailscale" title="Permanent link">&para;</a></h3>
+<p>Servicio de VPN mesh basado en WireGuard que crea redes privadas.</p>
+<h3 id="token">Token<a class="headerlink" href="#token" title="Permanent link">&para;</a></h3>
+<p>Cadena de caracteres que representa credenciales o autorización.</p>
+<hr />
+<h2 id="u">U<a class="headerlink" href="#u" title="Permanent link">&para;</a></h2>
+<h3 id="ufw-uncomplicated-firewall">UFW (Uncomplicated Firewall)<a class="headerlink" href="#ufw-uncomplicated-firewall" title="Permanent link">&para;</a></h3>
+<p>Interfaz simplificada para gestionar iptables en Ubuntu.</p>
+<h3 id="unattended-upgrades">Unattended Upgrades<a class="headerlink" href="#unattended-upgrades" title="Permanent link">&para;</a></h3>
+<p>Sistema de Ubuntu para aplicar actualizaciones de seguridad automáticamente.</p>
+<hr />
+<h2 id="v">V<a class="headerlink" href="#v" title="Permanent link">&para;</a></h2>
+<h3 id="vpn-virtual-private-network">VPN (Virtual Private Network)<a class="headerlink" href="#vpn-virtual-private-network" title="Permanent link">&para;</a></h3>
+<p>Red privada que extiende una red local a través de Internet de forma segura.</p>
+<h3 id="vps-virtual-private-server">VPS (Virtual Private Server)<a class="headerlink" href="#vps-virtual-private-server" title="Permanent link">&para;</a></h3>
+<p>Servidor virtual alojado en infraestructura compartida pero con recursos dedicados.</p>
+<hr />
+<h2 id="w">W<a class="headerlink" href="#w" title="Permanent link">&para;</a></h2>
+<h3 id="wireguard">WireGuard<a class="headerlink" href="#wireguard" title="Permanent link">&para;</a></h3>
+<p>Protocolo VPN moderno, rápido y seguro. Base de Tailscale.</p>
+<h3 id="workspace">Workspace<a class="headerlink" href="#workspace" title="Permanent link">&para;</a></h3>
+<p>Directorio de trabajo donde el agente AI puede operar.</p>
+<hr />
+<h2 id="y">Y<a class="headerlink" href="#y" title="Permanent link">&para;</a></h2>
+<h3 id="yaml">YAML<a class="headerlink" href="#yaml" title="Permanent link">&para;</a></h3>
+<p>Formato de serialización de datos legible por humanos, usado para configuración.</p>
+<hr />
+<h2 id="z">Z<a class="headerlink" href="#z" title="Permanent link">&para;</a></h2>
+<h3 id="zero-trust">Zero-trust<a class="headerlink" href="#zero-trust" title="Permanent link">&para;</a></h3>
+<p>Modelo de seguridad que no confía en ninguna entidad por defecto, requiriendo verificación continua.</p>
+<hr />
+<h2 id="acronimos-frecuentes">Acrónimos frecuentes<a class="headerlink" href="#acronimos-frecuentes" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Acrónimo</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API</td>
+<td>Application Programming Interface</td>
+</tr>
+<tr>
+<td>CIS</td>
+<td>Center for Internet Security</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>Central Processing Unit</td>
+</tr>
+<tr>
+<td>DNS</td>
+<td>Domain Name System</td>
+</tr>
+<tr>
+<td>E2E</td>
+<td>End-to-End (cifrado de extremo a extremo)</td>
+</tr>
+<tr>
+<td>GB</td>
+<td>Gigabyte</td>
+</tr>
+<tr>
+<td>HTTP</td>
+<td>Hypertext Transfer Protocol</td>
+</tr>
+<tr>
+<td>IP</td>
+<td>Internet Protocol</td>
+</tr>
+<tr>
+<td>JSON</td>
+<td>JavaScript Object Notation</td>
+</tr>
+<tr>
+<td>LLM</td>
+<td>Large Language Model</td>
+</tr>
+<tr>
+<td>MAC</td>
+<td>Message Authentication Code</td>
+</tr>
+<tr>
+<td>MFA</td>
+<td>Multi-Factor Authentication</td>
+</tr>
+<tr>
+<td>NIM</td>
+<td>NVIDIA Inference Microservices</td>
+</tr>
+<tr>
+<td>OS</td>
+<td>Operating System</td>
+</tr>
+<tr>
+<td>OWASP</td>
+<td>Open Web Application Security Project</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>Random Access Memory</td>
+</tr>
+<tr>
+<td>SSH</td>
+<td>Secure Shell</td>
+</tr>
+<tr>
+<td>SSL/TLS</td>
+<td>Secure Sockets Layer / Transport Layer Security</td>
+</tr>
+<tr>
+<td>URL</td>
+<td>Uniform Resource Locator</td>
+</tr>
+<tr>
+<td>VPN</td>
+<td>Virtual Private Network</td>
+</tr>
+<tr>
+<td>VPS</td>
+<td>Virtual Private Server</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/corbat" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

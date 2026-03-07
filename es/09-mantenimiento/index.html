@@ -1,0 +1,2864 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Secure OpenClaw installation guide for VPS - CIS Benchmark, Tailscale Hardening, OWASP Agentic Top 10">
+      
+      
+        <meta name="author" content="CORBAT">
+      
+      
+        <link rel="canonical" href="https://corbat.github.io/corbat-openclaw-hardening/es/09-mantenimiento/">
+      
+      
+        <link rel="prev" href="../08-seguridad-agente/">
+      
+      
+        <link rel="next" href="../10-checklist-final/">
+      
+      
+        
+          <link rel="alternate" href="/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="es">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>9. Mantenimiento - OpenClaw en VPS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#9-mantenimiento" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../" title="OpenClaw en VPS" class="md-header__button md-logo" aria-label="OpenClaw en VPS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenClaw en VPS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              9. Mantenimiento
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Seleccionar idioma">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="es" class="md-select__link">
+              Español
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/corbat/corbat-openclaw-hardening" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    corbat-openclaw-hardening
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="OpenClaw en VPS" class="md-nav__button md-logo" aria-label="OpenClaw en VPS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenClaw en VPS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/corbat/corbat-openclaw-hardening" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    corbat-openclaw-hardening
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de instalación
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de instalación
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-preparacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Preparación
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-vps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Contratar VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-seguridad-sistema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Seguridad del sistema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-acceso-privado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Acceso privado (Tailscale)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-openclaw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Instalar OpenClaw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-llm-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. APIs de LLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-casos-uso/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Casos de uso y herramientas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seguridad avanzada
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Seguridad avanzada
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-seguridad-agente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Seguridad del agente
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Mantenimiento
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Mantenimiento
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerrequisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerrequisitos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#calendario-de-mantenimiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calendario de mantenimiento
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#actualizaciones-del-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizaciones del sistema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Actualizaciones del sistema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#actualizaciones-automaticas-ya-configuradas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizaciones automáticas (ya configuradas)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#canonical-livepatch-parches-de-kernel-sin-reboot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonical Livepatch (parches de kernel sin reboot)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actualizaciones-manuales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizaciones manuales
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#actualizar-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizar Tailscale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Actualizar Tailscale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verificar-version-actual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar versión actual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actualizar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#despues-de-actualizar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Después de actualizar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#actualizar-openclaw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizar OpenClaw
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Actualizar OpenClaw">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backup-antes-de-actualizar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup antes de actualizar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actualizar-openclaw_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizar OpenClaw
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-despues-de-actualizar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar después de actualizar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rotacion-de-api-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rotación de API Keys
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rotación de API Keys">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#procedimiento-de-rotacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Procedimiento de rotación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Procedimiento de rotación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-generar-nueva-key-en-el-proveedor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Generar nueva key en el proveedor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-actualizar-env-en-el-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Actualizar .env en el VPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-reiniciar-servicio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Reiniciar servicio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-verificar-funcionamiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Verificar funcionamiento
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-revocar-key-antigua" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Revocar key antigua
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#script-de-recordatorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Script de recordatorio
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rotacion-de-ssh-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rotación de SSH Keys
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rotación de SSH Keys">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cuando-rotar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cuándo rotar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#procedimiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Procedimiento
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Procedimiento">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-generar-nueva-key-en-tu-maquina-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Generar nueva key en tu máquina local
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-anadir-nueva-key-al-vps-mientras-la-antigua-funciona" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Añadir nueva key al VPS (mientras la antigua funciona)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-probar-nueva-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Probar nueva key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-eliminar-key-antigua" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Eliminar key antigua
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-actualizar-tu-configuracion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Actualizar tu configuración local
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backups
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#que-incluir-en-backups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qué incluir en backups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#script-de-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Script de backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#programar-backups-automaticos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Programar backups automáticos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#descargar-backups-a-tu-maquina-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Descargar backups a tu máquina local
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoreo-continuo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoreo continuo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoreo continuo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dashboard-de-estado-rapido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard de estado rápido
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alertas-por-email-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alertas por email (opcional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disaster-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disaster Recovery
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Disaster Recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#escenario-perdida-total-del-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Escenario: Pérdida total del VPS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Escenario: Pérdida total del VPS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#paso-1-crear-nuevo-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 1: Crear nuevo VPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-2-restaurar-desde-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 2: Restaurar desde backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-3-ejecutar-setup-inicial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 3: Ejecutar setup inicial
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-4-restaurar-configuracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 4: Restaurar configuración
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-5-re-ejecutar-hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 5: Re-ejecutar hardening
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-6-verificar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 6: Verificar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-de-disaster-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test de disaster recovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checklist-de-mantenimiento-mensual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checklist de mantenimiento mensual
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-checklist-final/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Checklist final
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referencia
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referencia
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glosario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glosario
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerrequisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerrequisitos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#calendario-de-mantenimiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calendario de mantenimiento
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#actualizaciones-del-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizaciones del sistema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Actualizaciones del sistema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#actualizaciones-automaticas-ya-configuradas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizaciones automáticas (ya configuradas)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#canonical-livepatch-parches-de-kernel-sin-reboot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonical Livepatch (parches de kernel sin reboot)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actualizaciones-manuales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizaciones manuales
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#actualizar-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizar Tailscale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Actualizar Tailscale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verificar-version-actual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar versión actual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actualizar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#despues-de-actualizar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Después de actualizar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#actualizar-openclaw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizar OpenClaw
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Actualizar OpenClaw">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backup-antes-de-actualizar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup antes de actualizar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actualizar-openclaw_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Actualizar OpenClaw
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-despues-de-actualizar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar después de actualizar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rotacion-de-api-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rotación de API Keys
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rotación de API Keys">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#procedimiento-de-rotacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Procedimiento de rotación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Procedimiento de rotación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-generar-nueva-key-en-el-proveedor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Generar nueva key en el proveedor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-actualizar-env-en-el-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Actualizar .env en el VPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-reiniciar-servicio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Reiniciar servicio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-verificar-funcionamiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Verificar funcionamiento
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-revocar-key-antigua" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Revocar key antigua
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#script-de-recordatorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Script de recordatorio
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rotacion-de-ssh-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rotación de SSH Keys
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rotación de SSH Keys">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cuando-rotar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cuándo rotar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#procedimiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Procedimiento
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Procedimiento">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-generar-nueva-key-en-tu-maquina-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Generar nueva key en tu máquina local
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-anadir-nueva-key-al-vps-mientras-la-antigua-funciona" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Añadir nueva key al VPS (mientras la antigua funciona)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-probar-nueva-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Probar nueva key
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-eliminar-key-antigua" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Eliminar key antigua
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-actualizar-tu-configuracion-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Actualizar tu configuración local
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backups
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#que-incluir-en-backups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Qué incluir en backups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#script-de-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Script de backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#programar-backups-automaticos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Programar backups automáticos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#descargar-backups-a-tu-maquina-local" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Descargar backups a tu máquina local
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoreo-continuo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoreo continuo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoreo continuo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dashboard-de-estado-rapido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard de estado rápido
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alertas-por-email-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alertas por email (opcional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#disaster-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disaster Recovery
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Disaster Recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#escenario-perdida-total-del-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Escenario: Pérdida total del VPS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Escenario: Pérdida total del VPS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#paso-1-crear-nuevo-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 1: Crear nuevo VPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-2-restaurar-desde-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 2: Restaurar desde backup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-3-ejecutar-setup-inicial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 3: Ejecutar setup inicial
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-4-restaurar-configuracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 4: Restaurar configuración
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-5-re-ejecutar-hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 5: Re-ejecutar hardening
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-6-verificar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 6: Verificar
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-de-disaster-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test de disaster recovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checklist-de-mantenimiento-mensual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checklist de mantenimiento mensual
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="9-mantenimiento">9. Mantenimiento<a class="headerlink" href="#9-mantenimiento" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>TL;DR</strong>: Procedimientos de mantenimiento regular para mantener el sistema seguro: actualizaciones, rotación de secrets, backups y monitoreo continuo.</p>
+<p><strong>Tiempo estimado</strong>: Variable (tareas periódicas)</p>
+<p><strong>Nivel requerido</strong>: Intermedio</p>
+</blockquote>
+<h2 id="prerrequisitos">Prerrequisitos<a class="headerlink" href="#prerrequisitos" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[ ] Secciones 1-8 completadas</li>
+<li>[ ] Sistema funcionando correctamente</li>
+</ul>
+<h2 id="objetivos">Objetivos<a class="headerlink" href="#objetivos" title="Permanent link">&para;</a></h2>
+<p>Esta sección cubre:</p>
+<ul>
+<li>Actualizaciones del sistema, Tailscale y OpenClaw</li>
+<li>Rotación periódica de API keys y SSH keys</li>
+<li>Estrategia de backups</li>
+<li>Monitoreo continuo</li>
+<li>Procedimiento de disaster recovery</li>
+</ul>
+<hr />
+<h2 id="calendario-de-mantenimiento">Calendario de mantenimiento<a class="headerlink" href="#calendario-de-mantenimiento" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Tarea</th>
+<th>Frecuencia</th>
+<th>Criticidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actualizaciones de seguridad</td>
+<td>Automático (diario)</td>
+<td>Alta</td>
+</tr>
+<tr>
+<td>Revisar logs de seguridad</td>
+<td>Semanal</td>
+<td>Media</td>
+</tr>
+<tr>
+<td>Backup de configuración</td>
+<td>Semanal</td>
+<td>Alta</td>
+</tr>
+<tr>
+<td>Actualizar OpenClaw</td>
+<td>Mensual</td>
+<td>Media</td>
+</tr>
+<tr>
+<td>Rotar API keys</td>
+<td>Cada 90 días</td>
+<td>Alta</td>
+</tr>
+<tr>
+<td>Rotar SSH keys</td>
+<td>Anual</td>
+<td>Media</td>
+</tr>
+<tr>
+<td>Revisar ACLs de Tailscale</td>
+<td>Trimestral</td>
+<td>Media</td>
+</tr>
+<tr>
+<td>Actualizar base AIDE</td>
+<td>Después de cambios</td>
+<td>Media</td>
+</tr>
+<tr>
+<td>Test de disaster recovery</td>
+<td>Semestral</td>
+<td>Alta</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="actualizaciones-del-sistema">Actualizaciones del sistema<a class="headerlink" href="#actualizaciones-del-sistema" title="Permanent link">&para;</a></h2>
+<h3 id="actualizaciones-automaticas-ya-configuradas">Actualizaciones automáticas (ya configuradas)<a class="headerlink" href="#actualizaciones-automaticas-ya-configuradas" title="Permanent link">&para;</a></h3>
+<p>Las actualizaciones de seguridad se aplican automáticamente gracias a <code>unattended-upgrades</code>.</p>
+<p><strong>Verificar que funciona:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Ver estado de actualizaciones automáticas</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>unattended-upgrades
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Ver log de actualizaciones recientes</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>cat<span class="w"> </span>/var/log/unattended-upgrades/unattended-upgrades.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-50
+</code></pre></div>
+<h3 id="canonical-livepatch-parches-de-kernel-sin-reboot">Canonical Livepatch (parches de kernel sin reboot)<a class="headerlink" href="#canonical-livepatch-parches-de-kernel-sin-reboot" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Recomendado: parches de kernel en caliente</p>
+<p><a href="https://ubuntu.com/security/livepatch">Canonical Livepatch</a> aplica parches de seguridad al kernel <strong>sin necesidad de reiniciar</strong>. Complementa <code>unattended-upgrades</code> (que cubre paquetes pero no el kernel en ejecución).</p>
+</div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Activar Livepatch (gratis para uso personal, hasta 5 máquinas)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sudo<span class="w"> </span>snap<span class="w"> </span>install<span class="w"> </span>canonical-livepatch
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>sudo<span class="w"> </span>canonical-livepatch<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>&lt;TU_TOKEN&gt;
+</code></pre></div>
+<p>Obtén tu token en <a href="https://ubuntu.com/security/livepatch">ubuntu.com/security/livepatch</a> (login con Ubuntu One).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Verificar estado</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>sudo<span class="w"> </span>canonical-livepatch<span class="w"> </span>status<span class="w"> </span>--verbose
+</code></pre></div>
+<h3 id="actualizaciones-manuales">Actualizaciones manuales<a class="headerlink" href="#actualizaciones-manuales" title="Permanent link">&para;</a></h3>
+<p>Para actualizaciones completas (no solo seguridad):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Actualizar lista de paquetes</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>sudo<span class="w"> </span>apt<span class="w"> </span>update
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Ver actualizaciones disponibles</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>apt<span class="w"> </span>list<span class="w"> </span>--upgradable
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Aplicar todas las actualizaciones</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>sudo<span class="w"> </span>apt<span class="w"> </span>upgrade<span class="w"> </span>-y
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1"># Actualizar distribución (con cuidado)</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>sudo<span class="w"> </span>apt<span class="w"> </span>dist-upgrade<span class="w"> </span>-y
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="c1"># Limpiar paquetes obsoletos</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>sudo<span class="w"> </span>apt<span class="w"> </span>autoremove<span class="w"> </span>-y
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Reiniciar si es necesario</p>
+<p>Después de actualizar el kernel (si no usas Livepatch):
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Verificar si hay reinicio pendiente</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span>/var/run/reboot-required<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Reinicio necesario&quot;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Reiniciar (planificado)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>sudo<span class="w"> </span>shutdown<span class="w"> </span>-r<span class="w"> </span>+5<span class="w"> </span><span class="s2">&quot;Reinicio por actualizaciones en 5 minutos&quot;</span>
+</code></pre></div></p>
+</div>
+<hr />
+<h2 id="actualizar-tailscale">Actualizar Tailscale<a class="headerlink" href="#actualizar-tailscale" title="Permanent link">&para;</a></h2>
+<h3 id="verificar-version-actual">Verificar versión actual<a class="headerlink" href="#verificar-version-actual" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>tailscale<span class="w"> </span>version
+</code></pre></div>
+<h3 id="actualizar">Actualizar<a class="headerlink" href="#actualizar" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Actualizar desde repositorio APT</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>sudo<span class="w"> </span>apt<span class="w"> </span>update
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>--only-upgrade<span class="w"> </span>tailscale
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="c1"># Verificar nueva versión</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>tailscale<span class="w"> </span>version
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="c1"># Verificar que sigue funcionando</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>tailscale<span class="w"> </span>status
+</code></pre></div>
+<h3 id="despues-de-actualizar">Después de actualizar<a class="headerlink" href="#despues-de-actualizar" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Verificar que los tags siguen configurados</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>tailscale<span class="w"> </span>status<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>tag
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Si es necesario, re-aplicar tags</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>up<span class="w"> </span>--advertise-tags<span class="o">=</span>tag:vps<span class="w"> </span>--reset
+</code></pre></div>
+<hr />
+<h2 id="actualizar-openclaw">Actualizar OpenClaw<a class="headerlink" href="#actualizar-openclaw" title="Permanent link">&para;</a></h2>
+<h3 id="backup-antes-de-actualizar">Backup antes de actualizar<a class="headerlink" href="#backup-antes-de-actualizar" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Backup de configuración</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>cp<span class="w"> </span>~/.openclaw/openclaw.json<span class="w"> </span>~/.openclaw/openclaw.json.backup.<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d<span class="k">)</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>cp<span class="w"> </span>~/openclaw/.env<span class="w"> </span>~/openclaw/.env.backup.<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d<span class="k">)</span>
+</code></pre></div>
+<h3 id="actualizar-openclaw_1">Actualizar OpenClaw<a class="headerlink" href="#actualizar-openclaw_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Verificar canal actual</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>openclaw<span class="w"> </span>update<span class="w"> </span>--channel
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># Actualizar OpenClaw (canal estable)</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>openclaw@latest
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1"># O usar el comando nativo de actualización</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>openclaw<span class="w"> </span>update
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="c1"># Verificar versión instalada</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>openclaw<span class="w"> </span>--version
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="c1"># Reiniciar servicio</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>openclaw
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="c1"># Verificar que funciona</span>
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>openclaw
+</code></pre></div>
+<h3 id="verificar-despues-de-actualizar">Verificar después de actualizar<a class="headerlink" href="#verificar-despues-de-actualizar" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Verificar versión</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>openclaw<span class="w"> </span>--version
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Ejecutar diagnóstico completo</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>openclaw<span class="w"> </span>doctor
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Ejecutar auditoría de seguridad</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>openclaw<span class="w"> </span>security<span class="w"> </span>audit
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="c1"># Ver logs por errores</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>openclaw<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="c1"># Verificar puntuación de seguridad systemd (no debe empeorar)</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>systemd-analyze<span class="w"> </span>security<span class="w"> </span>openclaw.service
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Revisa las notas de versión antes de actualizar</p>
+<p>OpenClaw v2026.3.x introdujo <strong>breaking changes</strong>. Consulta las <a href="https://github.com/openclaw/openclaw/releases/">release notes</a> antes de actualizar. Haz siempre backup de la configuración primero.</p>
+</div>
+<hr />
+<h2 id="rotacion-de-api-keys">Rotación de API Keys<a class="headerlink" href="#rotacion-de-api-keys" title="Permanent link">&para;</a></h2>
+<div class="admonition danger">
+<p class="admonition-title">Rotar API keys cada 90 días</p>
+<p>Las API keys son credenciales sensibles que deben rotarse regularmente.</p>
+</div>
+<h3 id="procedimiento-de-rotacion">Procedimiento de rotación<a class="headerlink" href="#procedimiento-de-rotacion" title="Permanent link">&para;</a></h3>
+<h4 id="1-generar-nueva-key-en-el-proveedor">1. Generar nueva key en el proveedor<a class="headerlink" href="#1-generar-nueva-key-en-el-proveedor" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Proveedor</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OpenAI</td>
+<td><a href="https://platform.openai.com/api-keys">platform.openai.com/api-keys</a></td>
+</tr>
+<tr>
+<td>Anthropic</td>
+<td><a href="https://console.anthropic.com/settings/keys">console.anthropic.com/settings/keys</a></td>
+</tr>
+<tr>
+<td>NVIDIA NIM</td>
+<td><a href="https://build.nvidia.com">build.nvidia.com</a></td>
+</tr>
+</tbody>
+</table>
+<h4 id="2-actualizar-env-en-el-vps">2. Actualizar .env en el VPS<a class="headerlink" href="#2-actualizar-env-en-el-vps" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Backup de .env actual</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>cp<span class="w"> </span>~/openclaw/.env<span class="w"> </span>~/openclaw/.env.backup.<span class="k">$(</span>date<span class="w"> </span>+%Y%m%d<span class="k">)</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># Editar .env</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>nano<span class="w"> </span>~/openclaw/.env
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1"># Reemplazar la key antigua por la nueva</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="c1"># Ejemplo: ANTHROPIC_API_KEY=sk-ant-NUEVA_KEY_AQUI</span>
+</code></pre></div>
+<h4 id="3-reiniciar-servicio">3. Reiniciar servicio<a class="headerlink" href="#3-reiniciar-servicio" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>openclaw
+</code></pre></div>
+<h4 id="4-verificar-funcionamiento">4. Verificar funcionamiento<a class="headerlink" href="#4-verificar-funcionamiento" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Ver logs para confirmar que conecta correctamente</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>openclaw<span class="w"> </span>-n<span class="w"> </span><span class="m">20</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># Hacer una petición de prueba si es posible</span>
+</code></pre></div>
+<h4 id="5-revocar-key-antigua">5. Revocar key antigua<a class="headerlink" href="#5-revocar-key-antigua" title="Permanent link">&para;</a></h4>
+<div class="admonition warning">
+<p class="admonition-title">Solo después de verificar que la nueva funciona</p>
+<p>Vuelve al panel del proveedor y elimina/revoca la key antigua.</p>
+</div>
+<h3 id="script-de-recordatorio">Script de recordatorio<a class="headerlink" href="#script-de-recordatorio" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/openclaw/scripts
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>nano<span class="w"> </span>~/openclaw/scripts/key_rotation_reminder.sh
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="ch">#!/bin/bash</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="c1"># Recordatorio de rotación de API keys</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nv">LAST_ROTATION_FILE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.openclaw/.last_key_rotation&quot;</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="nv">MAX_DAYS</span><span class="o">=</span><span class="m">90</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$LAST_ROTATION_FILE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">    </span><span class="nv">LAST_DATE</span><span class="o">=</span><span class="k">$(</span>cat<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$LAST_ROTATION_FILE</span><span class="s2">&quot;</span><span class="k">)</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="w">    </span><span class="nv">LAST_TS</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$LAST_DATE</span><span class="s2">&quot;</span><span class="w"> </span>+%s<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="m">0</span><span class="k">)</span>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">    </span><span class="nv">NOW_TS</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>+%s<span class="k">)</span>
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="w">    </span><span class="nv">DIFF_DAYS</span><span class="o">=</span><span class="k">$((</span><span class="w"> </span><span class="o">(</span><span class="nv">NOW_TS</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">LAST_TS</span><span class="o">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">86400</span><span class="w"> </span><span class="k">))</span>
+<a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>
+<a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$DIFF_DAYS</span><span class="s2">&quot;</span><span class="w"> </span>-ge<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MAX_DAYS</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;⚠️  ALERTA: Han pasado </span><span class="nv">$DIFF_DAYS</span><span class="s2"> días desde la última rotación de API keys&quot;</span>
+<a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;   Última rotación: </span><span class="nv">$LAST_DATE</span><span class="s2">&quot;</span>
+<a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;   Ejecuta el procedimiento de rotación documentado en docs/09-mantenimiento.md&quot;</span>
+<a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a><span class="w">    </span><span class="k">fi</span>
+<a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a><span class="k">else</span>
+<a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;⚠️  No hay registro de última rotación de API keys&quot;</span>
+<a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;   Crea el archivo: echo </span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span><span class="s2"> &gt; </span><span class="nv">$LAST_ROTATION_FILE</span><span class="s2">&quot;</span>
+<a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a><span class="k">fi</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>chmod<span class="w"> </span>+x<span class="w"> </span>~/openclaw/scripts/key_rotation_reminder.sh
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="c1"># Registrar fecha de última rotación</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="nb">echo</span><span class="w"> </span><span class="k">$(</span>date<span class="w"> </span>+%Y-%m-%d<span class="k">)</span><span class="w"> </span>&gt;<span class="w"> </span>~/.openclaw/.last_key_rotation
+</code></pre></div>
+<p>Añade a cron para verificación semanal:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>crontab<span class="w"> </span>-e
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a># Recordatorio de rotación de keys cada lunes
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>0 9 * * 1 /home/openclaw/openclaw/scripts/key_rotation_reminder.sh | logger -t key-rotation
+</code></pre></div>
+<hr />
+<h2 id="rotacion-de-ssh-keys">Rotación de SSH Keys<a class="headerlink" href="#rotacion-de-ssh-keys" title="Permanent link">&para;</a></h2>
+<h3 id="cuando-rotar">Cuándo rotar<a class="headerlink" href="#cuando-rotar" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Anualmente como práctica de higiene</li>
+<li>Inmediatamente si sospechas compromiso</li>
+<li>Cuando cambias de dispositivo</li>
+</ul>
+<h3 id="procedimiento">Procedimiento<a class="headerlink" href="#procedimiento" title="Permanent link">&para;</a></h3>
+<h4 id="1-generar-nueva-key-en-tu-maquina-local">1. Generar nueva key en tu máquina local<a class="headerlink" href="#1-generar-nueva-key-en-tu-maquina-local" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># En tu máquina local</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>ssh-keygen<span class="w"> </span>-t<span class="w"> </span>ed25519<span class="w"> </span>-C<span class="w"> </span><span class="s2">&quot;openclaw-vps-</span><span class="k">$(</span>date<span class="w"> </span>+%Y<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>-f<span class="w"> </span>~/.ssh/id_ed25519_openclaw_new
+</code></pre></div>
+<h4 id="2-anadir-nueva-key-al-vps-mientras-la-antigua-funciona">2. Añadir nueva key al VPS (mientras la antigua funciona)<a class="headerlink" href="#2-anadir-nueva-key-al-vps-mientras-la-antigua-funciona" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># Copiar nueva clave pública</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>cat<span class="w"> </span>~/.ssh/id_ed25519_openclaw_new.pub
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1"># En el VPS, añadir a authorized_keys</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>ssh<span class="w"> </span>openclaw@&lt;TU_TAILSCALE_IP&gt;
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;PEGA_AQUI_LA_NUEVA_CLAVE_PUBLICA&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.ssh/authorized_keys
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="nb">exit</span>
+</code></pre></div>
+<h4 id="3-probar-nueva-key">3. Probar nueva key<a class="headerlink" href="#3-probar-nueva-key" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Probar conexión con nueva key</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>ssh<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_ed25519_openclaw_new<span class="w"> </span>openclaw@&lt;TU_TAILSCALE_IP&gt;
+</code></pre></div>
+<h4 id="4-eliminar-key-antigua">4. Eliminar key antigua<a class="headerlink" href="#4-eliminar-key-antigua" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># En el VPS, editar authorized_keys</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>nano<span class="w"> </span>~/.ssh/authorized_keys
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="c1"># Eliminar la línea de la key antigua</span>
+</code></pre></div>
+<h4 id="5-actualizar-tu-configuracion-local">5. Actualizar tu configuración local<a class="headerlink" href="#5-actualizar-tu-configuracion-local" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># Renombrar keys</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>mv<span class="w"> </span>~/.ssh/id_ed25519_openclaw<span class="w"> </span>~/.ssh/id_ed25519_openclaw_old
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>mv<span class="w"> </span>~/.ssh/id_ed25519_openclaw_new<span class="w"> </span>~/.ssh/id_ed25519_openclaw
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>mv<span class="w"> </span>~/.ssh/id_ed25519_openclaw_new.pub<span class="w"> </span>~/.ssh/id_ed25519_openclaw.pub
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>
+<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="c1"># Actualizar SSH config si es necesario</span>
+<a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>nano<span class="w"> </span>~/.ssh/config
+</code></pre></div>
+<hr />
+<h2 id="backups">Backups<a class="headerlink" href="#backups" title="Permanent link">&para;</a></h2>
+<h3 id="que-incluir-en-backups">Qué incluir en backups<a class="headerlink" href="#que-incluir-en-backups" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Archivo/Directorio</th>
+<th>Criticidad</th>
+<th>Frecuencia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~/.openclaw/openclaw.json</code></td>
+<td>Crítica</td>
+<td>Semanal</td>
+</tr>
+<tr>
+<td><code>~/openclaw/.env</code></td>
+<td>Crítica</td>
+<td>Semanal</td>
+</tr>
+<tr>
+<td><code>~/openclaw/workspace/</code></td>
+<td>Media</td>
+<td>Diario (si hay datos)</td>
+</tr>
+<tr>
+<td>SSH keys (<code>.ssh/</code>)</td>
+<td>Alta</td>
+<td>Después de rotación</td>
+</tr>
+<tr>
+<td>Configuración systemd</td>
+<td>Media</td>
+<td>Después de cambios</td>
+</tr>
+</tbody>
+</table>
+<h3 id="script-de-backup">Script de backup<a class="headerlink" href="#script-de-backup" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>nano<span class="w"> </span>~/openclaw/scripts/backup.sh
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="ch">#!/bin/bash</span>
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="c1"># Backup de configuración de OpenClaw</span>
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="c1"># Ejecutar semanalmente</span>
+<a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>
+<a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="nb">set</span><span class="w"> </span>-e
+<a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>
+<a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a><span class="nv">BACKUP_DIR</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/backups&quot;</span>
+<a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a><span class="nv">DATE</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>+%Y%m%d_%H%M%S<span class="k">)</span>
+<a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a><span class="nv">BACKUP_NAME</span><span class="o">=</span><span class="s2">&quot;openclaw_backup_</span><span class="nv">$DATE</span><span class="s2">&quot;</span>
+<a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a><span class="nv">BACKUP_PATH</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$BACKUP_DIR</span><span class="s2">/</span><span class="nv">$BACKUP_NAME</span><span class="s2">&quot;</span>
+<a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a>
+<a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a><span class="c1"># Crear directorio de backup</span>
+<a id="__codelineno-25-13" name="__codelineno-25-13" href="#__codelineno-25-13"></a>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_PATH</span><span class="s2">&quot;</span>
+<a id="__codelineno-25-14" name="__codelineno-25-14" href="#__codelineno-25-14"></a>
+<a id="__codelineno-25-15" name="__codelineno-25-15" href="#__codelineno-25-15"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Creando backup: </span><span class="nv">$BACKUP_NAME</span><span class="s2">&quot;</span>
+<a id="__codelineno-25-16" name="__codelineno-25-16" href="#__codelineno-25-16"></a>
+<a id="__codelineno-25-17" name="__codelineno-25-17" href="#__codelineno-25-17"></a><span class="c1"># Backup de configuración OpenClaw (cifrado)</span>
+<a id="__codelineno-25-18" name="__codelineno-25-18" href="#__codelineno-25-18"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;- Backup de configuración OpenClaw...&quot;</span>
+<a id="__codelineno-25-19" name="__codelineno-25-19" href="#__codelineno-25-19"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/openclaw/.env&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-25-20" name="__codelineno-25-20" href="#__codelineno-25-20"></a><span class="w">    </span>gpg<span class="w"> </span>--symmetric<span class="w"> </span>--cipher-algo<span class="w"> </span>AES256<span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_PATH</span><span class="s2">/env.gpg&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/openclaw/.env&quot;</span>
+<a id="__codelineno-25-21" name="__codelineno-25-21" href="#__codelineno-25-21"></a><span class="k">fi</span>
+<a id="__codelineno-25-22" name="__codelineno-25-22" href="#__codelineno-25-22"></a>cp<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.openclaw/openclaw.json&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_PATH</span><span class="s2">/&quot;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-25-23" name="__codelineno-25-23" href="#__codelineno-25-23"></a>cp<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.openclaw/workspace/SOUL.md&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_PATH</span><span class="s2">/&quot;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-25-24" name="__codelineno-25-24" href="#__codelineno-25-24"></a>cp<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.openclaw/workspace/TOOLS.md&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_PATH</span><span class="s2">/&quot;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-25-25" name="__codelineno-25-25" href="#__codelineno-25-25"></a>
+<a id="__codelineno-25-26" name="__codelineno-25-26" href="#__codelineno-25-26"></a><span class="c1"># Backup de scripts de mantenimiento</span>
+<a id="__codelineno-25-27" name="__codelineno-25-27" href="#__codelineno-25-27"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;- Backup de scripts...&quot;</span>
+<a id="__codelineno-25-28" name="__codelineno-25-28" href="#__codelineno-25-28"></a>cp<span class="w"> </span>-r<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/openclaw/scripts&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_PATH</span><span class="s2">/&quot;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-25-29" name="__codelineno-25-29" href="#__codelineno-25-29"></a>
+<a id="__codelineno-25-30" name="__codelineno-25-30" href="#__codelineno-25-30"></a><span class="c1"># Backup de configuración systemd</span>
+<a id="__codelineno-25-31" name="__codelineno-25-31" href="#__codelineno-25-31"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;- Backup de systemd service...&quot;</span>
+<a id="__codelineno-25-32" name="__codelineno-25-32" href="#__codelineno-25-32"></a>sudo<span class="w"> </span>cp<span class="w"> </span>/etc/systemd/system/openclaw.service<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_PATH</span><span class="s2">/&quot;</span>
+<a id="__codelineno-25-33" name="__codelineno-25-33" href="#__codelineno-25-33"></a>
+<a id="__codelineno-25-34" name="__codelineno-25-34" href="#__codelineno-25-34"></a><span class="c1"># Backup de SSH authorized_keys</span>
+<a id="__codelineno-25-35" name="__codelineno-25-35" href="#__codelineno-25-35"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;- Backup de SSH keys...&quot;</span>
+<a id="__codelineno-25-36" name="__codelineno-25-36" href="#__codelineno-25-36"></a>cp<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.ssh/authorized_keys&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_PATH</span><span class="s2">/&quot;</span>
+<a id="__codelineno-25-37" name="__codelineno-25-37" href="#__codelineno-25-37"></a>
+<a id="__codelineno-25-38" name="__codelineno-25-38" href="#__codelineno-25-38"></a><span class="c1"># Backup de reglas de audit</span>
+<a id="__codelineno-25-39" name="__codelineno-25-39" href="#__codelineno-25-39"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;- Backup de audit rules...&quot;</span>
+<a id="__codelineno-25-40" name="__codelineno-25-40" href="#__codelineno-25-40"></a>sudo<span class="w"> </span>cp<span class="w"> </span>/etc/audit/rules.d/openclaw.rules<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_PATH</span><span class="s2">/&quot;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-25-41" name="__codelineno-25-41" href="#__codelineno-25-41"></a>
+<a id="__codelineno-25-42" name="__codelineno-25-42" href="#__codelineno-25-42"></a><span class="c1"># Crear archivo de información</span>
+<a id="__codelineno-25-43" name="__codelineno-25-43" href="#__codelineno-25-43"></a>cat<span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_PATH</span><span class="s2">/backup_info.txt&quot;</span><span class="w"> </span><span class="s">&lt;&lt; EOF</span>
+<a id="__codelineno-25-44" name="__codelineno-25-44" href="#__codelineno-25-44"></a><span class="s">Backup creado: $(date)</span>
+<a id="__codelineno-25-45" name="__codelineno-25-45" href="#__codelineno-25-45"></a><span class="s">Hostname: $(hostname)</span>
+<a id="__codelineno-25-46" name="__codelineno-25-46" href="#__codelineno-25-46"></a><span class="s">Tailscale IP: $(tailscale ip -4)</span>
+<a id="__codelineno-25-47" name="__codelineno-25-47" href="#__codelineno-25-47"></a><span class="s">OpenClaw version: $(openclaw --version 2&gt;/dev/null || echo &quot;unknown&quot;)</span>
+<a id="__codelineno-25-48" name="__codelineno-25-48" href="#__codelineno-25-48"></a><span class="s">EOF</span>
+<a id="__codelineno-25-49" name="__codelineno-25-49" href="#__codelineno-25-49"></a>
+<a id="__codelineno-25-50" name="__codelineno-25-50" href="#__codelineno-25-50"></a><span class="c1"># Comprimir backup</span>
+<a id="__codelineno-25-51" name="__codelineno-25-51" href="#__codelineno-25-51"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;- Comprimiendo...&quot;</span>
+<a id="__codelineno-25-52" name="__codelineno-25-52" href="#__codelineno-25-52"></a><span class="nb">cd</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_DIR</span><span class="s2">&quot;</span>
+<a id="__codelineno-25-53" name="__codelineno-25-53" href="#__codelineno-25-53"></a>tar<span class="w"> </span>-czf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_NAME</span><span class="s2">.tar.gz&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_NAME</span><span class="s2">&quot;</span>
+<a id="__codelineno-25-54" name="__codelineno-25-54" href="#__codelineno-25-54"></a>rm<span class="w"> </span>-rf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_PATH</span><span class="s2">&quot;</span>
+<a id="__codelineno-25-55" name="__codelineno-25-55" href="#__codelineno-25-55"></a>
+<a id="__codelineno-25-56" name="__codelineno-25-56" href="#__codelineno-25-56"></a><span class="c1"># Limpiar backups antiguos (mantener últimos 4)</span>
+<a id="__codelineno-25-57" name="__codelineno-25-57" href="#__codelineno-25-57"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;- Limpiando backups antiguos...&quot;</span>
+<a id="__codelineno-25-58" name="__codelineno-25-58" href="#__codelineno-25-58"></a>ls<span class="w"> </span>-t<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_DIR</span><span class="s2">&quot;</span>/openclaw_backup_*.tar.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-n<span class="w"> </span>+5<span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>-r<span class="w"> </span>rm
+<a id="__codelineno-25-59" name="__codelineno-25-59" href="#__codelineno-25-59"></a>
+<a id="__codelineno-25-60" name="__codelineno-25-60" href="#__codelineno-25-60"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Backup completado: </span><span class="nv">$BACKUP_DIR</span><span class="s2">/</span><span class="nv">$BACKUP_NAME</span><span class="s2">.tar.gz&quot;</span>
+<a id="__codelineno-25-61" name="__codelineno-25-61" href="#__codelineno-25-61"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Tamaño: </span><span class="k">$(</span>du<span class="w"> </span>-h<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$BACKUP_DIR</span><span class="s2">/</span><span class="nv">$BACKUP_NAME</span><span class="s2">.tar.gz&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-f1<span class="k">)</span><span class="s2">&quot;</span>
+<a id="__codelineno-25-62" name="__codelineno-25-62" href="#__codelineno-25-62"></a>
+<a id="__codelineno-25-63" name="__codelineno-25-63" href="#__codelineno-25-63"></a><span class="c1"># Recordatorio de descargar backup</span>
+<a id="__codelineno-25-64" name="__codelineno-25-64" href="#__codelineno-25-64"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-25-65" name="__codelineno-25-65" href="#__codelineno-25-65"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;⚠️  IMPORTANTE: Descarga el backup a tu máquina local:&quot;</span>
+<a id="__codelineno-25-66" name="__codelineno-25-66" href="#__codelineno-25-66"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;   scp openclaw@&lt;TU_TAILSCALE_IP&gt;:</span><span class="nv">$BACKUP_DIR</span><span class="s2">/</span><span class="nv">$BACKUP_NAME</span><span class="s2">.tar.gz ./&quot;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>chmod<span class="w"> </span>+x<span class="w"> </span>~/openclaw/scripts/backup.sh
+</code></pre></div>
+<h3 id="programar-backups-automaticos">Programar backups automáticos<a class="headerlink" href="#programar-backups-automaticos" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>crontab<span class="w"> </span>-e
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a># Backup semanal (domingos a las 3am)
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>0 3 * * 0 /home/openclaw/openclaw/scripts/backup.sh &gt;&gt; /home/openclaw/openclaw/logs/backup.log 2&gt;&amp;1
+</code></pre></div>
+<h3 id="descargar-backups-a-tu-maquina-local">Descargar backups a tu máquina local<a class="headerlink" href="#descargar-backups-a-tu-maquina-local" title="Permanent link">&para;</a></h3>
+<div class="admonition danger">
+<p class="admonition-title">Los backups en el VPS no son suficientes</p>
+<p>Si pierdes el VPS, pierdes los backups. Descarga regularmente a tu máquina local.</p>
+</div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1"># Desde tu máquina local</span>
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>scp<span class="w"> </span>openclaw@&lt;TU_TAILSCALE_IP&gt;:~/backups/openclaw_backup_*.tar.gz<span class="w"> </span>~/backups/vps/
+</code></pre></div>
+<hr />
+<h2 id="monitoreo-continuo">Monitoreo continuo<a class="headerlink" href="#monitoreo-continuo" title="Permanent link">&para;</a></h2>
+<h3 id="dashboard-de-estado-rapido">Dashboard de estado rápido<a class="headerlink" href="#dashboard-de-estado-rapido" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>nano<span class="w"> </span>~/openclaw/scripts/status.sh
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="ch">#!/bin/bash</span>
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="c1"># Dashboard de estado de OpenClaw</span>
+<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>clear
+<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;========================================&quot;</span>
+<a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;      ESTADO DE OPENCLAW VPS           &quot;</span>
+<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;      </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">     &quot;</span>
+<a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;========================================&quot;</span>
+<a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-31-10" name="__codelineno-31-10" href="#__codelineno-31-10"></a>
+<a id="__codelineno-31-11" name="__codelineno-31-11" href="#__codelineno-31-11"></a><span class="c1"># Sistema</span>
+<a id="__codelineno-31-12" name="__codelineno-31-12" href="#__codelineno-31-12"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- SISTEMA ---&quot;</span>
+<a id="__codelineno-31-13" name="__codelineno-31-13" href="#__codelineno-31-13"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Uptime: </span><span class="k">$(</span>uptime<span class="w"> </span>-p<span class="k">)</span><span class="s2">&quot;</span>
+<a id="__codelineno-31-14" name="__codelineno-31-14" href="#__codelineno-31-14"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Load: </span><span class="k">$(</span>cat<span class="w"> </span>/proc/loadavg<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="s1">&#39; &#39;</span><span class="w"> </span>-f1-3<span class="k">)</span><span class="s2">&quot;</span>
+<a id="__codelineno-31-15" name="__codelineno-31-15" href="#__codelineno-31-15"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;RAM: </span><span class="k">$(</span>free<span class="w"> </span>-h<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Mem<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $3&quot;/&quot;$2}&#39;</span><span class="k">)</span><span class="s2">&quot;</span>
+<a id="__codelineno-31-16" name="__codelineno-31-16" href="#__codelineno-31-16"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Disco: </span><span class="k">$(</span>df<span class="w"> </span>-h<span class="w"> </span>/<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-1<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $3&quot;/&quot;$2&quot; (&quot;$5&quot;)&quot;}&#39;</span><span class="k">)</span><span class="s2">&quot;</span>
+<a id="__codelineno-31-17" name="__codelineno-31-17" href="#__codelineno-31-17"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-31-18" name="__codelineno-31-18" href="#__codelineno-31-18"></a>
+<a id="__codelineno-31-19" name="__codelineno-31-19" href="#__codelineno-31-19"></a><span class="c1"># Servicios</span>
+<a id="__codelineno-31-20" name="__codelineno-31-20" href="#__codelineno-31-20"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- SERVICIOS ---&quot;</span>
+<a id="__codelineno-31-21" name="__codelineno-31-21" href="#__codelineno-31-21"></a><span class="k">for</span><span class="w"> </span>service<span class="w"> </span><span class="k">in</span><span class="w"> </span>openclaw<span class="w"> </span>tailscaled<span class="w"> </span>fail2ban<span class="w"> </span>auditd<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<a id="__codelineno-31-22" name="__codelineno-31-22" href="#__codelineno-31-22"></a><span class="w">    </span><span class="nv">status</span><span class="o">=</span><span class="k">$(</span>systemctl<span class="w"> </span>is-active<span class="w"> </span><span class="nv">$service</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span>
+<a id="__codelineno-31-23" name="__codelineno-31-23" href="#__codelineno-31-23"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$status</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;active&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-31-24" name="__codelineno-31-24" href="#__codelineno-31-24"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ </span><span class="nv">$service</span><span class="s2">&quot;</span>
+<a id="__codelineno-31-25" name="__codelineno-31-25" href="#__codelineno-31-25"></a><span class="w">    </span><span class="k">else</span>
+<a id="__codelineno-31-26" name="__codelineno-31-26" href="#__codelineno-31-26"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ </span><span class="nv">$service</span><span class="s2"> (</span><span class="nv">$status</span><span class="s2">)&quot;</span>
+<a id="__codelineno-31-27" name="__codelineno-31-27" href="#__codelineno-31-27"></a><span class="w">    </span><span class="k">fi</span>
+<a id="__codelineno-31-28" name="__codelineno-31-28" href="#__codelineno-31-28"></a><span class="k">done</span>
+<a id="__codelineno-31-29" name="__codelineno-31-29" href="#__codelineno-31-29"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-31-30" name="__codelineno-31-30" href="#__codelineno-31-30"></a>
+<a id="__codelineno-31-31" name="__codelineno-31-31" href="#__codelineno-31-31"></a><span class="c1"># Red</span>
+<a id="__codelineno-31-32" name="__codelineno-31-32" href="#__codelineno-31-32"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- RED ---&quot;</span>
+<a id="__codelineno-31-33" name="__codelineno-31-33" href="#__codelineno-31-33"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Tailscale IP: </span><span class="k">$(</span>tailscale<span class="w"> </span>ip<span class="w"> </span>-4<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;N/A&#39;</span><span class="k">)</span><span class="s2">&quot;</span>
+<a id="__codelineno-31-34" name="__codelineno-31-34" href="#__codelineno-31-34"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;SSH escuchando: </span><span class="k">$(</span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>sshd<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span><span class="s2">&quot;</span>
+<a id="__codelineno-31-35" name="__codelineno-31-35" href="#__codelineno-31-35"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;OpenClaw escuchando: </span><span class="k">$(</span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">18789</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span><span class="s2">&quot;</span>
+<a id="__codelineno-31-36" name="__codelineno-31-36" href="#__codelineno-31-36"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-31-37" name="__codelineno-31-37" href="#__codelineno-31-37"></a>
+<a id="__codelineno-31-38" name="__codelineno-31-38" href="#__codelineno-31-38"></a><span class="c1"># Seguridad</span>
+<a id="__codelineno-31-39" name="__codelineno-31-39" href="#__codelineno-31-39"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- SEGURIDAD ---&quot;</span>
+<a id="__codelineno-31-40" name="__codelineno-31-40" href="#__codelineno-31-40"></a><span class="nv">BANNED</span><span class="o">=</span><span class="k">$(</span>sudo<span class="w"> </span>fail2ban-client<span class="w"> </span>status<span class="w"> </span>sshd<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Currently banned&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $NF}&#39;</span><span class="k">)</span>
+<a id="__codelineno-31-41" name="__codelineno-31-41" href="#__codelineno-31-41"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;IPs baneadas (fail2ban): </span><span class="si">${</span><span class="nv">BANNED</span><span class="k">:-</span><span class="nv">0</span><span class="si">}</span><span class="s2">&quot;</span>
+<a id="__codelineno-31-42" name="__codelineno-31-42" href="#__codelineno-31-42"></a><span class="nv">ALERTS</span><span class="o">=</span><span class="k">$(</span>wc<span class="w"> </span>-l<span class="w"> </span>&lt;<span class="w"> </span>~/openclaw/logs/security_alerts.log<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="m">0</span><span class="k">)</span>
+<a id="__codelineno-31-43" name="__codelineno-31-43" href="#__codelineno-31-43"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Alertas de seguridad: </span><span class="nv">$ALERTS</span><span class="s2">&quot;</span>
+<a id="__codelineno-31-44" name="__codelineno-31-44" href="#__codelineno-31-44"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-31-45" name="__codelineno-31-45" href="#__codelineno-31-45"></a>
+<a id="__codelineno-31-46" name="__codelineno-31-46" href="#__codelineno-31-46"></a><span class="c1"># Últimos eventos</span>
+<a id="__codelineno-31-47" name="__codelineno-31-47" href="#__codelineno-31-47"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- ÚLTIMOS LOGS ---&quot;</span>
+<a id="__codelineno-31-48" name="__codelineno-31-48" href="#__codelineno-31-48"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;OpenClaw:&quot;</span>
+<a id="__codelineno-31-49" name="__codelineno-31-49" href="#__codelineno-31-49"></a>sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>openclaw<span class="w"> </span>-n<span class="w"> </span><span class="m">3</span><span class="w"> </span>--no-pager<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-3
+<a id="__codelineno-31-50" name="__codelineno-31-50" href="#__codelineno-31-50"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-31-51" name="__codelineno-31-51" href="#__codelineno-31-51"></a>
+<a id="__codelineno-31-52" name="__codelineno-31-52" href="#__codelineno-31-52"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;========================================&quot;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>chmod<span class="w"> </span>+x<span class="w"> </span>~/openclaw/scripts/status.sh
+</code></pre></div>
+<h3 id="alertas-por-email-opcional">Alertas por email (opcional)<a class="headerlink" href="#alertas-por-email-opcional" title="Permanent link">&para;</a></h3>
+<p>Si quieres recibir alertas por email, configura <code>msmtp</code> o similar:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>msmtp<span class="w"> </span>msmtp-mta
+<a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>
+<a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="c1"># Configurar (ejemplo con Gmail)</span>
+<a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>nano<span class="w"> </span>~/.msmtprc
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>account gmail
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>host smtp.gmail.com
+<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>port 587
+<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>auth on
+<a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a>user tu-email@gmail.com
+<a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a>password tu-app-password
+<a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a>tls on
+<a id="__codelineno-34-8" name="__codelineno-34-8" href="#__codelineno-34-8"></a>tls_starttls on
+<a id="__codelineno-34-9" name="__codelineno-34-9" href="#__codelineno-34-9"></a>from tu-email@gmail.com
+<a id="__codelineno-34-10" name="__codelineno-34-10" href="#__codelineno-34-10"></a>
+<a id="__codelineno-34-11" name="__codelineno-34-11" href="#__codelineno-34-11"></a>account default : gmail
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>~/.msmtprc
+</code></pre></div>
+<hr />
+<h2 id="disaster-recovery">Disaster Recovery<a class="headerlink" href="#disaster-recovery" title="Permanent link">&para;</a></h2>
+<h3 id="escenario-perdida-total-del-vps">Escenario: Pérdida total del VPS<a class="headerlink" href="#escenario-perdida-total-del-vps" title="Permanent link">&para;</a></h3>
+<h4 id="paso-1-crear-nuevo-vps">Paso 1: Crear nuevo VPS<a class="headerlink" href="#paso-1-crear-nuevo-vps" title="Permanent link">&para;</a></h4>
+<p>Sigue las instrucciones de la <a href="../02-vps/">Sección 2</a> para crear un nuevo VPS.</p>
+<h4 id="paso-2-restaurar-desde-backup">Paso 2: Restaurar desde backup<a class="headerlink" href="#paso-2-restaurar-desde-backup" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="c1"># Subir backup al nuevo VPS</span>
+<a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>scp<span class="w"> </span>openclaw_backup_FECHA.tar.gz<span class="w"> </span>root@NUEVO_VPS:/tmp/
+<a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>
+<a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="c1"># En el nuevo VPS</span>
+<a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>tar<span class="w"> </span>-xzf<span class="w"> </span>/tmp/openclaw_backup_FECHA.tar.gz<span class="w"> </span>-C<span class="w"> </span>/tmp/
+</code></pre></div>
+<h4 id="paso-3-ejecutar-setup-inicial">Paso 3: Ejecutar setup inicial<a class="headerlink" href="#paso-3-ejecutar-setup-inicial" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="c1"># Crear usuario (Sección 3)</span>
+<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>adduser<span class="w"> </span>openclaw
+<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>usermod<span class="w"> </span>-aG<span class="w"> </span>sudo<span class="w"> </span>openclaw
+<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a>
+<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a><span class="c1"># Restaurar authorized_keys</span>
+<a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>/home/openclaw/.ssh
+<a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a>cp<span class="w"> </span>/tmp/openclaw_backup_*/authorized_keys<span class="w"> </span>/home/openclaw/.ssh/
+<a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a>chown<span class="w"> </span>-R<span class="w"> </span>openclaw:openclaw<span class="w"> </span>/home/openclaw/.ssh
+<a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a>chmod<span class="w"> </span><span class="m">700</span><span class="w"> </span>/home/openclaw/.ssh
+<a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>/home/openclaw/.ssh/authorized_keys
+</code></pre></div>
+<h4 id="paso-4-restaurar-configuracion">Paso 4: Restaurar configuración<a class="headerlink" href="#paso-4-restaurar-configuracion" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="c1"># Como usuario openclaw</span>
+<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>su<span class="w"> </span>-<span class="w"> </span>openclaw
+<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a><span class="c1"># Instalar OpenClaw</span>
+<a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>npm<span class="w"> </span>install<span class="w"> </span>-g<span class="w"> </span>openclaw@latest
+<a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>
+<a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a><span class="c1"># Crear estructura</span>
+<a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/.openclaw
+<a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a>mkdir<span class="w"> </span>-p<span class="w"> </span>~/openclaw/<span class="o">{</span>workspace,logs,scripts<span class="o">}</span>
+<a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a>
+<a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a><span class="c1"># Restaurar configuración OpenClaw</span>
+<a id="__codelineno-38-12" name="__codelineno-38-12" href="#__codelineno-38-12"></a>cp<span class="w"> </span>/tmp/openclaw_backup_*/openclaw.json<span class="w"> </span>~/.openclaw/
+<a id="__codelineno-38-13" name="__codelineno-38-13" href="#__codelineno-38-13"></a>cp<span class="w"> </span>/tmp/openclaw_backup_*/SOUL.md<span class="w"> </span>~/.openclaw/workspace/<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-38-14" name="__codelineno-38-14" href="#__codelineno-38-14"></a>cp<span class="w"> </span>/tmp/openclaw_backup_*/TOOLS.md<span class="w"> </span>~/.openclaw/workspace/<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-38-15" name="__codelineno-38-15" href="#__codelineno-38-15"></a>cp<span class="w"> </span>-r<span class="w"> </span>/tmp/openclaw_backup_*/scripts/*<span class="w"> </span>~/openclaw/scripts/<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+<a id="__codelineno-38-16" name="__codelineno-38-16" href="#__codelineno-38-16"></a>
+<a id="__codelineno-38-17" name="__codelineno-38-17" href="#__codelineno-38-17"></a><span class="c1"># Restaurar .env (descifrar)</span>
+<a id="__codelineno-38-18" name="__codelineno-38-18" href="#__codelineno-38-18"></a>gpg<span class="w"> </span>-d<span class="w"> </span>/tmp/openclaw_backup_*/env.gpg<span class="w"> </span>&gt;<span class="w"> </span>~/openclaw/.env
+<a id="__codelineno-38-19" name="__codelineno-38-19" href="#__codelineno-38-19"></a>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>~/openclaw/.env
+<a id="__codelineno-38-20" name="__codelineno-38-20" href="#__codelineno-38-20"></a>
+<a id="__codelineno-38-21" name="__codelineno-38-21" href="#__codelineno-38-21"></a><span class="c1"># Restaurar servicio systemd</span>
+<a id="__codelineno-38-22" name="__codelineno-38-22" href="#__codelineno-38-22"></a>sudo<span class="w"> </span>cp<span class="w"> </span>/tmp/openclaw_backup_*/openclaw.service<span class="w"> </span>/etc/systemd/system/
+<a id="__codelineno-38-23" name="__codelineno-38-23" href="#__codelineno-38-23"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+</code></pre></div>
+<h4 id="paso-5-re-ejecutar-hardening">Paso 5: Re-ejecutar hardening<a class="headerlink" href="#paso-5-re-ejecutar-hardening" title="Permanent link">&para;</a></h4>
+<p>Sigue las secciones relevantes:</p>
+<ul>
+<li><a href="../03-seguridad-sistema/">3. Seguridad del sistema</a> - SSH hardening</li>
+<li><a href="../04-acceso-privado/">4. Acceso privado</a> - Tailscale</li>
+<li><a href="../05-openclaw/">5. OpenClaw</a> - Instalación</li>
+</ul>
+<h4 id="paso-6-verificar">Paso 6: Verificar<a class="headerlink" href="#paso-6-verificar" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="c1"># Ejecutar script de verificación</span>
+<a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>~/openclaw/scripts/verify_permissions.sh
+<a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>
+<a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a><span class="c1"># Verificar servicios</span>
+<a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a>~/openclaw/scripts/status.sh
+</code></pre></div>
+<h3 id="test-de-disaster-recovery">Test de disaster recovery<a class="headerlink" href="#test-de-disaster-recovery" title="Permanent link">&para;</a></h3>
+<div class="admonition tip">
+<p class="admonition-title">Haz este test cada 6 meses</p>
+<p>La única forma de saber si tus backups funcionan es probarlos.</p>
+</div>
+<ol>
+<li>Crea un VPS temporal</li>
+<li>Intenta restaurar desde backup</li>
+<li>Verifica que todo funciona</li>
+<li>Elimina el VPS temporal</li>
+</ol>
+<hr />
+<h2 id="checklist-de-mantenimiento-mensual">Checklist de mantenimiento mensual<a class="headerlink" href="#checklist-de-mantenimiento-mensual" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="gu">## Mantenimiento mensual - [MES/AÑO]</span>
+<a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>
+<a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a><span class="gu">### Sistema</span>
+<a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a><span class="k">- [ ]</span> Verificar actualizaciones automáticas funcionando
+<a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a><span class="k">- [ ]</span> Revisar logs de seguridad
+<a id="__codelineno-40-6" name="__codelineno-40-6" href="#__codelineno-40-6"></a><span class="k">- [ ]</span> Verificar espacio en disco (&lt; 80%)
+<a id="__codelineno-40-7" name="__codelineno-40-7" href="#__codelineno-40-7"></a><span class="k">- [ ]</span> Revisar uso de recursos
+<a id="__codelineno-40-8" name="__codelineno-40-8" href="#__codelineno-40-8"></a>
+<a id="__codelineno-40-9" name="__codelineno-40-9" href="#__codelineno-40-9"></a><span class="gu">### Tailscale</span>
+<a id="__codelineno-40-10" name="__codelineno-40-10" href="#__codelineno-40-10"></a><span class="k">- [ ]</span> Verificar versión actualizada
+<a id="__codelineno-40-11" name="__codelineno-40-11" href="#__codelineno-40-11"></a><span class="k">- [ ]</span> Revisar dispositivos conectados
+<a id="__codelineno-40-12" name="__codelineno-40-12" href="#__codelineno-40-12"></a><span class="k">- [ ]</span> Verificar ACLs siguen correctas
+<a id="__codelineno-40-13" name="__codelineno-40-13" href="#__codelineno-40-13"></a>
+<a id="__codelineno-40-14" name="__codelineno-40-14" href="#__codelineno-40-14"></a><span class="gu">### OpenClaw</span>
+<a id="__codelineno-40-15" name="__codelineno-40-15" href="#__codelineno-40-15"></a><span class="k">- [ ]</span> Actualizar si hay nueva versión
+<a id="__codelineno-40-16" name="__codelineno-40-16" href="#__codelineno-40-16"></a><span class="k">- [ ]</span> Revisar logs por errores
+<a id="__codelineno-40-17" name="__codelineno-40-17" href="#__codelineno-40-17"></a><span class="k">- [ ]</span> Verificar puntuación systemd
+<a id="__codelineno-40-18" name="__codelineno-40-18" href="#__codelineno-40-18"></a>
+<a id="__codelineno-40-19" name="__codelineno-40-19" href="#__codelineno-40-19"></a><span class="gu">### Seguridad</span>
+<a id="__codelineno-40-20" name="__codelineno-40-20" href="#__codelineno-40-20"></a><span class="k">- [ ]</span> Revisar IPs baneadas por fail2ban
+<a id="__codelineno-40-21" name="__codelineno-40-21" href="#__codelineno-40-21"></a><span class="k">- [ ]</span> Verificar alertas de seguridad
+<a id="__codelineno-40-22" name="__codelineno-40-22" href="#__codelineno-40-22"></a><span class="k">- [ ]</span> Ejecutar verificación de integridad AIDE
+<a id="__codelineno-40-23" name="__codelineno-40-23" href="#__codelineno-40-23"></a><span class="k">- [ ]</span> Revisar reglas de auditoría
+<a id="__codelineno-40-24" name="__codelineno-40-24" href="#__codelineno-40-24"></a>
+<a id="__codelineno-40-25" name="__codelineno-40-25" href="#__codelineno-40-25"></a><span class="gu">### Backups</span>
+<a id="__codelineno-40-26" name="__codelineno-40-26" href="#__codelineno-40-26"></a><span class="k">- [ ]</span> Verificar backups automáticos
+<a id="__codelineno-40-27" name="__codelineno-40-27" href="#__codelineno-40-27"></a><span class="k">- [ ]</span> Descargar backup a local
+<a id="__codelineno-40-28" name="__codelineno-40-28" href="#__codelineno-40-28"></a><span class="k">- [ ]</span> Verificar que se puede restaurar (trimestral)
+<a id="__codelineno-40-29" name="__codelineno-40-29" href="#__codelineno-40-29"></a>
+<a id="__codelineno-40-30" name="__codelineno-40-30" href="#__codelineno-40-30"></a><span class="gu">### Rotación de secrets</span>
+<a id="__codelineno-40-31" name="__codelineno-40-31" href="#__codelineno-40-31"></a><span class="k">- [ ]</span> ¿Han pasado 90 días desde última rotación de API keys?
+<a id="__codelineno-40-32" name="__codelineno-40-32" href="#__codelineno-40-32"></a><span class="k">- [ ]</span> ¿Ha pasado 1 año desde rotación de SSH keys?
+<a id="__codelineno-40-33" name="__codelineno-40-33" href="#__codelineno-40-33"></a>
+<a id="__codelineno-40-34" name="__codelineno-40-34" href="#__codelineno-40-34"></a><span class="gu">### Notas</span>
+<a id="__codelineno-40-35" name="__codelineno-40-35" href="#__codelineno-40-35"></a><span class="ge">_Cualquier observación o tarea pendiente_</span>
+</code></pre></div>
+<hr />
+<p><strong>Siguiente:</strong> <a href="../10-checklist-final/">10. Checklist final</a> — Verificación consolidada de todos los controles.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/corbat" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

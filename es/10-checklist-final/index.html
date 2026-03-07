@@ -1,0 +1,2410 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Secure OpenClaw installation guide for VPS - CIS Benchmark, Tailscale Hardening, OWASP Agentic Top 10">
+      
+      
+        <meta name="author" content="CORBAT">
+      
+      
+        <link rel="canonical" href="https://corbat.github.io/corbat-openclaw-hardening/es/10-checklist-final/">
+      
+      
+        <link rel="prev" href="../09-mantenimiento/">
+      
+      
+        <link rel="next" href="../glosario/">
+      
+      
+        
+          <link rel="alternate" href="/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="es">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>10. Checklist final - OpenClaw en VPS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#10-checklist-final-de-seguridad" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../" title="OpenClaw en VPS" class="md-header__button md-logo" aria-label="OpenClaw en VPS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenClaw en VPS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              10. Checklist final
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Seleccionar idioma">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="es" class="md-select__link">
+              Español
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/corbat/corbat-openclaw-hardening" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    corbat-openclaw-hardening
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="OpenClaw en VPS" class="md-nav__button md-logo" aria-label="OpenClaw en VPS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenClaw en VPS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/corbat/corbat-openclaw-hardening" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    corbat-openclaw-hardening
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de instalación
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de instalación
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-preparacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Preparación
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-vps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Contratar VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-seguridad-sistema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Seguridad del sistema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-acceso-privado/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Acceso privado (Tailscale)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-openclaw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Instalar OpenClaw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-llm-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. APIs de LLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-casos-uso/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Casos de uso y herramientas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seguridad avanzada
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Seguridad avanzada
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-seguridad-agente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Seguridad del agente
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-mantenimiento/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Mantenimiento
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Checklist final
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Checklist final
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#instrucciones-de-uso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instrucciones de uso
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#script-de-verificacion-automatica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Script de verificación automática
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checklist-manual-detallado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checklist manual detallado
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Checklist manual detallado">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-sistema-operativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Sistema Operativo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-ssh-hardening-cis-benchmark-52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. SSH Hardening (CIS Benchmark 5.2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-openclaw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. OpenClaw
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-seguridad-openclaw-owasp-aa4aa5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Seguridad OpenClaw (OWASP AA4/AA5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-seguridad-del-agente-owasp-agentic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Seguridad del Agente (OWASP Agentic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-monitoreo-y-mantenimiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Monitoreo y Mantenimiento
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conformidad-con-estandares" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conformidad con estándares
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Conformidad con estándares">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cis-benchmark-ubuntu-2404-l1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CIS Benchmark Ubuntu 24.04 L1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tailscale-security-hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tailscale Security Hardening
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#owasp-agentic-top-10-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OWASP Agentic Top 10 2026
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#firma-de-conformidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firma de conformidad
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referencia
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referencia
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glosario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glosario
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#instrucciones-de-uso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instrucciones de uso
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#script-de-verificacion-automatica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Script de verificación automática
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checklist-manual-detallado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checklist manual detallado
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Checklist manual detallado">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-sistema-operativo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Sistema Operativo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-ssh-hardening-cis-benchmark-52" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. SSH Hardening (CIS Benchmark 5.2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-openclaw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. OpenClaw
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-seguridad-openclaw-owasp-aa4aa5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Seguridad OpenClaw (OWASP AA4/AA5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-seguridad-del-agente-owasp-agentic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Seguridad del Agente (OWASP Agentic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-monitoreo-y-mantenimiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Monitoreo y Mantenimiento
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conformidad-con-estandares" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conformidad con estándares
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Conformidad con estándares">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cis-benchmark-ubuntu-2404-l1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CIS Benchmark Ubuntu 24.04 L1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tailscale-security-hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tailscale Security Hardening
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#owasp-agentic-top-10-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OWASP Agentic Top 10 2026
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#firma-de-conformidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firma de conformidad
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="10-checklist-final-de-seguridad">10. Checklist Final de Seguridad<a class="headerlink" href="#10-checklist-final-de-seguridad" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>TL;DR</strong>: Verificación consolidada de todos los controles de seguridad implementados. Usa este checklist para confirmar que tu instalación cumple con CIS Benchmark, Tailscale Hardening y OWASP Agentic Top 10.</p>
+</blockquote>
+<hr />
+<h2 id="instrucciones-de-uso">Instrucciones de uso<a class="headerlink" href="#instrucciones-de-uso" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Ejecuta cada verificación en orden</li>
+<li>Marca cada control como ✅ (cumple) o ❌ (no cumple)</li>
+<li>No pongas OpenClaw en producción hasta que todos los controles críticos estén en ✅</li>
+<li>Guarda este checklist completado como evidencia de configuración</li>
+</ol>
+<hr />
+<h2 id="script-de-verificacion-automatica">Script de verificación automática<a class="headerlink" href="#script-de-verificacion-automatica" title="Permanent link">&para;</a></h2>
+<p>Ejecuta este script para verificar automáticamente la mayoría de controles:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="ch">#!/bin/bash</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># verificar_seguridad.sh - Verificación completa de seguridad</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;========================================================&quot;</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  VERIFICACIÓN DE SEGURIDAD - OpenClaw VPS&quot;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  Fecha: </span><span class="k">$(</span>date<span class="w"> </span><span class="s1">&#39;+%Y-%m-%d %H:%M:%S&#39;</span><span class="k">)</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  Hostname: </span><span class="k">$(</span>hostname<span class="k">)</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;========================================================&quot;</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nv">PASS</span><span class="o">=</span><span class="m">0</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nv">FAIL</span><span class="o">=</span><span class="m">0</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="nv">WARN</span><span class="o">=</span><span class="m">0</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>check<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="nb">local</span><span class="w"> </span><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">    </span><span class="nb">local</span><span class="w"> </span><span class="nv">result</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">    </span><span class="nb">local</span><span class="w"> </span><span class="nv">critical</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$3</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$result</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ </span><span class="nv">$name</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">        </span><span class="o">((</span>PASS++<span class="o">))</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">    </span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$result</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;⚠️  </span><span class="nv">$name</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">        </span><span class="o">((</span>WARN++<span class="o">))</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">    </span><span class="k">else</span>
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$critical</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">            </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ [CRÍTICO] </span><span class="nv">$name</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">        </span><span class="k">else</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="w">            </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ </span><span class="nv">$name</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="w">        </span><span class="k">fi</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="w">        </span><span class="o">((</span>FAIL++<span class="o">))</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="w">    </span><span class="k">fi</span>
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="o">}</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== 1. SISTEMA OPERATIVO ===&quot;</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a><span class="c1"># Usuario openclaw existe</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a><span class="k">if</span><span class="w"> </span>id<span class="w"> </span>openclaw<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Usuario openclaw existe&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a><span class="k">else</span>
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Usuario openclaw existe&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a><span class="k">fi</span>
+<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>
+<a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a><span class="c1"># Usuario openclaw no es root</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>id<span class="w"> </span>-u<span class="w"> </span>openclaw<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>!<span class="o">=</span><span class="w"> </span><span class="s2">&quot;0&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Usuario openclaw no es root&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a><span class="k">else</span>
+<a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Usuario openclaw no es root&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a><span class="k">fi</span>
+<a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a>
+<a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a><span class="c1"># UFW activo</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53" href="#__codelineno-0-53"></a><span class="k">if</span><span class="w"> </span>sudo<span class="w"> </span>ufw<span class="w"> </span>status<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;Status: active&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-54" name="__codelineno-0-54" href="#__codelineno-0-54"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Firewall UFW activo&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-55" name="__codelineno-0-55" href="#__codelineno-0-55"></a><span class="k">else</span>
+<a id="__codelineno-0-56" name="__codelineno-0-56" href="#__codelineno-0-56"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Firewall UFW activo&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-57" name="__codelineno-0-57" href="#__codelineno-0-57"></a><span class="k">fi</span>
+<a id="__codelineno-0-58" name="__codelineno-0-58" href="#__codelineno-0-58"></a>
+<a id="__codelineno-0-59" name="__codelineno-0-59" href="#__codelineno-0-59"></a><span class="c1"># Fail2ban activo</span>
+<a id="__codelineno-0-60" name="__codelineno-0-60" href="#__codelineno-0-60"></a><span class="k">if</span><span class="w"> </span>systemctl<span class="w"> </span>is-active<span class="w"> </span>fail2ban<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-61" name="__codelineno-0-61" href="#__codelineno-0-61"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Fail2ban activo&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-62" name="__codelineno-0-62" href="#__codelineno-0-62"></a><span class="k">else</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63" href="#__codelineno-0-63"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Fail2ban activo&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64" href="#__codelineno-0-64"></a><span class="k">fi</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65" href="#__codelineno-0-65"></a>
+<a id="__codelineno-0-66" name="__codelineno-0-66" href="#__codelineno-0-66"></a><span class="c1"># Unattended upgrades</span>
+<a id="__codelineno-0-67" name="__codelineno-0-67" href="#__codelineno-0-67"></a><span class="k">if</span><span class="w"> </span>systemctl<span class="w"> </span>is-active<span class="w"> </span>unattended-upgrades<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-68" name="__codelineno-0-68" href="#__codelineno-0-68"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Actualizaciones automáticas&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-69" name="__codelineno-0-69" href="#__codelineno-0-69"></a><span class="k">else</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70" href="#__codelineno-0-70"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Actualizaciones automáticas&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71" href="#__codelineno-0-71"></a><span class="k">fi</span>
+<a id="__codelineno-0-72" name="__codelineno-0-72" href="#__codelineno-0-72"></a>
+<a id="__codelineno-0-73" name="__codelineno-0-73" href="#__codelineno-0-73"></a><span class="c1"># Auditd activo</span>
+<a id="__codelineno-0-74" name="__codelineno-0-74" href="#__codelineno-0-74"></a><span class="k">if</span><span class="w"> </span>systemctl<span class="w"> </span>is-active<span class="w"> </span>auditd<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-75" name="__codelineno-0-75" href="#__codelineno-0-75"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Auditd activo&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-76" name="__codelineno-0-76" href="#__codelineno-0-76"></a><span class="k">else</span>
+<a id="__codelineno-0-77" name="__codelineno-0-77" href="#__codelineno-0-77"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Auditd activo&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-78" name="__codelineno-0-78" href="#__codelineno-0-78"></a><span class="k">fi</span>
+<a id="__codelineno-0-79" name="__codelineno-0-79" href="#__codelineno-0-79"></a>
+<a id="__codelineno-0-80" name="__codelineno-0-80" href="#__codelineno-0-80"></a><span class="c1"># AIDE inicializado</span>
+<a id="__codelineno-0-81" name="__codelineno-0-81" href="#__codelineno-0-81"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span>/var/lib/aide/aide.db<span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82" href="#__codelineno-0-82"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;AIDE inicializado&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-83" name="__codelineno-0-83" href="#__codelineno-0-83"></a><span class="k">else</span>
+<a id="__codelineno-0-84" name="__codelineno-0-84" href="#__codelineno-0-84"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;AIDE inicializado&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-85" name="__codelineno-0-85" href="#__codelineno-0-85"></a><span class="k">fi</span>
+<a id="__codelineno-0-86" name="__codelineno-0-86" href="#__codelineno-0-86"></a>
+<a id="__codelineno-0-87" name="__codelineno-0-87" href="#__codelineno-0-87"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-0-88" name="__codelineno-0-88" href="#__codelineno-0-88"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== 2. SSH HARDENING (CIS Benchmark) ===&quot;</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89" href="#__codelineno-0-89"></a>
+<a id="__codelineno-0-90" name="__codelineno-0-90" href="#__codelineno-0-90"></a><span class="c1"># PasswordAuthentication no</span>
+<a id="__codelineno-0-91" name="__codelineno-0-91" href="#__codelineno-0-91"></a><span class="k">if</span><span class="w"> </span>sudo<span class="w"> </span>sshd<span class="w"> </span>-T<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-qi<span class="w"> </span><span class="s2">&quot;passwordauthentication no&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92" href="#__codelineno-0-92"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: PasswordAuthentication no&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93" href="#__codelineno-0-93"></a><span class="k">else</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94" href="#__codelineno-0-94"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: PasswordAuthentication no&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-95" name="__codelineno-0-95" href="#__codelineno-0-95"></a><span class="k">fi</span>
+<a id="__codelineno-0-96" name="__codelineno-0-96" href="#__codelineno-0-96"></a>
+<a id="__codelineno-0-97" name="__codelineno-0-97" href="#__codelineno-0-97"></a><span class="c1"># PermitRootLogin no</span>
+<a id="__codelineno-0-98" name="__codelineno-0-98" href="#__codelineno-0-98"></a><span class="k">if</span><span class="w"> </span>sudo<span class="w"> </span>sshd<span class="w"> </span>-T<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-qi<span class="w"> </span><span class="s2">&quot;permitrootlogin no&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-99" name="__codelineno-0-99" href="#__codelineno-0-99"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: PermitRootLogin no&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-100" name="__codelineno-0-100" href="#__codelineno-0-100"></a><span class="k">else</span>
+<a id="__codelineno-0-101" name="__codelineno-0-101" href="#__codelineno-0-101"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: PermitRootLogin no&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-102" name="__codelineno-0-102" href="#__codelineno-0-102"></a><span class="k">fi</span>
+<a id="__codelineno-0-103" name="__codelineno-0-103" href="#__codelineno-0-103"></a>
+<a id="__codelineno-0-104" name="__codelineno-0-104" href="#__codelineno-0-104"></a><span class="c1"># AllowUsers configurado</span>
+<a id="__codelineno-0-105" name="__codelineno-0-105" href="#__codelineno-0-105"></a><span class="k">if</span><span class="w"> </span>sudo<span class="w"> </span>sshd<span class="w"> </span>-T<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-qi<span class="w"> </span><span class="s2">&quot;allowusers&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-106" name="__codelineno-0-106" href="#__codelineno-0-106"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: AllowUsers configurado&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-107" name="__codelineno-0-107" href="#__codelineno-0-107"></a><span class="k">else</span>
+<a id="__codelineno-0-108" name="__codelineno-0-108" href="#__codelineno-0-108"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: AllowUsers configurado&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span>
+<a id="__codelineno-0-109" name="__codelineno-0-109" href="#__codelineno-0-109"></a><span class="k">fi</span>
+<a id="__codelineno-0-110" name="__codelineno-0-110" href="#__codelineno-0-110"></a>
+<a id="__codelineno-0-111" name="__codelineno-0-111" href="#__codelineno-0-111"></a><span class="c1"># MaxAuthTries &lt;= 4</span>
+<a id="__codelineno-0-112" name="__codelineno-0-112" href="#__codelineno-0-112"></a><span class="nv">MAX_AUTH</span><span class="o">=</span><span class="k">$(</span>sudo<span class="w"> </span>sshd<span class="w"> </span>-T<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>maxauthtries<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $2}&#39;</span><span class="k">)</span>
+<a id="__codelineno-0-113" name="__codelineno-0-113" href="#__codelineno-0-113"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MAX_AUTH</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$MAX_AUTH</span><span class="s2">&quot;</span><span class="w"> </span>-le<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-114" name="__codelineno-0-114" href="#__codelineno-0-114"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: MaxAuthTries &lt;= 4&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-115" name="__codelineno-0-115" href="#__codelineno-0-115"></a><span class="k">else</span>
+<a id="__codelineno-0-116" name="__codelineno-0-116" href="#__codelineno-0-116"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: MaxAuthTries &lt;= 4&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span>
+<a id="__codelineno-0-117" name="__codelineno-0-117" href="#__codelineno-0-117"></a><span class="k">fi</span>
+<a id="__codelineno-0-118" name="__codelineno-0-118" href="#__codelineno-0-118"></a>
+<a id="__codelineno-0-119" name="__codelineno-0-119" href="#__codelineno-0-119"></a><span class="c1"># X11Forwarding no</span>
+<a id="__codelineno-0-120" name="__codelineno-0-120" href="#__codelineno-0-120"></a><span class="k">if</span><span class="w"> </span>sudo<span class="w"> </span>sshd<span class="w"> </span>-T<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-qi<span class="w"> </span><span class="s2">&quot;x11forwarding no&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-121" name="__codelineno-0-121" href="#__codelineno-0-121"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: X11Forwarding no&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-122" name="__codelineno-0-122" href="#__codelineno-0-122"></a><span class="k">else</span>
+<a id="__codelineno-0-123" name="__codelineno-0-123" href="#__codelineno-0-123"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: X11Forwarding no&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span>
+<a id="__codelineno-0-124" name="__codelineno-0-124" href="#__codelineno-0-124"></a><span class="k">fi</span>
+<a id="__codelineno-0-125" name="__codelineno-0-125" href="#__codelineno-0-125"></a>
+<a id="__codelineno-0-126" name="__codelineno-0-126" href="#__codelineno-0-126"></a><span class="c1"># LogLevel VERBOSE</span>
+<a id="__codelineno-0-127" name="__codelineno-0-127" href="#__codelineno-0-127"></a><span class="k">if</span><span class="w"> </span>sudo<span class="w"> </span>sshd<span class="w"> </span>-T<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-qi<span class="w"> </span><span class="s2">&quot;loglevel verbose&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-128" name="__codelineno-0-128" href="#__codelineno-0-128"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: LogLevel VERBOSE&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-129" name="__codelineno-0-129" href="#__codelineno-0-129"></a><span class="k">else</span>
+<a id="__codelineno-0-130" name="__codelineno-0-130" href="#__codelineno-0-130"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: LogLevel VERBOSE&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-131" name="__codelineno-0-131" href="#__codelineno-0-131"></a><span class="k">fi</span>
+<a id="__codelineno-0-132" name="__codelineno-0-132" href="#__codelineno-0-132"></a>
+<a id="__codelineno-0-133" name="__codelineno-0-133" href="#__codelineno-0-133"></a><span class="c1"># Permisos sshd_config</span>
+<a id="__codelineno-0-134" name="__codelineno-0-134" href="#__codelineno-0-134"></a><span class="nv">SSHD_PERMS</span><span class="o">=</span><span class="k">$(</span>stat<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;%a&quot;</span><span class="w"> </span>/etc/ssh/sshd_config<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span>
+<a id="__codelineno-0-135" name="__codelineno-0-135" href="#__codelineno-0-135"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SSHD_PERMS</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;600&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-136" name="__codelineno-0-136" href="#__codelineno-0-136"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: sshd_config permisos 600&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-137" name="__codelineno-0-137" href="#__codelineno-0-137"></a><span class="k">else</span>
+<a id="__codelineno-0-138" name="__codelineno-0-138" href="#__codelineno-0-138"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH: sshd_config permisos 600&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span>
+<a id="__codelineno-0-139" name="__codelineno-0-139" href="#__codelineno-0-139"></a><span class="k">fi</span>
+<a id="__codelineno-0-140" name="__codelineno-0-140" href="#__codelineno-0-140"></a>
+<a id="__codelineno-0-141" name="__codelineno-0-141" href="#__codelineno-0-141"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-0-142" name="__codelineno-0-142" href="#__codelineno-0-142"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== 3. TAILSCALE ===&quot;</span>
+<a id="__codelineno-0-143" name="__codelineno-0-143" href="#__codelineno-0-143"></a>
+<a id="__codelineno-0-144" name="__codelineno-0-144" href="#__codelineno-0-144"></a><span class="c1"># Tailscale instalado y activo</span>
+<a id="__codelineno-0-145" name="__codelineno-0-145" href="#__codelineno-0-145"></a><span class="k">if</span><span class="w"> </span>systemctl<span class="w"> </span>is-active<span class="w"> </span>tailscaled<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-146" name="__codelineno-0-146" href="#__codelineno-0-146"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Tailscale activo&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-147" name="__codelineno-0-147" href="#__codelineno-0-147"></a><span class="k">else</span>
+<a id="__codelineno-0-148" name="__codelineno-0-148" href="#__codelineno-0-148"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Tailscale activo&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-149" name="__codelineno-0-149" href="#__codelineno-0-149"></a><span class="k">fi</span>
+<a id="__codelineno-0-150" name="__codelineno-0-150" href="#__codelineno-0-150"></a>
+<a id="__codelineno-0-151" name="__codelineno-0-151" href="#__codelineno-0-151"></a><span class="c1"># SSH escuchando solo en Tailscale</span>
+<a id="__codelineno-0-152" name="__codelineno-0-152" href="#__codelineno-0-152"></a><span class="nv">SSH_LISTEN</span><span class="o">=</span><span class="k">$(</span>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>sshd<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
+<a id="__codelineno-0-153" name="__codelineno-0-153" href="#__codelineno-0-153"></a><span class="k">if</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SSH_LISTEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;100\.&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-154" name="__codelineno-0-154" href="#__codelineno-0-154"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH solo en interfaz Tailscale&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-155" name="__codelineno-0-155" href="#__codelineno-0-155"></a><span class="k">elif</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SSH_LISTEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;0\.0\.0\.0&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-156" name="__codelineno-0-156" href="#__codelineno-0-156"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH solo en interfaz Tailscale&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-157" name="__codelineno-0-157" href="#__codelineno-0-157"></a><span class="k">else</span>
+<a id="__codelineno-0-158" name="__codelineno-0-158" href="#__codelineno-0-158"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;SSH solo en interfaz Tailscale&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-159" name="__codelineno-0-159" href="#__codelineno-0-159"></a><span class="k">fi</span>
+<a id="__codelineno-0-160" name="__codelineno-0-160" href="#__codelineno-0-160"></a>
+<a id="__codelineno-0-161" name="__codelineno-0-161" href="#__codelineno-0-161"></a><span class="c1"># Puerto 22 cerrado en UFW (no debe haber regla para SSH)</span>
+<a id="__codelineno-0-162" name="__codelineno-0-162" href="#__codelineno-0-162"></a><span class="k">if</span><span class="w"> </span>!<span class="w"> </span>sudo<span class="w"> </span>ufw<span class="w"> </span>status<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;22/tcp.*ALLOW.*Anywhere&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;100\.&quot;</span><span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-163" name="__codelineno-0-163" href="#__codelineno-0-163"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Puerto 22 público cerrado&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-164" name="__codelineno-0-164" href="#__codelineno-0-164"></a><span class="k">else</span>
+<a id="__codelineno-0-165" name="__codelineno-0-165" href="#__codelineno-0-165"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Puerto 22 público cerrado&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-166" name="__codelineno-0-166" href="#__codelineno-0-166"></a><span class="k">fi</span>
+<a id="__codelineno-0-167" name="__codelineno-0-167" href="#__codelineno-0-167"></a>
+<a id="__codelineno-0-168" name="__codelineno-0-168" href="#__codelineno-0-168"></a><span class="c1"># Tag vps configurado</span>
+<a id="__codelineno-0-169" name="__codelineno-0-169" href="#__codelineno-0-169"></a><span class="k">if</span><span class="w"> </span>tailscale<span class="w"> </span>status<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;tagged&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-170" name="__codelineno-0-170" href="#__codelineno-0-170"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Tag &#39;vps&#39; configurado&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-171" name="__codelineno-0-171" href="#__codelineno-0-171"></a><span class="k">else</span>
+<a id="__codelineno-0-172" name="__codelineno-0-172" href="#__codelineno-0-172"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Tag &#39;vps&#39; configurado&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-173" name="__codelineno-0-173" href="#__codelineno-0-173"></a><span class="k">fi</span>
+<a id="__codelineno-0-174" name="__codelineno-0-174" href="#__codelineno-0-174"></a>
+<a id="__codelineno-0-175" name="__codelineno-0-175" href="#__codelineno-0-175"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-0-176" name="__codelineno-0-176" href="#__codelineno-0-176"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== 4. OPENCLAW ===&quot;</span>
+<a id="__codelineno-0-177" name="__codelineno-0-177" href="#__codelineno-0-177"></a>
+<a id="__codelineno-0-178" name="__codelineno-0-178" href="#__codelineno-0-178"></a><span class="c1"># Servicio activo</span>
+<a id="__codelineno-0-179" name="__codelineno-0-179" href="#__codelineno-0-179"></a><span class="k">if</span><span class="w"> </span>systemctl<span class="w"> </span>is-active<span class="w"> </span>openclaw<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-180" name="__codelineno-0-180" href="#__codelineno-0-180"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Servicio OpenClaw activo&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-181" name="__codelineno-0-181" href="#__codelineno-0-181"></a><span class="k">else</span>
+<a id="__codelineno-0-182" name="__codelineno-0-182" href="#__codelineno-0-182"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Servicio OpenClaw activo&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-183" name="__codelineno-0-183" href="#__codelineno-0-183"></a><span class="k">fi</span>
+<a id="__codelineno-0-184" name="__codelineno-0-184" href="#__codelineno-0-184"></a>
+<a id="__codelineno-0-185" name="__codelineno-0-185" href="#__codelineno-0-185"></a><span class="c1"># Escuchando en localhost (no 0.0.0.0)</span>
+<a id="__codelineno-0-186" name="__codelineno-0-186" href="#__codelineno-0-186"></a><span class="nv">OPENCLAW_LISTEN</span><span class="o">=</span><span class="k">$(</span>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">18789</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $4}&#39;</span><span class="k">)</span>
+<a id="__codelineno-0-187" name="__codelineno-0-187" href="#__codelineno-0-187"></a><span class="k">if</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$OPENCLAW_LISTEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;127\.0\.0\.1&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-188" name="__codelineno-0-188" href="#__codelineno-0-188"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;OpenClaw en localhost (127.0.0.1:18789)&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-189" name="__codelineno-0-189" href="#__codelineno-0-189"></a><span class="k">elif</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$OPENCLAW_LISTEN</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;0\.0\.0\.0&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-190" name="__codelineno-0-190" href="#__codelineno-0-190"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;OpenClaw en localhost (127.0.0.1:18789)&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-191" name="__codelineno-0-191" href="#__codelineno-0-191"></a><span class="k">else</span>
+<a id="__codelineno-0-192" name="__codelineno-0-192" href="#__codelineno-0-192"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;OpenClaw en localhost (127.0.0.1:18789)&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-193" name="__codelineno-0-193" href="#__codelineno-0-193"></a><span class="k">fi</span>
+<a id="__codelineno-0-194" name="__codelineno-0-194" href="#__codelineno-0-194"></a>
+<a id="__codelineno-0-195" name="__codelineno-0-195" href="#__codelineno-0-195"></a><span class="c1"># .env con permisos 600</span>
+<a id="__codelineno-0-196" name="__codelineno-0-196" href="#__codelineno-0-196"></a><span class="nv">ENV_PERMS</span><span class="o">=</span><span class="k">$(</span>stat<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;%a&quot;</span><span class="w"> </span>/home/openclaw/openclaw/.env<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span>stat<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;%a&quot;</span><span class="w"> </span>~/openclaw/.env<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span>
+<a id="__codelineno-0-197" name="__codelineno-0-197" href="#__codelineno-0-197"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$ENV_PERMS</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;600&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-198" name="__codelineno-0-198" href="#__codelineno-0-198"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;.env permisos 600&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-199" name="__codelineno-0-199" href="#__codelineno-0-199"></a><span class="k">else</span>
+<a id="__codelineno-0-200" name="__codelineno-0-200" href="#__codelineno-0-200"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;.env permisos 600&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-201" name="__codelineno-0-201" href="#__codelineno-0-201"></a><span class="k">fi</span>
+<a id="__codelineno-0-202" name="__codelineno-0-202" href="#__codelineno-0-202"></a>
+<a id="__codelineno-0-203" name="__codelineno-0-203" href="#__codelineno-0-203"></a><span class="c1"># Puntuación systemd &lt; 5</span>
+<a id="__codelineno-0-204" name="__codelineno-0-204" href="#__codelineno-0-204"></a><span class="nv">SECURITY_SCORE</span><span class="o">=</span><span class="k">$(</span>systemd-analyze<span class="w"> </span>security<span class="w"> </span>openclaw.service<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Overall&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-oE<span class="w"> </span><span class="s2">&quot;[0-9]+\.[0-9]+&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-1<span class="k">)</span>
+<a id="__codelineno-0-205" name="__codelineno-0-205" href="#__codelineno-0-205"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SECURITY_SCORE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-206" name="__codelineno-0-206" href="#__codelineno-0-206"></a><span class="w">    </span><span class="c1"># Extraer parte entera para comparación (sin dependencia de bc)</span>
+<a id="__codelineno-0-207" name="__codelineno-0-207" href="#__codelineno-0-207"></a><span class="w">    </span><span class="nv">SCORE_INT</span><span class="o">=</span><span class="si">${</span><span class="nv">SECURITY_SCORE</span><span class="p">%%.*</span><span class="si">}</span>
+<a id="__codelineno-0-208" name="__codelineno-0-208" href="#__codelineno-0-208"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SCORE_INT</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SCORE_INT</span><span class="s2">&quot;</span><span class="w"> </span>-lt<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-209" name="__codelineno-0-209" href="#__codelineno-0-209"></a><span class="w">        </span>check<span class="w"> </span><span class="s2">&quot;Systemd hardening (score &lt; 5.0): </span><span class="nv">$SECURITY_SCORE</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-210" name="__codelineno-0-210" href="#__codelineno-0-210"></a><span class="w">    </span><span class="k">elif</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SCORE_INT</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SCORE_INT</span><span class="s2">&quot;</span><span class="w"> </span>-ge<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-211" name="__codelineno-0-211" href="#__codelineno-0-211"></a><span class="w">        </span>check<span class="w"> </span><span class="s2">&quot;Systemd hardening (score &lt; 5.0): </span><span class="nv">$SECURITY_SCORE</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span>
+<a id="__codelineno-0-212" name="__codelineno-0-212" href="#__codelineno-0-212"></a><span class="w">    </span><span class="k">else</span>
+<a id="__codelineno-0-213" name="__codelineno-0-213" href="#__codelineno-0-213"></a><span class="w">        </span>check<span class="w"> </span><span class="s2">&quot;Systemd hardening (score parse error)&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-214" name="__codelineno-0-214" href="#__codelineno-0-214"></a><span class="w">    </span><span class="k">fi</span>
+<a id="__codelineno-0-215" name="__codelineno-0-215" href="#__codelineno-0-215"></a><span class="k">else</span>
+<a id="__codelineno-0-216" name="__codelineno-0-216" href="#__codelineno-0-216"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Systemd hardening&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-217" name="__codelineno-0-217" href="#__codelineno-0-217"></a><span class="k">fi</span>
+<a id="__codelineno-0-218" name="__codelineno-0-218" href="#__codelineno-0-218"></a>
+<a id="__codelineno-0-219" name="__codelineno-0-219" href="#__codelineno-0-219"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-0-220" name="__codelineno-0-220" href="#__codelineno-0-220"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== 5. CONFIGURACIÓN DE OPENCLAW ===&quot;</span>
+<a id="__codelineno-0-221" name="__codelineno-0-221" href="#__codelineno-0-221"></a>
+<a id="__codelineno-0-222" name="__codelineno-0-222" href="#__codelineno-0-222"></a><span class="nv">CONFIG_FILE</span><span class="o">=</span><span class="s2">&quot;/home/openclaw/.openclaw/openclaw.json&quot;</span>
+<a id="__codelineno-0-223" name="__codelineno-0-223" href="#__codelineno-0-223"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG_FILE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-224" name="__codelineno-0-224" href="#__codelineno-0-224"></a><span class="w">    </span><span class="nv">CONFIG_FILE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.openclaw/openclaw.json&quot;</span>
+<a id="__codelineno-0-225" name="__codelineno-0-225" href="#__codelineno-0-225"></a><span class="k">fi</span>
+<a id="__codelineno-0-226" name="__codelineno-0-226" href="#__codelineno-0-226"></a>
+<a id="__codelineno-0-227" name="__codelineno-0-227" href="#__codelineno-0-227"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG_FILE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-228" name="__codelineno-0-228" href="#__codelineno-0-228"></a><span class="w">    </span><span class="c1"># Sandbox mode activo</span>
+<a id="__codelineno-0-229" name="__codelineno-0-229" href="#__codelineno-0-229"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;&quot;sandbox&quot;&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG_FILE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>grep<span class="w"> </span>-A2<span class="w"> </span><span class="s1">&#39;&quot;sandbox&quot;&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG_FILE</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;&quot;mode&quot;:\s*&quot;all&quot;&#39;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-230" name="__codelineno-0-230" href="#__codelineno-0-230"></a><span class="w">        </span>check<span class="w"> </span><span class="s2">&quot;Sandbox mode activo&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-231" name="__codelineno-0-231" href="#__codelineno-0-231"></a><span class="w">    </span><span class="k">else</span>
+<a id="__codelineno-0-232" name="__codelineno-0-232" href="#__codelineno-0-232"></a><span class="w">        </span>check<span class="w"> </span><span class="s2">&quot;Sandbox mode activo&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-233" name="__codelineno-0-233" href="#__codelineno-0-233"></a><span class="w">    </span><span class="k">fi</span>
+<a id="__codelineno-0-234" name="__codelineno-0-234" href="#__codelineno-0-234"></a>
+<a id="__codelineno-0-235" name="__codelineno-0-235" href="#__codelineno-0-235"></a><span class="w">    </span><span class="c1"># dmPolicy configurado</span>
+<a id="__codelineno-0-236" name="__codelineno-0-236" href="#__codelineno-0-236"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;&quot;dmPolicy&quot;:\s*&quot;pairing&quot;&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG_FILE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;&quot;dmPolicy&quot;:\s*&quot;closed&quot;&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG_FILE</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-237" name="__codelineno-0-237" href="#__codelineno-0-237"></a><span class="w">        </span>check<span class="w"> </span><span class="s2">&quot;dmPolicy configurado (pairing/closed)&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-238" name="__codelineno-0-238" href="#__codelineno-0-238"></a><span class="w">    </span><span class="k">elif</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;&quot;dmPolicy&quot;:\s*&quot;open&quot;&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG_FILE</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-239" name="__codelineno-0-239" href="#__codelineno-0-239"></a><span class="w">        </span>check<span class="w"> </span><span class="s2">&quot;dmPolicy configurado (pairing/closed)&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-240" name="__codelineno-0-240" href="#__codelineno-0-240"></a><span class="w">    </span><span class="k">else</span>
+<a id="__codelineno-0-241" name="__codelineno-0-241" href="#__codelineno-0-241"></a><span class="w">        </span>check<span class="w"> </span><span class="s2">&quot;dmPolicy configurado (pairing/closed)&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-242" name="__codelineno-0-242" href="#__codelineno-0-242"></a><span class="w">    </span><span class="k">fi</span>
+<a id="__codelineno-0-243" name="__codelineno-0-243" href="#__codelineno-0-243"></a>
+<a id="__codelineno-0-244" name="__codelineno-0-244" href="#__codelineno-0-244"></a><span class="w">    </span><span class="c1"># Gateway en localhost</span>
+<a id="__codelineno-0-245" name="__codelineno-0-245" href="#__codelineno-0-245"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;&quot;host&quot;:\s*&quot;127.0.0.1&quot;&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG_FILE</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-246" name="__codelineno-0-246" href="#__codelineno-0-246"></a><span class="w">        </span>check<span class="w"> </span><span class="s2">&quot;Gateway host = 127.0.0.1&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-247" name="__codelineno-0-247" href="#__codelineno-0-247"></a><span class="w">    </span><span class="k">else</span>
+<a id="__codelineno-0-248" name="__codelineno-0-248" href="#__codelineno-0-248"></a><span class="w">        </span>check<span class="w"> </span><span class="s2">&quot;Gateway host = 127.0.0.1&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span><span class="w"> </span><span class="s2">&quot;critical&quot;</span>
+<a id="__codelineno-0-249" name="__codelineno-0-249" href="#__codelineno-0-249"></a><span class="w">    </span><span class="k">fi</span>
+<a id="__codelineno-0-250" name="__codelineno-0-250" href="#__codelineno-0-250"></a>
+<a id="__codelineno-0-251" name="__codelineno-0-251" href="#__codelineno-0-251"></a><span class="w">    </span><span class="c1"># Gateway TLS pairing</span>
+<a id="__codelineno-0-252" name="__codelineno-0-252" href="#__codelineno-0-252"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;&quot;pairing&quot;:\s*true&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$CONFIG_FILE</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-253" name="__codelineno-0-253" href="#__codelineno-0-253"></a><span class="w">        </span>check<span class="w"> </span><span class="s2">&quot;Gateway TLS pairing habilitado&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-254" name="__codelineno-0-254" href="#__codelineno-0-254"></a><span class="w">    </span><span class="k">else</span>
+<a id="__codelineno-0-255" name="__codelineno-0-255" href="#__codelineno-0-255"></a><span class="w">        </span>check<span class="w"> </span><span class="s2">&quot;Gateway TLS pairing habilitado&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-256" name="__codelineno-0-256" href="#__codelineno-0-256"></a><span class="w">    </span><span class="k">fi</span>
+<a id="__codelineno-0-257" name="__codelineno-0-257" href="#__codelineno-0-257"></a><span class="k">else</span>
+<a id="__codelineno-0-258" name="__codelineno-0-258" href="#__codelineno-0-258"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Archivo openclaw.json existe&quot;</span><span class="w"> </span><span class="s2">&quot;fail&quot;</span>
+<a id="__codelineno-0-259" name="__codelineno-0-259" href="#__codelineno-0-259"></a><span class="k">fi</span>
+<a id="__codelineno-0-260" name="__codelineno-0-260" href="#__codelineno-0-260"></a>
+<a id="__codelineno-0-261" name="__codelineno-0-261" href="#__codelineno-0-261"></a><span class="c1"># Verificar TOOLS.md (allowlist de herramientas)</span>
+<a id="__codelineno-0-262" name="__codelineno-0-262" href="#__codelineno-0-262"></a><span class="nv">TOOLS_FILE</span><span class="o">=</span><span class="s2">&quot;/home/openclaw/.openclaw/workspace/TOOLS.md&quot;</span>
+<a id="__codelineno-0-263" name="__codelineno-0-263" href="#__codelineno-0-263"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TOOLS_FILE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-264" name="__codelineno-0-264" href="#__codelineno-0-264"></a><span class="w">    </span><span class="nv">TOOLS_FILE</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOME</span><span class="s2">/.openclaw/workspace/TOOLS.md&quot;</span>
+<a id="__codelineno-0-265" name="__codelineno-0-265" href="#__codelineno-0-265"></a><span class="k">fi</span>
+<a id="__codelineno-0-266" name="__codelineno-0-266" href="#__codelineno-0-266"></a>
+<a id="__codelineno-0-267" name="__codelineno-0-267" href="#__codelineno-0-267"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TOOLS_FILE</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-268" name="__codelineno-0-268" href="#__codelineno-0-268"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;TOOLS.md (allowlist) existe&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-269" name="__codelineno-0-269" href="#__codelineno-0-269"></a><span class="k">else</span>
+<a id="__codelineno-0-270" name="__codelineno-0-270" href="#__codelineno-0-270"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;TOOLS.md (allowlist) existe&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-271" name="__codelineno-0-271" href="#__codelineno-0-271"></a><span class="k">fi</span>
+<a id="__codelineno-0-272" name="__codelineno-0-272" href="#__codelineno-0-272"></a>
+<a id="__codelineno-0-273" name="__codelineno-0-273" href="#__codelineno-0-273"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-0-274" name="__codelineno-0-274" href="#__codelineno-0-274"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== 6. MONITOREO Y AUDITORÍA ===&quot;</span>
+<a id="__codelineno-0-275" name="__codelineno-0-275" href="#__codelineno-0-275"></a>
+<a id="__codelineno-0-276" name="__codelineno-0-276" href="#__codelineno-0-276"></a><span class="c1"># Reglas de audit para openclaw</span>
+<a id="__codelineno-0-277" name="__codelineno-0-277" href="#__codelineno-0-277"></a><span class="k">if</span><span class="w"> </span>sudo<span class="w"> </span>auditctl<span class="w"> </span>-l<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;openclaw&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-278" name="__codelineno-0-278" href="#__codelineno-0-278"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Reglas de auditoría configuradas&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-279" name="__codelineno-0-279" href="#__codelineno-0-279"></a><span class="k">else</span>
+<a id="__codelineno-0-280" name="__codelineno-0-280" href="#__codelineno-0-280"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Reglas de auditoría configuradas&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-281" name="__codelineno-0-281" href="#__codelineno-0-281"></a><span class="k">fi</span>
+<a id="__codelineno-0-282" name="__codelineno-0-282" href="#__codelineno-0-282"></a>
+<a id="__codelineno-0-283" name="__codelineno-0-283" href="#__codelineno-0-283"></a><span class="c1"># Script de monitoreo existe</span>
+<a id="__codelineno-0-284" name="__codelineno-0-284" href="#__codelineno-0-284"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-x<span class="w"> </span>/home/openclaw/openclaw/scripts/monitor_behavior.sh<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-x<span class="w"> </span>~/openclaw/scripts/monitor_behavior.sh<span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-285" name="__codelineno-0-285" href="#__codelineno-0-285"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Script de monitoreo existe&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-286" name="__codelineno-0-286" href="#__codelineno-0-286"></a><span class="k">else</span>
+<a id="__codelineno-0-287" name="__codelineno-0-287" href="#__codelineno-0-287"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Script de monitoreo existe&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-288" name="__codelineno-0-288" href="#__codelineno-0-288"></a><span class="k">fi</span>
+<a id="__codelineno-0-289" name="__codelineno-0-289" href="#__codelineno-0-289"></a>
+<a id="__codelineno-0-290" name="__codelineno-0-290" href="#__codelineno-0-290"></a><span class="c1"># Backup script existe</span>
+<a id="__codelineno-0-291" name="__codelineno-0-291" href="#__codelineno-0-291"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-x<span class="w"> </span>/home/openclaw/openclaw/scripts/backup.sh<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-x<span class="w"> </span>~/openclaw/scripts/backup.sh<span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-292" name="__codelineno-0-292" href="#__codelineno-0-292"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Script de backup existe&quot;</span><span class="w"> </span><span class="s2">&quot;pass&quot;</span>
+<a id="__codelineno-0-293" name="__codelineno-0-293" href="#__codelineno-0-293"></a><span class="k">else</span>
+<a id="__codelineno-0-294" name="__codelineno-0-294" href="#__codelineno-0-294"></a><span class="w">    </span>check<span class="w"> </span><span class="s2">&quot;Script de backup existe&quot;</span><span class="w"> </span><span class="s2">&quot;warn&quot;</span>
+<a id="__codelineno-0-295" name="__codelineno-0-295" href="#__codelineno-0-295"></a><span class="k">fi</span>
+<a id="__codelineno-0-296" name="__codelineno-0-296" href="#__codelineno-0-296"></a>
+<a id="__codelineno-0-297" name="__codelineno-0-297" href="#__codelineno-0-297"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-0-298" name="__codelineno-0-298" href="#__codelineno-0-298"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;========================================================&quot;</span>
+<a id="__codelineno-0-299" name="__codelineno-0-299" href="#__codelineno-0-299"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  RESUMEN&quot;</span>
+<a id="__codelineno-0-300" name="__codelineno-0-300" href="#__codelineno-0-300"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;========================================================&quot;</span>
+<a id="__codelineno-0-301" name="__codelineno-0-301" href="#__codelineno-0-301"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  ✅ Pasados: </span><span class="nv">$PASS</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-302" name="__codelineno-0-302" href="#__codelineno-0-302"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  ⚠️  Advertencias: </span><span class="nv">$WARN</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-303" name="__codelineno-0-303" href="#__codelineno-0-303"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  ❌ Fallidos: </span><span class="nv">$FAIL</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-304" name="__codelineno-0-304" href="#__codelineno-0-304"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-0-305" name="__codelineno-0-305" href="#__codelineno-0-305"></a>
+<a id="__codelineno-0-306" name="__codelineno-0-306" href="#__codelineno-0-306"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$FAIL</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-0-307" name="__codelineno-0-307" href="#__codelineno-0-307"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  🎉 Todos los controles críticos pasados&quot;</span>
+<a id="__codelineno-0-308" name="__codelineno-0-308" href="#__codelineno-0-308"></a><span class="w">    </span><span class="nb">exit</span><span class="w"> </span><span class="m">0</span>
+<a id="__codelineno-0-309" name="__codelineno-0-309" href="#__codelineno-0-309"></a><span class="k">else</span>
+<a id="__codelineno-0-310" name="__codelineno-0-310" href="#__codelineno-0-310"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  ⚠️  Hay controles fallidos que deben corregirse&quot;</span>
+<a id="__codelineno-0-311" name="__codelineno-0-311" href="#__codelineno-0-311"></a><span class="w">    </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
+<a id="__codelineno-0-312" name="__codelineno-0-312" href="#__codelineno-0-312"></a><span class="k">fi</span>
+</code></pre></div>
+<p>Guarda y ejecuta:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>nano<span class="w"> </span>~/openclaw/scripts/verificar_seguridad.sh
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>chmod<span class="w"> </span>+x<span class="w"> </span>~/openclaw/scripts/verificar_seguridad.sh
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>~/openclaw/scripts/verificar_seguridad.sh
+</code></pre></div>
+<hr />
+<h2 id="checklist-manual-detallado">Checklist manual detallado<a class="headerlink" href="#checklist-manual-detallado" title="Permanent link">&para;</a></h2>
+<h3 id="1-sistema-operativo">1. Sistema Operativo<a class="headerlink" href="#1-sistema-operativo" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Control</th>
+<th>Verificación</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.1</td>
+<td>Usuario <code>openclaw</code> creado</td>
+<td><code>id openclaw</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>1.2</td>
+<td>Usuario no es root</td>
+<td><code>id -u openclaw</code> ≠ 0</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>1.3</td>
+<td>Usuario tiene sudo</td>
+<td><code>groups openclaw</code> incluye sudo</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>1.4</td>
+<td>UFW activo</td>
+<td><code>sudo ufw status</code> = active</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>1.5</td>
+<td>UFW default deny incoming</td>
+<td><code>sudo ufw status verbose</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>1.6</td>
+<td>Fail2ban activo</td>
+<td><code>systemctl is-active fail2ban</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>1.7</td>
+<td>Fail2ban protegiendo SSH</td>
+<td><code>sudo fail2ban-client status sshd</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>1.8</td>
+<td>Actualizaciones automáticas</td>
+<td><code>systemctl is-active unattended-upgrades</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>1.9</td>
+<td>Auditd activo</td>
+<td><code>systemctl is-active auditd</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>1.10</td>
+<td>Reglas audit para OpenClaw</td>
+<td><code>sudo auditctl -l \| grep openclaw</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>1.11</td>
+<td>AIDE inicializado</td>
+<td><code>ls /var/lib/aide/aide.db</code></td>
+<td>⬜</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-ssh-hardening-cis-benchmark-52">2. SSH Hardening (CIS Benchmark 5.2)<a class="headerlink" href="#2-ssh-hardening-cis-benchmark-52" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Control</th>
+<th>Comando de verificación</th>
+<th>Valor esperado</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.1</td>
+<td>PasswordAuthentication</td>
+<td><code>sudo sshd -T \| grep passwordauthentication</code></td>
+<td>no</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td>PermitRootLogin</td>
+<td><code>sudo sshd -T \| grep permitrootlogin</code></td>
+<td>no</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.3</td>
+<td>PermitEmptyPasswords</td>
+<td><code>sudo sshd -T \| grep permitemptypasswords</code></td>
+<td>no</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.4</td>
+<td>MaxAuthTries</td>
+<td><code>sudo sshd -T \| grep maxauthtries</code></td>
+<td>≤ 4</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.5</td>
+<td>X11Forwarding</td>
+<td><code>sudo sshd -T \| grep x11forwarding</code></td>
+<td>no</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.6</td>
+<td>AllowTcpForwarding</td>
+<td><code>sudo sshd -T \| grep allowtcpforwarding</code></td>
+<td>local</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.7</td>
+<td>LogLevel</td>
+<td><code>sudo sshd -T \| grep loglevel</code></td>
+<td>VERBOSE</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.8</td>
+<td>ClientAliveInterval</td>
+<td><code>sudo sshd -T \| grep clientaliveinterval</code></td>
+<td>&gt; 0</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.9</td>
+<td>LoginGraceTime</td>
+<td><code>sudo sshd -T \| grep logingracetime</code></td>
+<td>≤ 60</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.10</td>
+<td>AllowUsers</td>
+<td><code>sudo sshd -T \| grep allowusers</code></td>
+<td>openclaw</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.11</td>
+<td>Banner</td>
+<td><code>sudo sshd -T \| grep banner</code></td>
+<td>/etc/issue.net</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.12</td>
+<td>Ciphers seguros</td>
+<td><code>sudo sshd -T \| grep ciphers</code></td>
+<td>Sin arcfour, 3des</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.13</td>
+<td>KexAlgorithms post-cuántico</td>
+<td><code>sudo sshd -T \| grep kexalgorithms</code></td>
+<td>Incluye sntrup761</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.14</td>
+<td>Permisos sshd_config</td>
+<td><code>stat -c %a /etc/ssh/sshd_config</code></td>
+<td>600</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>2.15</td>
+<td>Propietario sshd_config</td>
+<td><code>stat -c %U:%G /etc/ssh/sshd_config</code></td>
+<td>root:root</td>
+<td>⬜</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-tailscale">3. Tailscale<a class="headerlink" href="#3-tailscale" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Control</th>
+<th>Verificación</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.1</td>
+<td>Tailscale instalado</td>
+<td><code>tailscale version</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>3.2</td>
+<td>Tailscaled activo</td>
+<td><code>systemctl is-active tailscaled</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>3.3</td>
+<td>Conectado a Tailnet</td>
+<td><code>tailscale status</code> muestra dispositivos</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>3.4</td>
+<td>Tag 'vps' asignado</td>
+<td><code>tailscale status</code> muestra tagged</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>3.5</td>
+<td>ACLs configuradas (no permit-all)</td>
+<td>Verificar en panel Tailscale</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>3.6</td>
+<td>SSH escucha solo en IP Tailscale</td>
+<td><code>ss -tlnp \| grep sshd</code> = <TU_TAILSCALE_IP></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>3.7</td>
+<td>Puerto 22 público cerrado</td>
+<td><code>ssh user@IP_PUBLICA</code> falla</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>3.8</td>
+<td>Acceso por Tailscale funciona</td>
+<td><code>ssh user@IP_TAILSCALE</code> funciona</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>3.9</td>
+<td>(Opcional) Tailnet Lock activo</td>
+<td><code>tailscale lock status</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>3.10</td>
+<td>(Opcional) Webhooks configurados</td>
+<td>Verificar en panel Tailscale</td>
+<td>⬜</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-openclaw">4. OpenClaw<a class="headerlink" href="#4-openclaw" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Control</th>
+<th>Verificación</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.1</td>
+<td>Directorio estructura correcta</td>
+<td><code>ls ~/.openclaw/</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>4.2</td>
+<td>openclaw.json existe</td>
+<td><code>ls ~/.openclaw/openclaw.json</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>4.3</td>
+<td>.env existe y permisos 600</td>
+<td><code>stat -c %a ~/openclaw/.env</code> = 600</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>4.4</td>
+<td>.env propietario correcto</td>
+<td><code>stat -c %U ~/openclaw/.env</code> = openclaw</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>4.5</td>
+<td>Gateway host = 127.0.0.1</td>
+<td><code>grep host ~/.openclaw/openclaw.json</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>4.6</td>
+<td>OpenClaw escucha localhost:18789</td>
+<td><code>ss -tlnp \| grep 18789</code> = 127.0.0.1</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>4.7</td>
+<td>No escucha en 0.0.0.0</td>
+<td><code>ss -tlnp \| grep 18789</code> ≠ 0.0.0.0</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>4.8</td>
+<td>Servicio systemd creado</td>
+<td><code>systemctl status openclaw</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>4.9</td>
+<td>Servicio habilitado</td>
+<td><code>systemctl is-enabled openclaw</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>4.10</td>
+<td>Hardening systemd aplicado</td>
+<td>Ver archivo service</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>4.11</td>
+<td>Puntuación systemd &lt; 5</td>
+<td><code>systemd-analyze security openclaw</code></td>
+<td>⬜</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-seguridad-openclaw-owasp-aa4aa5">5. Seguridad OpenClaw (OWASP AA4/AA5)<a class="headerlink" href="#5-seguridad-openclaw-owasp-aa4aa5" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Control</th>
+<th>Verificación</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.1</td>
+<td>openclaw.json existe</td>
+<td><code>ls ~/.openclaw/openclaw.json</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>5.2</td>
+<td>Sandbox mode = all</td>
+<td><code>grep sandbox ~/.openclaw/openclaw.json</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>5.3</td>
+<td>dmPolicy = pairing o closed</td>
+<td><code>grep dmPolicy ~/.openclaw/openclaw.json</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>5.4</td>
+<td>Gateway TLS pairing activo</td>
+<td><code>grep tls ~/.openclaw/openclaw.json</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>5.5</td>
+<td>TOOLS.md (allowlist) existe</td>
+<td><code>ls ~/.openclaw/workspace/TOOLS.md</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>5.6</td>
+<td>SOUL.md (límites) existe</td>
+<td><code>ls ~/.openclaw/workspace/SOUL.md</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>5.7</td>
+<td>No hay herramientas peligrosas</td>
+<td>Revisar TOOLS.md manualmente</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>5.8</td>
+<td><code>openclaw security audit</code> sin errores</td>
+<td><code>openclaw security audit</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>5.9</td>
+<td>SecretRef configurado (no .env plano)</td>
+<td><code>openclaw secrets list</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>5.10</td>
+<td>Canal de actualización = stable</td>
+<td><code>openclaw update --channel</code></td>
+<td>⬜</td>
+</tr>
+</tbody>
+</table>
+<h3 id="6-seguridad-del-agente-owasp-agentic">6. Seguridad del Agente (OWASP Agentic)<a class="headerlink" href="#6-seguridad-del-agente-owasp-agentic" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Control</th>
+<th>Referencia OWASP</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6.1</td>
+<td>Input validation configurado</td>
+<td>AA1</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>6.2</td>
+<td>Output filtering activo</td>
+<td>AA2</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>6.3</td>
+<td>Secrets redactados en outputs</td>
+<td>AA2</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>6.4</td>
+<td>Principio mínimo privilegio</td>
+<td>AA4</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>6.5</td>
+<td>Skills con allowlist</td>
+<td>AA5</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>6.6</td>
+<td>Human-in-the-loop configurado</td>
+<td>AA8</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>6.7</td>
+<td>Logging completo</td>
+<td>AA10</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>6.8</td>
+<td>(Opcional) AppArmor perfil</td>
+<td>AA4</td>
+<td>⬜</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-monitoreo-y-mantenimiento">7. Monitoreo y Mantenimiento<a class="headerlink" href="#7-monitoreo-y-mantenimiento" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Control</th>
+<th>Verificación</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7.1</td>
+<td>Script de monitoreo existe</td>
+<td><code>ls ~/openclaw/scripts/monitor_behavior.sh</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>7.2</td>
+<td>Script de backup existe</td>
+<td><code>ls ~/openclaw/scripts/backup.sh</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>7.3</td>
+<td>Cron jobs configurados</td>
+<td><code>crontab -l</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>7.4</td>
+<td>Logs rotatados</td>
+<td><code>ls /etc/logrotate.d/openclaw</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>7.5</td>
+<td>Fecha última rotación API keys</td>
+<td><code>cat ~/.openclaw/.last_key_rotation</code></td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>7.6</td>
+<td>Backup descargado a local</td>
+<td>Verificar manualmente</td>
+<td>⬜</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="conformidad-con-estandares">Conformidad con estándares<a class="headerlink" href="#conformidad-con-estandares" title="Permanent link">&para;</a></h2>
+<h3 id="cis-benchmark-ubuntu-2404-l1">CIS Benchmark Ubuntu 24.04 L1<a class="headerlink" href="#cis-benchmark-ubuntu-2404-l1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Sección</th>
+<th>Descripción</th>
+<th>Cubierto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.2.1</td>
+<td>Permisos sshd_config</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>5.2.2</td>
+<td>Permisos claves SSH host</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>5.2.4</td>
+<td>Ciphers SSH</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>5.2.5</td>
+<td>MACs SSH</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>5.2.6</td>
+<td>KEX SSH</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>5.2.7</td>
+<td>Banner SSH</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>5.2.8</td>
+<td>LogLevel SSH</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>5.2.9-23</td>
+<td>Configuración SSH</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tailscale-security-hardening">Tailscale Security Hardening<a class="headerlink" href="#tailscale-security-hardening" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Descripción</th>
+<th>Cubierto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACLs</td>
+<td>No usar permit-all</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Tags</td>
+<td>Usar tags para segmentación</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>SSH sobre Tailscale</td>
+<td>Eliminar SSH público</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Tailnet Lock</td>
+<td>Firmas criptográficas</td>
+<td>⬜ Opcional</td>
+</tr>
+<tr>
+<td>Webhooks</td>
+<td>Alertas de cambios</td>
+<td>⬜ Opcional</td>
+</tr>
+</tbody>
+</table>
+<h3 id="owasp-agentic-top-10-2026">OWASP Agentic Top 10 2026<a class="headerlink" href="#owasp-agentic-top-10-2026" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Riesgo</th>
+<th>Mitigación</th>
+<th>Cubierto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AA1</td>
+<td>Agentic Injection</td>
+<td>Input validation</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>AA2</td>
+<td>Sensitive Data Exposure</td>
+<td>Output filtering</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>AA3</td>
+<td>Improper Output Handling</td>
+<td>Sanitización</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>AA4</td>
+<td>Excessive Agency</td>
+<td>Mínimo privilegio</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>AA5</td>
+<td>Tool Misuse</td>
+<td>Skills allowlist</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>AA6</td>
+<td>Insecure Memory</td>
+<td>Memoria cifrada y con retención</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>AA7</td>
+<td>Insufficient Identity</td>
+<td>ACLs Tailscale</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>AA8</td>
+<td>Unsafe Agentic Actions</td>
+<td>Human-in-the-loop</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>AA9</td>
+<td>Poor Multi-Agent Security</td>
+<td>N/A (single agent)</td>
+<td>➖</td>
+</tr>
+<tr>
+<td>AA10</td>
+<td>Missing Audit Logs</td>
+<td>Auditd, logging</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="firma-de-conformidad">Firma de conformidad<a class="headerlink" href="#firma-de-conformidad" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Instalación verificada por: _________________________
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>Fecha: _________________________
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>Puntuación de verificación automática:
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>- Pasados: ____
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>- Advertencias: ____
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>- Fallidos: ____
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>Notas:
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>_________________________________________________
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>_________________________________________________
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>_________________________________________________
+</code></pre></div>
+<hr />
+<p><strong>Fin de la guía de instalación</strong></p>
+<p>Para mantenimiento continuo, consulta <a href="../09-mantenimiento/">9. Mantenimiento</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/corbat" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

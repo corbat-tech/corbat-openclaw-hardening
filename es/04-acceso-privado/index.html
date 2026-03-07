@@ -1,0 +1,2806 @@
+
+<!doctype html>
+<html lang="es" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Secure OpenClaw installation guide for VPS - CIS Benchmark, Tailscale Hardening, OWASP Agentic Top 10">
+      
+      
+        <meta name="author" content="CORBAT">
+      
+      
+        <link rel="canonical" href="https://corbat.github.io/corbat-openclaw-hardening/es/04-acceso-privado/">
+      
+      
+        <link rel="prev" href="../03-seguridad-sistema/">
+      
+      
+        <link rel="next" href="../05-openclaw/">
+      
+      
+        
+          <link rel="alternate" href="/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="es">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>4. Acceso privado (Tailscale) - OpenClaw en VPS</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#4-acceso-privado-con-tailscale" class="md-skip">
+          Saltar a contenido
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Cabecera">
+    <a href="../" title="OpenClaw en VPS" class="md-header__button md-logo" aria-label="OpenClaw en VPS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OpenClaw en VPS
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              4. Acceso privado (Tailscale)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Seleccionar idioma">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="es" class="md-select__link">
+              Español
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Búsqueda" placeholder="Búsqueda" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Buscar">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Limpiar" aria-label="Limpiar" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Inicializando búsqueda
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/corbat/corbat-openclaw-hardening" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    corbat-openclaw-hardening
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navegación" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="OpenClaw en VPS" class="md-nav__button md-logo" aria-label="OpenClaw en VPS" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    OpenClaw en VPS
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/corbat/corbat-openclaw-hardening" title="Ir al repositorio" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    corbat-openclaw-hardening
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Inicio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guía de instalación
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guía de instalación
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-preparacion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Preparación
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-vps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Contratar VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-seguridad-sistema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Seguridad del sistema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Acceso privado (Tailscale)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Acceso privado (Tailscale)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerrequisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerrequisitos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-es-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ¿Qué es Tailscale?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-tailscale-en-el-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instalar Tailscale en el VPS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Instalar Tailscale en el VPS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#opcion-a-instalacion-desde-repositorio-apt-recomendado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opción A: Instalación desde repositorio APT (RECOMENDADO)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opcion-b-script-de-instalacion-con-verificacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opción B: Script de instalación (con verificación)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iniciar-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Iniciar Tailscale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Iniciar Tailscale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verificar-conexion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar conexión
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-tailscale-en-tu-dispositivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instalar Tailscale en tu dispositivo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Instalar Tailscale en tu dispositivo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#macos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#windows-ios-android" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows / iOS / Android
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#probar-conexion-por-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Probar conexión por Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configurar-acls-obligatorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar ACLs (OBLIGATORIO)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configurar ACLs (OBLIGATORIO)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configurar-acl-restrictiva" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar ACL restrictiva
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aplicar-tag-al-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aplicar tag al VPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eliminar-acceso-ssh-publico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Eliminar acceso SSH público
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Eliminar acceso SSH público">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#paso-1-configurar-ssh-para-escuchar-solo-en-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 1: Configurar SSH para escuchar solo en Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-2-verificar-sintaxis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 2: Verificar sintaxis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-3-reiniciar-ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 3: Reiniciar SSH
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-4-eliminar-regla-de-firewall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 4: Eliminar regla de firewall
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verificacion-final" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificación final
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verificación final">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#en-una-nueva-terminal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        En una NUEVA terminal:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-que-ssh-solo-escucha-en-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar que SSH solo escucha en Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tailnet-lock-seguridad-avanzada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tailnet Lock (Seguridad avanzada)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tailnet Lock (Seguridad avanzada)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#que-es-tailnet-lock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ¿Qué es Tailnet Lock?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activar-tailnet-lock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Activar Tailnet Lock
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-tailnet-lock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar Tailnet Lock
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#webhooks-de-alertas-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Webhooks de alertas (Opcional)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Webhooks de alertas (Opcional)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configurar-webhooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar webhooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejemplo-de-payload-de-webhook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejemplo de payload de webhook
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#magicdns-hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MagicDNS Hardening
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MagicDNS Hardening">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verificar-configuracion-de-magicdns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar configuración de MagicDNS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anadir-split-dns-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Añadir Split DNS (opcional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expiracion-de-claves-de-nodo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expiración de claves de nodo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Expiración de claves de nodo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#opcion-a-desactivar-expiracion-recomendado-para-servidores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opción A: Desactivar expiración (recomendado para servidores)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opcion-b-renovar-manualmente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opción B: Renovar manualmente
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configurar-alerta-de-expiracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar alerta de expiración
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estado-actual-del-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estado actual del sistema
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comandos-utiles-de-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comandos útiles de Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subir-archivos-al-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subir archivos al VPS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-tailscale-not-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Tailscale not running"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-not-authorized-al-usar-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Not authorized" al usar tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-connection-timed-out-por-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Connection timed out" por Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#perdi-acceso-por-ssh-publico-y-tailscale-no-funciona" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Perdí acceso por SSH público y Tailscale no funciona
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resumen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resumen
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-openclaw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Instalar OpenClaw
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-llm-apis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    6. APIs de LLM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-casos-uso/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    7. Casos de uso y herramientas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seguridad avanzada
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Seguridad avanzada
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-seguridad-agente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    8. Seguridad del agente
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-mantenimiento/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    9. Mantenimiento
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-checklist-final/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10. Checklist final
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referencia
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referencia
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glosario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glosario
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Tabla de contenidos">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Tabla de contenidos
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerrequisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerrequisitos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#objetivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objetivos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#que-es-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ¿Qué es Tailscale?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-tailscale-en-el-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instalar Tailscale en el VPS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Instalar Tailscale en el VPS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#opcion-a-instalacion-desde-repositorio-apt-recomendado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opción A: Instalación desde repositorio APT (RECOMENDADO)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opcion-b-script-de-instalacion-con-verificacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opción B: Script de instalación (con verificación)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iniciar-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Iniciar Tailscale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Iniciar Tailscale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verificar-conexion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar conexión
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instalar-tailscale-en-tu-dispositivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Instalar Tailscale en tu dispositivo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Instalar Tailscale en tu dispositivo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#macos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        macOS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Linux
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#windows-ios-android" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows / iOS / Android
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#probar-conexion-por-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Probar conexión por Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configurar-acls-obligatorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar ACLs (OBLIGATORIO)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configurar ACLs (OBLIGATORIO)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configurar-acl-restrictiva" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar ACL restrictiva
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aplicar-tag-al-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aplicar tag al VPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eliminar-acceso-ssh-publico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Eliminar acceso SSH público
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Eliminar acceso SSH público">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#paso-1-configurar-ssh-para-escuchar-solo-en-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 1: Configurar SSH para escuchar solo en Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-2-verificar-sintaxis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 2: Verificar sintaxis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-3-reiniciar-ssh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 3: Reiniciar SSH
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paso-4-eliminar-regla-de-firewall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paso 4: Eliminar regla de firewall
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verificacion-final" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificación final
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verificación final">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#en-una-nueva-terminal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        En una NUEVA terminal:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-que-ssh-solo-escucha-en-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar que SSH solo escucha en Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tailnet-lock-seguridad-avanzada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tailnet Lock (Seguridad avanzada)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tailnet Lock (Seguridad avanzada)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#que-es-tailnet-lock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ¿Qué es Tailnet Lock?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activar-tailnet-lock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Activar Tailnet Lock
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verificar-tailnet-lock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar Tailnet Lock
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#webhooks-de-alertas-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Webhooks de alertas (Opcional)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Webhooks de alertas (Opcional)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configurar-webhooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar webhooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejemplo-de-payload-de-webhook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejemplo de payload de webhook
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#magicdns-hardening" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MagicDNS Hardening
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MagicDNS Hardening">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#verificar-configuracion-de-magicdns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verificar configuración de MagicDNS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anadir-split-dns-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Añadir Split DNS (opcional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expiracion-de-claves-de-nodo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expiración de claves de nodo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Expiración de claves de nodo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#opcion-a-desactivar-expiracion-recomendado-para-servidores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opción A: Desactivar expiración (recomendado para servidores)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opcion-b-renovar-manualmente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opción B: Renovar manualmente
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configurar-alerta-de-expiracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurar alerta de expiración
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estado-actual-del-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estado actual del sistema
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comandos-utiles-de-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comandos útiles de Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subir-archivos-al-vps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subir archivos al VPS
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#error-tailscale-not-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Tailscale not running"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-not-authorized-al-usar-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Not authorized" al usar tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-connection-timed-out-por-tailscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error: "Connection timed out" por Tailscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#perdi-acceso-por-ssh-publico-y-tailscale-no-funciona" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Perdí acceso por SSH público y Tailscale no funciona
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resumen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resumen
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="4-acceso-privado-con-tailscale">4. Acceso privado con Tailscale<a class="headerlink" href="#4-acceso-privado-con-tailscale" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>TL;DR</strong>: Instalar Tailscale de forma segura, configurar ACLs obligatorias para zero-trust, cerrar SSH público y opcionalmente habilitar Tailnet Lock.</p>
+<p><strong>Tiempo estimado</strong>: 20-30 minutos</p>
+<p><strong>Nivel requerido</strong>: Intermedio</p>
+</blockquote>
+<h2 id="prerrequisitos">Prerrequisitos<a class="headerlink" href="#prerrequisitos" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[ ] Sección 3 (Seguridad del sistema) completada</li>
+<li>[ ] Usuario <code>openclaw</code> funcionando</li>
+<li>[ ] Cuenta Tailscale creada (con MFA en identity provider)</li>
+</ul>
+<h2 id="objetivos">Objetivos<a class="headerlink" href="#objetivos" title="Permanent link">&para;</a></h2>
+<p>Al terminar esta sección tendrás:</p>
+<ul>
+<li>Tailscale instalado y verificado en el VPS</li>
+<li>ACLs configuradas (zero-trust, no permit-all)</li>
+<li>SSH público eliminado (solo acceso por Tailscale)</li>
+<li>Opcionalmente: Tailnet Lock y webhooks de alertas</li>
+</ul>
+<hr />
+<h2 id="que-es-tailscale">¿Qué es Tailscale?<a class="headerlink" href="#que-es-tailscale" title="Permanent link">&para;</a></h2>
+<ul>
+<li>VPN mesh peer-to-peer basada en WireGuard</li>
+<li>Free tier: hasta 100 dispositivos, 3 usuarios</li>
+<li>Cada dispositivo recibe una IP privada tipo <code>100.x.x.x</code></li>
+<li>Cifrado de extremo a extremo</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌─────────────────────────────────────────────┐
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│              INTERNET                       │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│                  ❌                         │
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│    Sin acceso directo al VPS               │
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>└─────────────────────────────────────────────┘
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>          ▲
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>          │ Tailscale VPN (WireGuard)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>          │ Cifrado E2E
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>          ▼
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>┌─────────────────────────────────────────────┐
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│         TU DISPOSITIVO                      │
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│  IP Tailscale: 100.y.y.y                    │
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>└─────────────────────────────────────────────┘
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>          │
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>          ▼
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>┌─────────────────────────────────────────────┐
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│              VPS                            │
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│  IP Tailscale: 100.x.x.x (única vía)        │
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│  IP pública: cerrada                        │
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>└─────────────────────────────────────────────┘
+</code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Placeholders en esta sección</p>
+<p>En los ejemplos de esta sección:</p>
+<ul>
+<li><code>&lt;TU_TAILSCALE_IP&gt;</code> o <code>100.x.x.x</code> = IP de Tailscale de tu VPS (obtenida con <code>tailscale ip -4</code>)</li>
+<li><code>100.y.y.y</code> = IP de Tailscale de tu dispositivo local</li>
+<li><code>&lt;TU_IP_PUBLICA&gt;</code> = IP pública del VPS (la que te dio el proveedor)</li>
+</ul>
+<p>Reemplaza estos valores con tus IPs reales en cada comando.</p>
+</div>
+<hr />
+<h2 id="instalar-tailscale-en-el-vps">Instalar Tailscale en el VPS<a class="headerlink" href="#instalar-tailscale-en-el-vps" title="Permanent link">&para;</a></h2>
+<p>Conéctate al VPS (todavía por IP pública):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>ssh<span class="w"> </span>openclaw@&lt;TU_IP_PUBLICA&gt;
+</code></pre></div>
+<h3 id="opcion-a-instalacion-desde-repositorio-apt-recomendado">Opción A: Instalación desde repositorio APT (RECOMENDADO)<a class="headerlink" href="#opcion-a-instalacion-desde-repositorio-apt-recomendado" title="Permanent link">&para;</a></h3>
+<p>Esta opción es más segura porque verifica firmas de paquetes.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Añadir clave GPG de Tailscale</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://pkgs.tailscale.com/stable/ubuntu/noble.noarmor.gpg<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/usr/share/keyrings/tailscale-archive-keyring.gpg<span class="w"> </span>&gt;/dev/null
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Añadir repositorio</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://pkgs.tailscale.com/stable/ubuntu/noble.tailscale-keyring.list<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/tailscale.list
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="c1"># Instalar</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>sudo<span class="w"> </span>apt<span class="w"> </span>update
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>tailscale
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="c1"># Verificar que se instaló desde el repo oficial</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>apt-cache<span class="w"> </span>policy<span class="w"> </span>tailscale
+</code></pre></div>
+<p><strong>Salida esperada:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>tailscale:
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  Installed: 1.XX.X
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  Candidate: 1.XX.X
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>  Version table:
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a> *** 1.XX.X 500
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        500 https://pkgs.tailscale.com/stable/ubuntu noble/main amd64 Packages
+</code></pre></div></p>
+<h3 id="opcion-b-script-de-instalacion-con-verificacion">Opción B: Script de instalación (con verificación)<a class="headerlink" href="#opcion-b-script-de-instalacion-con-verificacion" title="Permanent link">&para;</a></h3>
+<p>Si prefieres el script oficial, verifícalo antes de ejecutar:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># 1. Descargar script</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://tailscale.com/install.sh<span class="w"> </span>-o<span class="w"> </span>/tmp/tailscale-install.sh
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># 2. Verificar contenido (buscar comandos sospechosos)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># Revisa que solo descarga de dominios tailscale.com/pkgs.tailscale.com</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>less<span class="w"> </span>/tmp/tailscale-install.sh
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># 3. Si todo parece correcto, ejecutar</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>sudo<span class="w"> </span>bash<span class="w"> </span>/tmp/tailscale-install.sh
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="c1"># 4. Limpiar</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>rm<span class="w"> </span>/tmp/tailscale-install.sh
+</code></pre></div>
+<hr />
+<h2 id="iniciar-tailscale">Iniciar Tailscale<a class="headerlink" href="#iniciar-tailscale" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>up
+</code></pre></div>
+<p>Te dará una URL para autenticar. Ábrela en tu navegador e inicia sesión con tu cuenta Tailscale.</p>
+<h3 id="verificar-conexion">Verificar conexión<a class="headerlink" href="#verificar-conexion" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Ver IP de Tailscale asignada</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>tailscale<span class="w"> </span>ip<span class="w"> </span>-4
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Ver estado completo</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>tailscale<span class="w"> </span>status
+</code></pre></div>
+<p><strong>Salida esperada:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>100.x.x.x    tu-vps     linux   -
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>100.y.y.y    tu-laptop  macOS   active; relay &quot;mad&quot;, tx 1234 rx 5678
+</code></pre></div></p>
+<p>Anota la IP de Tailscale del VPS (algo como <code>100.x.x.x</code>). Esta será tu <strong>nueva forma de acceder</strong>.</p>
+<hr />
+<h2 id="instalar-tailscale-en-tu-dispositivo">Instalar Tailscale en tu dispositivo<a class="headerlink" href="#instalar-tailscale-en-tu-dispositivo" title="Permanent link">&para;</a></h2>
+<h3 id="macos">macOS<a class="headerlink" href="#macos" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Con Homebrew</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>brew<span class="w"> </span>install<span class="w"> </span>--cask<span class="w"> </span>tailscale
+</code></pre></div>
+<p>O descarga desde <a href="https://tailscale.com/download">tailscale.com/download</a></p>
+<h3 id="linux">Linux<a class="headerlink" href="#linux" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Usando repositorio APT (Ubuntu/Debian)</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://pkgs.tailscale.com/stable/ubuntu/noble.noarmor.gpg<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/usr/share/keyrings/tailscale-archive-keyring.gpg<span class="w"> </span>&gt;/dev/null
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://pkgs.tailscale.com/stable/ubuntu/noble.tailscale-keyring.list<span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/etc/apt/sources.list.d/tailscale.list
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>tailscale
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>up
+</code></pre></div>
+<h3 id="windows-ios-android">Windows / iOS / Android<a class="headerlink" href="#windows-ios-android" title="Permanent link">&para;</a></h3>
+<p>Descarga la app desde la tienda correspondiente o <a href="https://tailscale.com/download">tailscale.com/download</a></p>
+<hr />
+<h2 id="probar-conexion-por-tailscale">Probar conexión por Tailscale<a class="headerlink" href="#probar-conexion-por-tailscale" title="Permanent link">&para;</a></h2>
+<p>Desde tu dispositivo local (con Tailscale activado):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Usar la IP de Tailscale del VPS</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>ssh<span class="w"> </span>openclaw@&lt;TU_TAILSCALE_IP&gt;
+</code></pre></div>
+<div class="admonition success">
+<p class="admonition-title">Si funciona, ya tienes acceso privado</p>
+<p>A partir de ahora, usa esta IP para todo.</p>
+</div>
+<hr />
+<h2 id="configurar-acls-obligatorio">Configurar ACLs (OBLIGATORIO)<a class="headerlink" href="#configurar-acls-obligatorio" title="Permanent link">&para;</a></h2>
+<div class="admonition danger">
+<p class="admonition-title">No saltes este paso</p>
+<p>Sin ACLs, cualquier dispositivo en tu Tailnet puede acceder a cualquier otro.
+Esto viola el principio de zero-trust y es un riesgo de seguridad.</p>
+</div>
+<p>Por defecto, Tailscale permite que todos los dispositivos se comuniquen entre sí (<code>"*": ["*:*"]</code>). Esto NO es seguro para un servidor con OpenClaw.</p>
+<h3 id="configurar-acl-restrictiva">Configurar ACL restrictiva<a class="headerlink" href="#configurar-acl-restrictiva" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Ve a <a href="https://login.tailscale.com/admin/acls">login.tailscale.com/admin/acls</a></li>
+<li>Reemplaza el contenido <strong>completo</strong> con:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">{</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="c1">// === ACLs para OpenClaw VPS ===</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span><span class="c1">// Referencia: https://tailscale.com/kb/1196/security-hardening</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">  </span><span class="nt">&quot;acls&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="c1">// Solo el owner puede acceder al VPS</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;accept&quot;</span><span class="p">,</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">      </span><span class="nt">&quot;src&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;autogroup:owner&quot;</span><span class="p">],</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">      </span><span class="nt">&quot;dst&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;tag:vps:*&quot;</span><span class="p">]</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">    </span><span class="c1">// El VPS puede acceder a Internet (para APIs de LLM)</span>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;accept&quot;</span><span class="p">,</span>
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w">      </span><span class="nt">&quot;src&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;tag:vps&quot;</span><span class="p">],</span>
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w">      </span><span class="nt">&quot;dst&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;autogroup:internet:*&quot;</span><span class="p">]</span>
+<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w">    </span><span class="c1">// NOTA: El VPS NO puede iniciar conexiones a otros dispositivos</span>
+<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="w">  </span><span class="p">],</span>
+<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a>
+<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="w">  </span><span class="c1">// Tags y sus propietarios</span>
+<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="w">  </span><span class="nt">&quot;tagOwners&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="w">    </span><span class="nt">&quot;tag:vps&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;autogroup:owner&quot;</span><span class="p">]</span>
+<a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a>
+<a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a><span class="w">  </span><span class="c1">// Configuración de SSH por Tailscale</span>
+<a id="__codelineno-11-27" name="__codelineno-11-27" href="#__codelineno-11-27"></a><span class="w">  </span><span class="nt">&quot;ssh&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-11-28" name="__codelineno-11-28" href="#__codelineno-11-28"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-11-29" name="__codelineno-11-29" href="#__codelineno-11-29"></a><span class="w">      </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;accept&quot;</span><span class="p">,</span>
+<a id="__codelineno-11-30" name="__codelineno-11-30" href="#__codelineno-11-30"></a><span class="w">      </span><span class="nt">&quot;src&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;autogroup:owner&quot;</span><span class="p">],</span>
+<a id="__codelineno-11-31" name="__codelineno-11-31" href="#__codelineno-11-31"></a><span class="w">      </span><span class="nt">&quot;dst&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;tag:vps&quot;</span><span class="p">],</span>
+<a id="__codelineno-11-32" name="__codelineno-11-32" href="#__codelineno-11-32"></a><span class="w">      </span><span class="nt">&quot;users&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;openclaw&quot;</span><span class="p">]</span>
+<a id="__codelineno-11-33" name="__codelineno-11-33" href="#__codelineno-11-33"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-11-34" name="__codelineno-11-34" href="#__codelineno-11-34"></a><span class="w">  </span><span class="p">],</span>
+<a id="__codelineno-11-35" name="__codelineno-11-35" href="#__codelineno-11-35"></a>
+<a id="__codelineno-11-36" name="__codelineno-11-36" href="#__codelineno-11-36"></a><span class="w">  </span><span class="c1">// Tests para validar las ACLs</span>
+<a id="__codelineno-11-37" name="__codelineno-11-37" href="#__codelineno-11-37"></a><span class="w">  </span><span class="nt">&quot;tests&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-11-38" name="__codelineno-11-38" href="#__codelineno-11-38"></a><span class="w">    </span><span class="c1">// Verificar que owner puede acceder al VPS</span>
+<a id="__codelineno-11-39" name="__codelineno-11-39" href="#__codelineno-11-39"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-11-40" name="__codelineno-11-40" href="#__codelineno-11-40"></a><span class="w">      </span><span class="nt">&quot;src&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;autogroup:owner&quot;</span><span class="p">,</span>
+<a id="__codelineno-11-41" name="__codelineno-11-41" href="#__codelineno-11-41"></a><span class="w">      </span><span class="nt">&quot;accept&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;tag:vps:22&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;tag:vps:3000&quot;</span><span class="p">]</span>
+<a id="__codelineno-11-42" name="__codelineno-11-42" href="#__codelineno-11-42"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-11-43" name="__codelineno-11-43" href="#__codelineno-11-43"></a><span class="w">    </span><span class="c1">// Verificar que VPS puede acceder a Internet</span>
+<a id="__codelineno-11-44" name="__codelineno-11-44" href="#__codelineno-11-44"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-11-45" name="__codelineno-11-45" href="#__codelineno-11-45"></a><span class="w">      </span><span class="nt">&quot;src&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tag:vps&quot;</span><span class="p">,</span>
+<a id="__codelineno-11-46" name="__codelineno-11-46" href="#__codelineno-11-46"></a><span class="w">      </span><span class="nt">&quot;accept&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;8.8.8.8:443&quot;</span><span class="p">]</span>
+<a id="__codelineno-11-47" name="__codelineno-11-47" href="#__codelineno-11-47"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-11-48" name="__codelineno-11-48" href="#__codelineno-11-48"></a><span class="w">    </span><span class="c1">// Verificar que VPS NO puede acceder a dispositivos del owner</span>
+<a id="__codelineno-11-49" name="__codelineno-11-49" href="#__codelineno-11-49"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-11-50" name="__codelineno-11-50" href="#__codelineno-11-50"></a><span class="w">      </span><span class="nt">&quot;src&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tag:vps&quot;</span><span class="p">,</span>
+<a id="__codelineno-11-51" name="__codelineno-11-51" href="#__codelineno-11-51"></a><span class="w">      </span><span class="nt">&quot;deny&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;autogroup:owner:22&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;autogroup:owner:80&quot;</span><span class="p">]</span>
+<a id="__codelineno-11-52" name="__codelineno-11-52" href="#__codelineno-11-52"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-11-53" name="__codelineno-11-53" href="#__codelineno-11-53"></a><span class="w">  </span><span class="p">]</span>
+<a id="__codelineno-11-54" name="__codelineno-11-54" href="#__codelineno-11-54"></a><span class="p">}</span>
+</code></pre></div>
+<ol>
+<li>Haz clic en <strong>Save</strong> y verifica que los tests pasan.</li>
+</ol>
+<h3 id="aplicar-tag-al-vps">Aplicar tag al VPS<a class="headerlink" href="#aplicar-tag-al-vps" title="Permanent link">&para;</a></h3>
+<p>En el VPS, ejecuta:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>up<span class="w"> </span>--advertise-tags<span class="o">=</span>tag:vps<span class="w"> </span>--reset
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">El flag --reset reinicia el estado</p>
+<p>Esto aplica la nueva configuración de tags. Necesitarás re-autenticar si ya estabas conectado.</p>
+</div>
+<h3 id="verificar-tags">Verificar tags<a class="headerlink" href="#verificar-tags" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>tailscale<span class="w"> </span>status
+</code></pre></div>
+<p><strong>Salida esperada:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>100.x.x.x    tu-vps        tagged-devices  linux   -
+</code></pre></div></p>
+<p>El VPS debe aparecer como <code>tagged-devices</code> en lugar de tu email.</p>
+<hr />
+<h2 id="eliminar-acceso-ssh-publico">Eliminar acceso SSH público<a class="headerlink" href="#eliminar-acceso-ssh-publico" title="Permanent link">&para;</a></h2>
+<p>Este es el paso crítico. Una vez verificado Tailscale, <strong>cierra el puerto 22 público</strong>.</p>
+<h3 id="paso-1-configurar-ssh-para-escuchar-solo-en-tailscale">Paso 1: Configurar SSH para escuchar solo en Tailscale<a class="headerlink" href="#paso-1-configurar-ssh-para-escuchar-solo-en-tailscale" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Obtener tu IP de Tailscale</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nv">TAILSCALE_IP</span><span class="o">=</span><span class="k">$(</span>tailscale<span class="w"> </span>ip<span class="w"> </span>-4<span class="k">)</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;IP Tailscale: </span><span class="nv">$TAILSCALE_IP</span><span class="s2">&quot;</span>
+</code></pre></div>
+<p>Añade la directiva ListenAddress automáticamente (evita errores de copia manual):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Añadir ListenAddress con tu IP real de Tailscale</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;# === Escuchar SOLO en Tailscale ===&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/ssh/sshd_config.d/99-hardening.conf
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;ListenAddress </span><span class="k">$(</span>tailscale<span class="w"> </span>ip<span class="w"> </span>-4<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/ssh/sshd_config.d/99-hardening.conf
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="c1"># Verificar que se añadió correctamente</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>tail<span class="w"> </span>-2<span class="w"> </span>/etc/ssh/sshd_config.d/99-hardening.conf
+</code></pre></div>
+<p><strong>Salida esperada:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a># === Escuchar SOLO en Tailscale ===
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>ListenAddress 100.64.0.1
+</code></pre></div></p>
+<div class="admonition warning">
+<p class="admonition-title">IP de ejemplo</p>
+<p>Tu IP será diferente (algo como <code>100.x.x.x</code>). El comando usa automáticamente tu IP real.</p>
+</div>
+<h3 id="paso-2-verificar-sintaxis">Paso 2: Verificar sintaxis<a class="headerlink" href="#paso-2-verificar-sintaxis" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>sudo<span class="w"> </span>sshd<span class="w"> </span>-t
+</code></pre></div>
+<p><strong>Si hay errores, NO reinicies SSH.</strong> Corrige primero.</p>
+<h3 id="paso-3-reiniciar-ssh">Paso 3: Reiniciar SSH<a class="headerlink" href="#paso-3-reiniciar-ssh" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>sshd
+</code></pre></div>
+<h3 id="paso-4-eliminar-regla-de-firewall">Paso 4: Eliminar regla de firewall<a class="headerlink" href="#paso-4-eliminar-regla-de-firewall" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># Eliminar regla que permite SSH desde cualquier lugar</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>delete<span class="w"> </span>allow<span class="w"> </span>ssh
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1"># Verificar estado</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>sudo<span class="w"> </span>ufw<span class="w"> </span>status
+</code></pre></div>
+<p><strong>Salida esperada:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>Status: active
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>To                         Action      From
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>--                         ------      ----
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>(sin reglas de SSH)
+</code></pre></div></p>
+<hr />
+<h2 id="verificacion-final">Verificación final<a class="headerlink" href="#verificacion-final" title="Permanent link">&para;</a></h2>
+<div class="admonition danger">
+<p class="admonition-title">Prueba ANTES de cerrar tu sesión actual</p>
+</div>
+<h3 id="en-una-nueva-terminal">En una NUEVA terminal:<a class="headerlink" href="#en-una-nueva-terminal" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># 1. Conectar por Tailscale (DEBE funcionar)</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>ssh<span class="w"> </span>openclaw@&lt;TU_TAILSCALE_IP&gt;
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="c1"># 2. Verificar que SSH público NO funciona</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>ssh<span class="w"> </span>openclaw@&lt;TU_IP_PUBLICA&gt;
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="c1"># Esperado: Connection timed out o Connection refused</span>
+</code></pre></div>
+<h3 id="verificar-que-ssh-solo-escucha-en-tailscale">Verificar que SSH solo escucha en Tailscale<a class="headerlink" href="#verificar-que-ssh-solo-escucha-en-tailscale" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>sshd
+</code></pre></div>
+<p><strong>Salida esperada:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>LISTEN  0  128  100.x.x.x:22  0.0.0.0:*  users:((&quot;sshd&quot;,pid=XXX,fd=3))
+</code></pre></div></p>
+<div class="admonition success">
+<p class="admonition-title">Si ves solo tu IP de Tailscale, el hardening está completo</p>
+</div>
+<hr />
+<h2 id="tailnet-lock-seguridad-avanzada">Tailnet Lock (Seguridad avanzada)<a class="headerlink" href="#tailnet-lock-seguridad-avanzada" title="Permanent link">&para;</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Recomendado para máxima seguridad</p>
+<p>Tailnet Lock asegura que incluso si Tailscale (la empresa) fuera comprometida,
+no podrían inyectar dispositivos maliciosos en tu red.</p>
+</div>
+<h3 id="que-es-tailnet-lock">¿Qué es Tailnet Lock?<a class="headerlink" href="#que-es-tailnet-lock" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Requiere firmas criptográficas para añadir dispositivos</li>
+<li>Los dispositivos de confianza firman nuevos dispositivos</li>
+<li>Incluso Tailscale (la empresa) no puede añadir dispositivos sin tu firma</li>
+</ul>
+<h3 id="activar-tailnet-lock">Activar Tailnet Lock<a class="headerlink" href="#activar-tailnet-lock" title="Permanent link">&para;</a></h3>
+<p><strong>Desde tu dispositivo principal (NO el VPS):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># 1. Inicializar Tailnet Lock</span>
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>tailscale<span class="w"> </span>lock<span class="w"> </span>init
+</code></pre></div>
+<p>Te mostrará una clave de firma. <strong>Guárdala en lugar seguro offline.</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1"># 2. Ver tu clave de firma y nodos</span>
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>tailscale<span class="w"> </span>lock<span class="w"> </span>status
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># 3. Ver el node key del VPS (necesitas esto para firmarlo)</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>tailscale<span class="w"> </span>status
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="c1"># Busca la línea del VPS y copia el node key</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="c1"># 4. Firmar el VPS desde tu dispositivo principal</span>
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>tailscale<span class="w"> </span>lock<span class="w"> </span>sign<span class="w"> </span>nodekey:&lt;NODE_KEY_DEL_VPS&gt;
+</code></pre></div>
+<h3 id="verificar-tailnet-lock">Verificar Tailnet Lock<a class="headerlink" href="#verificar-tailnet-lock" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>tailscale<span class="w"> </span>lock<span class="w"> </span>status
+</code></pre></div>
+<p><strong>Salida esperada:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>Tailnet lock is ENABLED
+<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>...
+<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>Trusted signing keys:
+<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>  - nlpub:XXXX (this node)
+<a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>
+<a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a>Filtered nodes:
+<a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a>  (ninguno, si todos están firmados)
+</code></pre></div></p>
+<div class="admonition warning">
+<p class="admonition-title">Guarda las claves de recuperación</p>
+<p>Si pierdes acceso a todos los dispositivos firmantes, perderás acceso a la red.
+Guarda las claves en un gestor de contraseñas o lugar seguro offline.</p>
+</div>
+<hr />
+<h2 id="webhooks-de-alertas-opcional">Webhooks de alertas (Opcional)<a class="headerlink" href="#webhooks-de-alertas-opcional" title="Permanent link">&para;</a></h2>
+<p>Recibe notificaciones cuando algo cambie en tu Tailnet.</p>
+<h3 id="configurar-webhooks">Configurar webhooks<a class="headerlink" href="#configurar-webhooks" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>Ve a <a href="https://login.tailscale.com/admin/settings/webhooks">login.tailscale.com/admin/settings/webhooks</a></p>
+</li>
+<li>
+<p>Añade un webhook:</p>
+</li>
+<li><strong>Slack</strong>: URL del incoming webhook</li>
+<li><strong>Discord</strong>: URL del webhook de Discord</li>
+<li>
+<p><strong>Custom</strong>: Tu endpoint HTTP/HTTPS</p>
+</li>
+<li>
+<p>Selecciona eventos a monitorear:</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Evento</th>
+<th>Descripción</th>
+<th>Recomendación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>nodeCreated</code></td>
+<td>Nuevo dispositivo añadido</td>
+<td>✅ Activar</td>
+</tr>
+<tr>
+<td><code>nodeDeleted</code></td>
+<td>Dispositivo eliminado</td>
+<td>✅ Activar</td>
+</tr>
+<tr>
+<td><code>nodeApproved</code></td>
+<td>Dispositivo aprobado</td>
+<td>✅ Activar</td>
+</tr>
+<tr>
+<td><code>nodeKeyExpiring</code></td>
+<td>Clave a punto de expirar</td>
+<td>✅ Activar</td>
+</tr>
+<tr>
+<td><code>userCreated</code></td>
+<td>Nuevo usuario</td>
+<td>✅ Activar</td>
+</tr>
+<tr>
+<td><code>userDeleted</code></td>
+<td>Usuario eliminado</td>
+<td>✅ Activar</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ejemplo-de-payload-de-webhook">Ejemplo de payload de webhook<a class="headerlink" href="#ejemplo-de-payload-de-webhook" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="p">{</span>
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="w">  </span><span class="nt">&quot;timestamp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-02-01T10:30:00Z&quot;</span><span class="p">,</span>
+<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="w">  </span><span class="nt">&quot;event&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;nodeCreated&quot;</span><span class="p">,</span>
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a><span class="w">  </span><span class="nt">&quot;tailnet&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tu-tailnet.ts.net&quot;</span><span class="p">,</span>
+<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a><span class="w">  </span><span class="nt">&quot;node&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;nuevo-dispositivo&quot;</span><span class="p">,</span>
+<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="w">    </span><span class="nt">&quot;addresses&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;100.x.x.x&quot;</span><span class="p">]</span>
+<a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h2 id="magicdns-hardening">MagicDNS Hardening<a class="headerlink" href="#magicdns-hardening" title="Permanent link">&para;</a></h2>
+<p>MagicDNS permite resolver nombres de dispositivos dentro de tu Tailnet. Para mayor seguridad:</p>
+<h3 id="verificar-configuracion-de-magicdns">Verificar configuración de MagicDNS<a class="headerlink" href="#verificar-configuracion-de-magicdns" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Ve a <a href="https://login.tailscale.com/admin/dns">login.tailscale.com/admin/dns</a></li>
+<li>Configura:</li>
+<li><strong>MagicDNS:</strong> Habilitado (para resolver nombres internos)</li>
+<li><strong>Override local DNS:</strong> Habilitado (para evitar DNS leaks)</li>
+<li><strong>Global nameservers:</strong> Configura servidores DNS seguros (ej: <code>1.1.1.1</code>, <code>9.9.9.9</code>)</li>
+</ol>
+<h3 id="anadir-split-dns-opcional">Añadir Split DNS (opcional)<a class="headerlink" href="#anadir-split-dns-opcional" title="Permanent link">&para;</a></h3>
+<p>Si necesitas resolver dominios internos específicos:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="p">{</span>
+<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="w">  </span><span class="nt">&quot;dns&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a><span class="w">    </span><span class="nt">&quot;nameservers&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;1.1.1.1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;9.9.9.9&quot;</span><span class="p">],</span>
+<a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a><span class="w">    </span><span class="nt">&quot;magicDNS&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a><span class="w">    </span><span class="nt">&quot;overrideLocalDNS&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-32-7" name="__codelineno-32-7" href="#__codelineno-32-7"></a><span class="p">}</span>
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Ventaja de Override local DNS</p>
+<p>Con <code>overrideLocalDNS: true</code>, todo el tráfico DNS del VPS pasa por los servidores configurados en Tailscale, evitando posibles DNS leaks a través del proveedor VPS.</p>
+</div>
+<hr />
+<h2 id="expiracion-de-claves-de-nodo">Expiración de claves de nodo<a class="headerlink" href="#expiracion-de-claves-de-nodo" title="Permanent link">&para;</a></h2>
+<p>Por defecto, las claves de nodo de Tailscale expiran cada 180 días. Debes renovarlas o desactivar la expiración para el VPS.</p>
+<h3 id="opcion-a-desactivar-expiracion-recomendado-para-servidores">Opción A: Desactivar expiración (recomendado para servidores)<a class="headerlink" href="#opcion-a-desactivar-expiracion-recomendado-para-servidores" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Ve a <a href="https://login.tailscale.com/admin/machines">login.tailscale.com/admin/machines</a></li>
+<li>Encuentra tu VPS en la lista</li>
+<li>Haz clic en el menú <strong>...</strong> → <strong>Disable key expiry</strong></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Implicación de seguridad</p>
+<p>Desactivar la expiración significa que el nodo permanecerá autorizado indefinidamente.
+Esto es aceptable para servidores que no cambian de propietario.
+Para dispositivos personales, mantén la expiración activa.</p>
+</div>
+<h3 id="opcion-b-renovar-manualmente">Opción B: Renovar manualmente<a class="headerlink" href="#opcion-b-renovar-manualmente" title="Permanent link">&para;</a></h3>
+<p>Si prefieres mantener la expiración activa, renueva antes de que expire:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="c1"># Ver cuándo expira la clave actual</span>
+<a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>tailscale<span class="w"> </span>status<span class="w"> </span>--json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.Self.KeyExpiry&#39;</span>
+<a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>
+<a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="c1"># Renovar (requiere re-autenticación)</span>
+<a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>up<span class="w"> </span>--reset
+</code></pre></div>
+<h3 id="configurar-alerta-de-expiracion">Configurar alerta de expiración<a class="headerlink" href="#configurar-alerta-de-expiracion" title="Permanent link">&para;</a></h3>
+<p>Añade al cron una verificación semanal:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>crontab<span class="w"> </span>-e
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a># Verificar expiración de clave Tailscale cada lunes
+<a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>0 9 * * 1 tailscale status --json | jq -r &#39;.Self.KeyExpiry // &quot;no-expiry&quot;&#39; | logger -t tailscale-expiry
+</code></pre></div>
+<hr />
+<h2 id="estado-actual-del-sistema">Estado actual del sistema<a class="headerlink" href="#estado-actual-del-sistema" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>┌─────────────────────────────────────────────┐
+<a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>│              INTERNET                       │
+<a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>│                  ❌                         │
+<a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a>│    Puerto 22 cerrado / no accesible         │
+<a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>│    Sin puertos públicos                     │
+<a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a>└─────────────────────────────────────────────┘
+<a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a>
+<a id="__codelineno-36-8" name="__codelineno-36-8" href="#__codelineno-36-8"></a>┌─────────────────────────────────────────────┐
+<a id="__codelineno-36-9" name="__codelineno-36-9" href="#__codelineno-36-9"></a>│              VPS (Hetzner/otro)              │
+<a id="__codelineno-36-10" name="__codelineno-36-10" href="#__codelineno-36-10"></a>│  IP pública: xxx.xxx.xxx.xxx (NO usada)     │
+<a id="__codelineno-36-11" name="__codelineno-36-11" href="#__codelineno-36-11"></a>│  IP Tailscale: 100.x.x.x (única vía)        │
+<a id="__codelineno-36-12" name="__codelineno-36-12" href="#__codelineno-36-12"></a>│  Tag: tag:vps                               │
+<a id="__codelineno-36-13" name="__codelineno-36-13" href="#__codelineno-36-13"></a>│  ┌─────────────────────────────────────┐    │
+<a id="__codelineno-36-14" name="__codelineno-36-14" href="#__codelineno-36-14"></a>│  │  SSH escuchando en 100.x.x.x:22     │    │
+<a id="__codelineno-36-15" name="__codelineno-36-15" href="#__codelineno-36-15"></a>│  │  Firewall: deny all incoming        │    │
+<a id="__codelineno-36-16" name="__codelineno-36-16" href="#__codelineno-36-16"></a>│  │  ACLs: solo owner puede acceder     │    │
+<a id="__codelineno-36-17" name="__codelineno-36-17" href="#__codelineno-36-17"></a>│  └─────────────────────────────────────┘    │
+<a id="__codelineno-36-18" name="__codelineno-36-18" href="#__codelineno-36-18"></a>└─────────────────────────────────────────────┘
+<a id="__codelineno-36-19" name="__codelineno-36-19" href="#__codelineno-36-19"></a>          ▲
+<a id="__codelineno-36-20" name="__codelineno-36-20" href="#__codelineno-36-20"></a>          │ Tailscale VPN (cifrado WireGuard)
+<a id="__codelineno-36-21" name="__codelineno-36-21" href="#__codelineno-36-21"></a>          │ ACLs verificadas
+<a id="__codelineno-36-22" name="__codelineno-36-22" href="#__codelineno-36-22"></a>          ▼
+<a id="__codelineno-36-23" name="__codelineno-36-23" href="#__codelineno-36-23"></a>┌─────────────────────────────────────────────┐
+<a id="__codelineno-36-24" name="__codelineno-36-24" href="#__codelineno-36-24"></a>│         TU DISPOSITIVO (owner)              │
+<a id="__codelineno-36-25" name="__codelineno-36-25" href="#__codelineno-36-25"></a>│  IP Tailscale: 100.y.y.y                    │
+<a id="__codelineno-36-26" name="__codelineno-36-26" href="#__codelineno-36-26"></a>│  Puede: SSH a VPS, acceder a puerto 3000    │
+<a id="__codelineno-36-27" name="__codelineno-36-27" href="#__codelineno-36-27"></a>└─────────────────────────────────────────────┘
+</code></pre></div>
+<hr />
+<h2 id="comandos-utiles-de-tailscale">Comandos útiles de Tailscale<a class="headerlink" href="#comandos-utiles-de-tailscale" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="c1"># Ver todos los dispositivos en tu red</span>
+<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>tailscale<span class="w"> </span>status
+<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>
+<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="c1"># Ver tu IP de Tailscale</span>
+<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>tailscale<span class="w"> </span>ip<span class="w"> </span>-4
+<a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a>
+<a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a><span class="c1"># Ping a otro dispositivo por nombre</span>
+<a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a>tailscale<span class="w"> </span>ping<span class="w"> </span>nombre-vps
+<a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a>
+<a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a><span class="c1"># Ver logs de Tailscale</span>
+<a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a>sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>tailscaled<span class="w"> </span>-f
+<a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a>
+<a id="__codelineno-37-13" name="__codelineno-37-13" href="#__codelineno-37-13"></a><span class="c1"># Desconectar temporalmente</span>
+<a id="__codelineno-37-14" name="__codelineno-37-14" href="#__codelineno-37-14"></a>tailscale<span class="w"> </span>down
+<a id="__codelineno-37-15" name="__codelineno-37-15" href="#__codelineno-37-15"></a>
+<a id="__codelineno-37-16" name="__codelineno-37-16" href="#__codelineno-37-16"></a><span class="c1"># Reconectar</span>
+<a id="__codelineno-37-17" name="__codelineno-37-17" href="#__codelineno-37-17"></a>tailscale<span class="w"> </span>up
+<a id="__codelineno-37-18" name="__codelineno-37-18" href="#__codelineno-37-18"></a>
+<a id="__codelineno-37-19" name="__codelineno-37-19" href="#__codelineno-37-19"></a><span class="c1"># Ver configuración actual</span>
+<a id="__codelineno-37-20" name="__codelineno-37-20" href="#__codelineno-37-20"></a>tailscale<span class="w"> </span>debug<span class="w"> </span>prefs
+</code></pre></div>
+<hr />
+<h2 id="subir-archivos-al-vps">Subir archivos al VPS<a class="headerlink" href="#subir-archivos-al-vps" title="Permanent link">&para;</a></h2>
+<p>Ahora que solo tienes acceso por Tailscale, usa estos comandos para transferir archivos:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="c1"># Subir un archivo</span>
+<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>scp<span class="w"> </span>archivo.txt<span class="w"> </span>openclaw@&lt;TU_TAILSCALE_IP&gt;:~/workspace/
+<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a><span class="c1"># Subir una carpeta</span>
+<a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>scp<span class="w"> </span>-r<span class="w"> </span>mi-carpeta/<span class="w"> </span>openclaw@&lt;TU_TAILSCALE_IP&gt;:~/workspace/
+<a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>
+<a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a><span class="c1"># Sincronizar carpeta (más eficiente para actualizaciones)</span>
+<a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a>rsync<span class="w"> </span>-avz<span class="w"> </span>mi-carpeta/<span class="w"> </span>openclaw@&lt;TU_TAILSCALE_IP&gt;:~/workspace/mi-carpeta/
+<a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a>
+<a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a><span class="c1"># Descargar archivo del VPS</span>
+<a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a>scp<span class="w"> </span>openclaw@&lt;TU_TAILSCALE_IP&gt;:~/workspace/resultado.txt<span class="w"> </span>./
+</code></pre></div>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="error-tailscale-not-running">Error: "Tailscale not running"<a class="headerlink" href="#error-tailscale-not-running" title="Permanent link">&para;</a></h3>
+<p><strong>Causa</strong>: El servicio tailscaled no está activo.</p>
+<p><strong>Solución</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>tailscaled
+<a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>tailscaled
+<a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>tailscale<span class="w"> </span>up
+</code></pre></div></p>
+<h3 id="error-not-authorized-al-usar-tags">Error: "Not authorized" al usar tags<a class="headerlink" href="#error-not-authorized-al-usar-tags" title="Permanent link">&para;</a></h3>
+<p><strong>Causa</strong>: Las ACLs no permiten el tag o no eres owner del tag.</p>
+<p><strong>Solución</strong>:
+1. Verifica que <code>tagOwners</code> incluye tu usuario o <code>autogroup:owner</code>
+2. Verifica que guardaste las ACLs en el panel de Tailscale</p>
+<h3 id="error-connection-timed-out-por-tailscale">Error: "Connection timed out" por Tailscale<a class="headerlink" href="#error-connection-timed-out-por-tailscale" title="Permanent link">&para;</a></h3>
+<p><strong>Causa</strong>: Firewall local o de red bloqueando WireGuard.</p>
+<p><strong>Solución</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="c1"># Verificar que tailscaled está escuchando</span>
+<a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-ulnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>tailscale
+<a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>
+<a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a><span class="c1"># Verificar conectividad</span>
+<a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a>tailscale<span class="w"> </span>netcheck
+</code></pre></div></p>
+<h3 id="perdi-acceso-por-ssh-publico-y-tailscale-no-funciona">Perdí acceso por SSH público y Tailscale no funciona<a class="headerlink" href="#perdi-acceso-por-ssh-publico-y-tailscale-no-funciona" title="Permanent link">&para;</a></h3>
+<p><strong>Solución</strong>:
+1. Accede por la consola web del proveedor VPS (Hostinger/Hetzner tienen VNC)
+2. Revierte los cambios de ListenAddress en <code>/etc/ssh/sshd_config.d/99-hardening.conf</code>
+3. <code>sudo systemctl restart sshd</code></p>
+<hr />
+<h2 id="resumen">Resumen<a class="headerlink" href="#resumen" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Configuración</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tailscale instalado</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Verificado desde repo oficial</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>ACLs configuradas (no permit-all)</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Tag <code>vps</code> asignado</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>SSH solo en interfaz Tailscale</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Puerto 22 público cerrado</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Tailnet Lock (opcional)</td>
+<td>⬜</td>
+</tr>
+<tr>
+<td>Webhooks configurados (opcional)</td>
+<td>⬜</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Siguiente:</strong> <a href="../05-openclaw/">5. Instalar OpenClaw</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Volver al principio
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/corbat" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "content.code.copy", "content.code.annotate", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copiado al portapapeles", "clipboard.copy": "Copiar al portapapeles", "search.result.more.one": "1 m\u00e1s en esta p\u00e1gina", "search.result.more.other": "# m\u00e1s en esta p\u00e1gina", "search.result.none": "No se encontraron documentos", "search.result.one": "1 documento encontrado", "search.result.other": "# documentos encontrados", "search.result.placeholder": "Teclee para comenzar b\u00fasqueda", "search.result.term.missing": "Falta", "select.version": "Seleccionar versi\u00f3n"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
