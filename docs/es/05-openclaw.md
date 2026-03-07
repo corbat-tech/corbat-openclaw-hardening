@@ -850,6 +850,35 @@ sudo systemctl restart openclaw
 !!! note "El wizard `openclaw channels add`"
     El wizard interactivo (`openclaw channels add`) puede no guardar la config correctamente. Si falla, usa el método manual de JSON descrito arriba — es más fiable.
 
+#### Comandos útiles en Telegram
+
+| Comando | Descripción |
+|---------|-------------|
+| `/new` | Inicia una sesión nueva (recarga SOUL.md y limpia contexto) |
+| `/reset` | Igual que `/new` |
+| `/compact` | Resume turnos antiguos de conversación para liberar contexto |
+
+!!! tip "Reducir mensajes duplicados"
+    Si el bot envía 2-3 respuestas por mensaje, añade `"blockStreaming": true` a la config del canal Telegram. Esto hace que el bot solo envíe la respuesta final.
+
+    ```json
+    "channels": {
+      "telegram": {
+        "blockStreaming": true,
+        ...
+      }
+    }
+    ```
+
+!!! tip "¿Cambios en SOUL.md no toman efecto?"
+    Envía `/new` al bot para iniciar una sesión nueva. Si no funciona, limpia el caché del sandbox:
+
+    ```bash
+    rm -rf ~/.openclaw/sandboxes/agent-main-*
+    sudo systemctl restart openclaw
+    ```
+    Luego envía `/new` al bot de nuevo.
+
 ---
 
 ## Ejecutar OpenClaw (prueba manual)
