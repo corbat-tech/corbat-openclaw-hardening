@@ -841,6 +841,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configurar SOUL.md (identidad del agente)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secciones-recomendadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secciones recomendadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#buenas-practicas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Buenas prácticas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejemplo-minimo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejemplo mínimo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1906,6 +1945,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configurar SOUL.md (identidad del agente)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secciones-recomendadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secciones recomendadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#buenas-practicas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Buenas prácticas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejemplo-minimo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejemplo mínimo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -2865,40 +2943,98 @@ para la versión que estás instalando.</p>
 <p>Usa <strong>SecretRef</strong> cuando sea posible.</p>
 </div>
 <h3 id="configurar-soulmd-identidad-del-agente">Configurar SOUL.md (identidad del agente)<a class="headerlink" href="#configurar-soulmd-identidad-del-agente" title="Permanent link">&para;</a></h3>
-<p>OpenClaw usa archivos Markdown para configurar la identidad del agente:</p>
+<p>SOUL.md define quién es tu agente, qué puede hacer y cómo se comporta. OpenClaw inyecta este archivo en el contexto del agente en cada interacción.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>nano<span class="w"> </span>~/.openclaw/workspace/SOUL.md
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="gh"># OpenClaw Assistant</span>
+<h4 id="secciones-recomendadas">Secciones recomendadas<a class="headerlink" href="#secciones-recomendadas" title="Permanent link">&para;</a></h4>
+<p>Un SOUL.md bien estructurado debería incluir estas secciones:</p>
+<table>
+<thead>
+<tr>
+<th>Sección</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Identidad</strong></td>
+<td>Quién es el agente y para quién trabaja</td>
+</tr>
+<tr>
+<td><strong>Misión</strong></td>
+<td>Qué debe optimizar (corrección, seguridad, valor, velocidad)</td>
+</tr>
+<tr>
+<td><strong>Reglas de idioma</strong></td>
+<td>Idioma de respuesta, idioma de código, idioma de comunicación de negocio</td>
+</tr>
+<tr>
+<td><strong>Capacidades</strong></td>
+<td>En qué puede ayudar (desarrollo, negocio, investigación, etc.)</td>
+</tr>
+<tr>
+<td><strong>Puertas de aprobación</strong></td>
+<td>Acciones que requieren confirmación explícita antes de ejecutarse</td>
+</tr>
+<tr>
+<td><strong>Límites de filesystem</strong></td>
+<td>Paths permitidos y prohibidos</td>
+</tr>
+<tr>
+<td><strong>Reglas de seguridad</strong></td>
+<td>Cómo manejar secrets, credenciales y datos sensibles</td>
+</tr>
+<tr>
+<td><strong>Reglas de comunicación</strong></td>
+<td>Tono, estilo y preferencias de formato de salida</td>
+</tr>
+<tr>
+<td><strong>Continuidad</strong></td>
+<td>Cómo usar archivos del workspace como memoria persistente entre sesiones</td>
+</tr>
+</tbody>
+</table>
+<h4 id="buenas-practicas">Buenas prácticas<a class="headerlink" href="#buenas-practicas" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Sé específico con la identidad</strong>: Dile al agente para quién trabaja y qué representa. Un genérico "eres un asistente" produce respuestas genéricas.</li>
+<li><strong>Define puertas de aprobación explícitamente</strong>: Lista cada acción irreversible o externa que necesita confirmación (emails, commits, llamadas API, compras). El agente debe mostrar borradores antes de enviar.</li>
+<li><strong>Establece reglas de idioma claras</strong>: Separa el idioma de conversación del idioma de código. Por ejemplo: "responde en español, escribe código y documentación en inglés."</li>
+<li><strong>Incluye límites de filesystem</strong>: Siempre restringe el acceso al directorio workspace. Prohíbe explícitamente el acceso a <code>.ssh</code>, <code>.env</code>, <code>/etc</code> y <code>/var</code>.</li>
+<li><strong>Añade contexto de negocio si aplica</strong>: Si el agente representa un negocio, incluye servicios ofrecidos, clientes ideales y reglas de estilo de comunicación comercial. Cuanto más contexto, mejor la calidad del output.</li>
+<li><strong>Define estructura de output</strong>: Dile al agente cómo formatear diferentes tipos de respuestas (técnicas, investigación, borradores de negocio). Esto ahorra tiempo en aclaraciones.</li>
+<li><strong>Protege datos sensibles</strong>: Indica explícitamente que secrets, credenciales e información personal nunca deben aparecer en outputs.</li>
+<li><strong>Usa la sección de continuidad</strong>: Dile al agente que persista conocimiento reutilizable (investigación de clientes, preferencias, plantillas) en archivos del workspace para que se mantenga entre sesiones.</li>
+</ul>
+<h4 id="ejemplo-minimo">Ejemplo mínimo<a class="headerlink" href="#ejemplo-minimo" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="gh"># Mi Asistente</span>
 <a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>
 <a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="gu">## Identidad</span>
-<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>Eres un asistente de desarrollo y automatización que opera en un VPS aislado.
-<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>
-<a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a><span class="gu">## Límites estrictos de comportamiento</span>
-<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a>
-<a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a><span class="gu">### Filesystem</span>
-<a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a><span class="k">-</span><span class="w"> </span>Solo acceder a archivos dentro de <span class="sb">`/home/openclaw/openclaw/workspace`</span>
-<a id="__codelineno-31-10" name="__codelineno-31-10" href="#__codelineno-31-10"></a><span class="k">-</span><span class="w"> </span>No eliminar archivos recursivamente (rm -rf)
-<a id="__codelineno-31-11" name="__codelineno-31-11" href="#__codelineno-31-11"></a><span class="k">-</span><span class="w"> </span>No modificar permisos de archivos del sistema
-<a id="__codelineno-31-12" name="__codelineno-31-12" href="#__codelineno-31-12"></a><span class="k">-</span><span class="w"> </span>No acceder a <span class="sb">`/home/openclaw/.ssh`</span>, <span class="sb">`/home/openclaw/.env`</span>, <span class="sb">`/etc`</span>, <span class="sb">`/var`</span>
-<a id="__codelineno-31-13" name="__codelineno-31-13" href="#__codelineno-31-13"></a>
-<a id="__codelineno-31-14" name="__codelineno-31-14" href="#__codelineno-31-14"></a><span class="gu">### Ejecución</span>
-<a id="__codelineno-31-15" name="__codelineno-31-15" href="#__codelineno-31-15"></a><span class="k">-</span><span class="w"> </span>No ejecutar comandos como root/sudo
-<a id="__codelineno-31-16" name="__codelineno-31-16" href="#__codelineno-31-16"></a><span class="k">-</span><span class="w"> </span>No instalar software sin aprobación explícita
-<a id="__codelineno-31-17" name="__codelineno-31-17" href="#__codelineno-31-17"></a><span class="k">-</span><span class="w"> </span>No modificar configuración del sistema
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>Eres un asistente de desarrollo en un VPS aislado.
+<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>Trabajas para [tu nombre/empresa].
+<a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a>
+<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="gu">## Idioma</span>
+<a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a><span class="k">-</span><span class="w"> </span>Responde en [tu idioma]
+<a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a><span class="k">-</span><span class="w"> </span>Escribe código, comentarios y documentación en inglés
+<a id="__codelineno-31-10" name="__codelineno-31-10" href="#__codelineno-31-10"></a>
+<a id="__codelineno-31-11" name="__codelineno-31-11" href="#__codelineno-31-11"></a><span class="gu">## Puertas de aprobación</span>
+<a id="__codelineno-31-12" name="__codelineno-31-12" href="#__codelineno-31-12"></a>Pide siempre antes de: enviar emails, hacer push de commits, borrar archivos,
+<a id="__codelineno-31-13" name="__codelineno-31-13" href="#__codelineno-31-13"></a>llamar a APIs externas, o cualquier acción irreversible.
+<a id="__codelineno-31-14" name="__codelineno-31-14" href="#__codelineno-31-14"></a>
+<a id="__codelineno-31-15" name="__codelineno-31-15" href="#__codelineno-31-15"></a><span class="gu">## Filesystem</span>
+<a id="__codelineno-31-16" name="__codelineno-31-16" href="#__codelineno-31-16"></a><span class="k">-</span><span class="w"> </span>Solo acceder a: /home/openclaw/openclaw/workspace
+<a id="__codelineno-31-17" name="__codelineno-31-17" href="#__codelineno-31-17"></a><span class="k">-</span><span class="w"> </span>Nunca acceder a: .ssh, .env, /etc, /var
 <a id="__codelineno-31-18" name="__codelineno-31-18" href="#__codelineno-31-18"></a>
-<a id="__codelineno-31-19" name="__codelineno-31-19" href="#__codelineno-31-19"></a><span class="gu">### Comunicación</span>
-<a id="__codelineno-31-20" name="__codelineno-31-20" href="#__codelineno-31-20"></a><span class="k">-</span><span class="w"> </span>No enviar emails sin confirmación explícita del usuario
-<a id="__codelineno-31-21" name="__codelineno-31-21" href="#__codelineno-31-21"></a><span class="k">-</span><span class="w"> </span>No hacer commits/push a repositorios sin revisión
-<a id="__codelineno-31-22" name="__codelineno-31-22" href="#__codelineno-31-22"></a><span class="k">-</span><span class="w"> </span>No llamar a APIs no incluidas en la allowlist
-<a id="__codelineno-31-23" name="__codelineno-31-23" href="#__codelineno-31-23"></a>
-<a id="__codelineno-31-24" name="__codelineno-31-24" href="#__codelineno-31-24"></a><span class="gu">### Datos sensibles</span>
-<a id="__codelineno-31-25" name="__codelineno-31-25" href="#__codelineno-31-25"></a><span class="k">-</span><span class="w"> </span>No exponer API keys, tokens o credenciales en respuestas
-<a id="__codelineno-31-26" name="__codelineno-31-26" href="#__codelineno-31-26"></a><span class="k">-</span><span class="w"> </span>No almacenar información sensible en logs
-<a id="__codelineno-31-27" name="__codelineno-31-27" href="#__codelineno-31-27"></a><span class="k">-</span><span class="w"> </span>Redactar cualquier secret que aparezca en outputs
-<a id="__codelineno-31-28" name="__codelineno-31-28" href="#__codelineno-31-28"></a>
-<a id="__codelineno-31-29" name="__codelineno-31-29" href="#__codelineno-31-29"></a><span class="gu">## Tono</span>
-<a id="__codelineno-31-30" name="__codelineno-31-30" href="#__codelineno-31-30"></a>Profesional, conciso, técnico. Responde en español por defecto.
+<a id="__codelineno-31-19" name="__codelineno-31-19" href="#__codelineno-31-19"></a><span class="gu">## Seguridad</span>
+<a id="__codelineno-31-20" name="__codelineno-31-20" href="#__codelineno-31-20"></a><span class="k">-</span><span class="w"> </span>Nunca exponer secrets, tokens o credenciales
+<a id="__codelineno-31-21" name="__codelineno-31-21" href="#__codelineno-31-21"></a><span class="k">-</span><span class="w"> </span>Redactar secrets en outputs
+<a id="__codelineno-31-22" name="__codelineno-31-22" href="#__codelineno-31-22"></a>
+<a id="__codelineno-31-23" name="__codelineno-31-23" href="#__codelineno-31-23"></a><span class="gu">## Tono</span>
+<a id="__codelineno-31-24" name="__codelineno-31-24" href="#__codelineno-31-24"></a>Profesional, conciso, directo.
 </code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Itera sobre tu SOUL.md</p>
+<p>Empieza con lo mínimo y amplía según descubras qué hace mal el agente. Si hace algo que no quieres, añade una regla. Si le falta contexto, añade información. El SOUL.md es un documento vivo.</p>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Archivos SOUL, TOOLS y AGENTS</p>
 <p>OpenClaw inyecta automáticamente estos archivos Markdown en el contexto del agente:</p>
