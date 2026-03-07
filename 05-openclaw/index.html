@@ -885,6 +885,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configure Telegram channel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#revoke-access-from-a-previously-approved-sender" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revoke access from a previously approved sender
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -1932,6 +1949,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Configure Telegram channel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#revoke-access-from-a-previously-approved-sender" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revoke access from a previously approved sender
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -2994,6 +3028,10 @@ for the version you're installing.</p>
 <p class="admonition-title">Don't forget the comma</p>
 <p>Add a comma after the closing <code>}</code> of the previous section before <code>"channels"</code>.</p>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Switch to allowlist after pairing</p>
+<p>Use <code>"pairing"</code> only for the initial setup. After approving your account (Step 4), switch to <code>"allowlist"</code> in Step 5 to lock down access.</p>
+</div>
 <p><strong>Step 3 — Restart and verify:</strong></p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>openclaw
 <a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a><span class="c1"># Wait ~2 minutes, then verify Telegram connected:</span>
@@ -3014,20 +3052,43 @@ for the version you're installing.</p>
 <p>Then edit the config:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>nano<span class="w"> </span>~/.openclaw/openclaw.json
 </code></pre></div>
-<p>Add <code>allowFrom</code> to the telegram channel with your ID:</p>
+<p>Change <code>dmPolicy</code> to <code>"allowlist"</code> and add <code>allowFrom</code> with your ID:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="nt">&quot;channels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a><span class="w">  </span><span class="nt">&quot;telegram&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a><span class="w">    </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
 <a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a><span class="w">    </span><span class="nt">&quot;botToken&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;YOUR_TOKEN&quot;</span><span class="p">,</span>
-<a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a><span class="w">    </span><span class="nt">&quot;dmPolicy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pairing&quot;</span><span class="p">,</span>
+<a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a><span class="w">    </span><span class="nt">&quot;dmPolicy&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;allowlist&quot;</span><span class="p">,</span>
 <a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a><span class="w">    </span><span class="nt">&quot;allowFrom&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;YOUR_TELEGRAM_ID&quot;</span><span class="p">]</span>
 <a id="__codelineno-44-7" name="__codelineno-44-7" href="#__codelineno-44-7"></a><span class="w">  </span><span class="p">}</span>
 <a id="__codelineno-44-8" name="__codelineno-44-8" href="#__codelineno-44-8"></a><span class="p">}</span>
 </code></pre></div>
 <p>Restart: <code>sudo systemctl restart openclaw</code></p>
 <div class="admonition danger">
-<p class="admonition-title">Always set allowFrom</p>
-<p>Without <code>allowFrom</code>, anyone who finds your bot can request pairing. With <code>allowFrom</code>, only your account can interact with the bot — all others are silently ignored.</p>
+<p class="admonition-title">Use dmPolicy 'allowlist' — not 'pairing'</p>
+<p>With <code>"pairing"</code>, <strong>anyone</strong> who finds your bot can request a pairing code — <code>allowFrom</code> is ignored.
+With <code>"allowlist"</code>, <strong>only</strong> the IDs in <code>allowFrom</code> can interact with the bot — all others are silently ignored.</p>
+</div>
+<h4 id="revoke-access-from-a-previously-approved-sender">Revoke access from a previously approved sender<a class="headerlink" href="#revoke-access-from-a-previously-approved-sender" title="Permanent link">&para;</a></h4>
+<p>If you approved someone by mistake, you need to edit the pairing store file:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="c1"># View currently approved senders</span>
+<a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a>cat<span class="w"> </span>~/.openclaw/credentials/telegram-default-allowFrom.json
+<a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a>
+<a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a><span class="c1"># Remove a sender (replace SENDER_ID with the ID to remove)</span>
+<a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a>python3<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a><span class="s2">import json</span>
+<a id="__codelineno-45-7" name="__codelineno-45-7" href="#__codelineno-45-7"></a><span class="s2">f = &#39;/home/openclaw/.openclaw/credentials/telegram-default-allowFrom.json&#39;</span>
+<a id="__codelineno-45-8" name="__codelineno-45-8" href="#__codelineno-45-8"></a><span class="s2">with open(f) as fh:</span>
+<a id="__codelineno-45-9" name="__codelineno-45-9" href="#__codelineno-45-9"></a><span class="s2">    d = json.load(fh)</span>
+<a id="__codelineno-45-10" name="__codelineno-45-10" href="#__codelineno-45-10"></a><span class="s2">d[&#39;allowFrom&#39;] = [x for x in d[&#39;allowFrom&#39;] if x != &#39;SENDER_ID&#39;]</span>
+<a id="__codelineno-45-11" name="__codelineno-45-11" href="#__codelineno-45-11"></a><span class="s2">with open(f, &#39;w&#39;) as fh:</span>
+<a id="__codelineno-45-12" name="__codelineno-45-12" href="#__codelineno-45-12"></a><span class="s2">    json.dump(d, fh, indent=2)</span>
+<a id="__codelineno-45-13" name="__codelineno-45-13" href="#__codelineno-45-13"></a><span class="s2">print(&#39;Removed SENDER_ID&#39;)</span>
+<a id="__codelineno-45-14" name="__codelineno-45-14" href="#__codelineno-45-14"></a><span class="s2">&quot;</span>
+<a id="__codelineno-45-15" name="__codelineno-45-15" href="#__codelineno-45-15"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>openclaw
+</code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">No CLI command for revocation</p>
+<p>OpenClaw does not have a CLI command to revoke approved senders. The pairing store files in <code>~/.openclaw/credentials/</code> must be edited manually.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">The <code>openclaw channels add</code> wizard</p>
@@ -3036,190 +3097,190 @@ for the version you're installing.</p>
 <hr />
 <h2 id="run-openclaw-manual-test">Run OpenClaw (manual test)<a class="headerlink" href="#run-openclaw-manual-test" title="Permanent link">&para;</a></h2>
 <h3 id="verify-it-only-listens-on-localhost">Verify it only listens on localhost<a class="headerlink" href="#verify-it-only-listens-on-localhost" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="c1"># Run the Gateway manually with environment variables loaded inline</span>
-<a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a><span class="c1"># This avoids leaking secrets into the shell environment and /proc/*/environ</span>
-<a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a>env<span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;^#&#39;</span><span class="w"> </span>~/openclaw/.env<span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="k">)</span><span class="w"> </span>openclaw<span class="w"> </span>gateway<span class="w"> </span>--port<span class="w"> </span><span class="m">18789</span><span class="w"> </span>--verbose
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="c1"># Run the Gateway manually with environment variables loaded inline</span>
+<a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a><span class="c1"># This avoids leaking secrets into the shell environment and /proc/*/environ</span>
+<a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a>env<span class="w"> </span><span class="k">$(</span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;^#&#39;</span><span class="w"> </span>~/openclaw/.env<span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="k">)</span><span class="w"> </span>openclaw<span class="w"> </span>gateway<span class="w"> </span>--port<span class="w"> </span><span class="m">18789</span><span class="w"> </span>--verbose
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Do not use <code>export</code> to load secrets</p>
 <p>Avoid the pattern <code>export $(grep -v '^#' .env | xargs)</code>. Using <code>export</code> injects all secrets into the shell environment, where they persist for the lifetime of the session and are readable via <code>/proc/*/environ</code> by any process running as the same user. The <code>env</code> pattern above limits the variables to the single command invocation. For production, the systemd <code>EnvironmentFile</code> directive (shown below in the service configuration) is the preferred method — it loads variables directly into the service without exposing them to interactive shells.</p>
 </div>
 <p>In <strong>another SSH terminal</strong>, verify:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="c1"># Should show listening on 127.0.0.1, NOT on 0.0.0.0</span>
-<a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">18789</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a><span class="c1"># Should show listening on 127.0.0.1, NOT on 0.0.0.0</span>
+<a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">18789</span>
 </code></pre></div>
 <p><strong>Expected output:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>LISTEN  0  128  127.0.0.1:18789  0.0.0.0:*  users:((&quot;node&quot;,pid=1234,fd=3))
+<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>LISTEN  0  128  127.0.0.1:18789  0.0.0.0:*  users:((&quot;node&quot;,pid=1234,fd=3))
 </code></pre></div></p>
 <div class="admonition danger">
 <p class="admonition-title">If you see <code>0.0.0.0:18789</code></p>
 <p>This means it's listening on all interfaces. Check the configuration in <code>~/.openclaw/openclaw.json</code> and make sure <code>gateway.host</code> is <code>"127.0.0.1"</code>. <strong>Do not continue until this is correct.</strong></p>
 </div>
 <h3 id="test-the-agent">Test the agent<a class="headerlink" href="#test-the-agent" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a><span class="c1"># In another terminal, send a test message</span>
-<a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a>openclaw<span class="w"> </span>agent<span class="w"> </span>--message<span class="w"> </span><span class="s2">&quot;Hello, what is your name?&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="c1"># In another terminal, send a test message</span>
+<a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a>openclaw<span class="w"> </span>agent<span class="w"> </span>--message<span class="w"> </span><span class="s2">&quot;Hello, what is your name?&quot;</span>
 </code></pre></div>
 <p>Stop the Gateway with <code>Ctrl+C</code>.</p>
 <hr />
 <h2 id="run-as-systemd-service-with-hardening">Run as systemd service (with hardening)<a class="headerlink" href="#run-as-systemd-service-with-hardening" title="Permanent link">&para;</a></h2>
 <h3 id="create-service-file">Create service file<a class="headerlink" href="#create-service-file" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/systemd/system/openclaw.service
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/systemd/system/openclaw.service
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="c1"># ============================================================</span>
-<a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a><span class="c1"># OpenClaw Systemd Service - With Complete Hardening</span>
-<a id="__codelineno-50-3" name="__codelineno-50-3" href="#__codelineno-50-3"></a><span class="c1"># Reference: https://www.freedesktop.org/software/systemd/man/systemd.exec.html</span>
-<a id="__codelineno-50-4" name="__codelineno-50-4" href="#__codelineno-50-4"></a><span class="c1"># ============================================================</span>
-<a id="__codelineno-50-5" name="__codelineno-50-5" href="#__codelineno-50-5"></a>
-<a id="__codelineno-50-6" name="__codelineno-50-6" href="#__codelineno-50-6"></a><span class="k">[Unit]</span>
-<a id="__codelineno-50-7" name="__codelineno-50-7" href="#__codelineno-50-7"></a><span class="na">Description</span><span class="o">=</span><span class="s">OpenClaw AI Agent Gateway</span>
-<a id="__codelineno-50-8" name="__codelineno-50-8" href="#__codelineno-50-8"></a><span class="na">Documentation</span><span class="o">=</span><span class="s">https://docs.openclaw.ai/</span>
-<a id="__codelineno-50-9" name="__codelineno-50-9" href="#__codelineno-50-9"></a><span class="na">After</span><span class="o">=</span><span class="s">network.target tailscaled.service</span>
-<a id="__codelineno-50-10" name="__codelineno-50-10" href="#__codelineno-50-10"></a><span class="na">Wants</span><span class="o">=</span><span class="s">tailscaled.service</span>
-<a id="__codelineno-50-11" name="__codelineno-50-11" href="#__codelineno-50-11"></a><span class="na">StartLimitBurst</span><span class="o">=</span><span class="s">5</span>
-<a id="__codelineno-50-12" name="__codelineno-50-12" href="#__codelineno-50-12"></a><span class="na">StartLimitIntervalSec</span><span class="o">=</span><span class="s">300</span>
-<a id="__codelineno-50-13" name="__codelineno-50-13" href="#__codelineno-50-13"></a>
-<a id="__codelineno-50-14" name="__codelineno-50-14" href="#__codelineno-50-14"></a><span class="k">[Service]</span>
-<a id="__codelineno-50-15" name="__codelineno-50-15" href="#__codelineno-50-15"></a><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
-<a id="__codelineno-50-16" name="__codelineno-50-16" href="#__codelineno-50-16"></a><span class="na">User</span><span class="o">=</span><span class="s">openclaw</span>
-<a id="__codelineno-50-17" name="__codelineno-50-17" href="#__codelineno-50-17"></a><span class="na">Group</span><span class="o">=</span><span class="s">openclaw</span>
-<a id="__codelineno-50-18" name="__codelineno-50-18" href="#__codelineno-50-18"></a><span class="na">WorkingDirectory</span><span class="o">=</span><span class="s">/home/openclaw</span>
-<a id="__codelineno-50-19" name="__codelineno-50-19" href="#__codelineno-50-19"></a>
-<a id="__codelineno-50-20" name="__codelineno-50-20" href="#__codelineno-50-20"></a><span class="c1"># --- Load environment variables ---</span>
-<a id="__codelineno-50-21" name="__codelineno-50-21" href="#__codelineno-50-21"></a><span class="na">EnvironmentFile</span><span class="o">=</span><span class="s">/home/openclaw/openclaw/.env</span>
-<a id="__codelineno-50-22" name="__codelineno-50-22" href="#__codelineno-50-22"></a><span class="na">Environment</span><span class="o">=</span><span class="s">NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache</span>
-<a id="__codelineno-50-23" name="__codelineno-50-23" href="#__codelineno-50-23"></a><span class="na">Environment</span><span class="o">=</span><span class="s">OPENCLAW_NO_RESPAWN=1</span>
-<a id="__codelineno-50-24" name="__codelineno-50-24" href="#__codelineno-50-24"></a>
-<a id="__codelineno-50-25" name="__codelineno-50-25" href="#__codelineno-50-25"></a><span class="c1"># --- Start command ---</span>
-<a id="__codelineno-50-26" name="__codelineno-50-26" href="#__codelineno-50-26"></a><span class="c1"># IMPORTANT: First find the correct path by running: which openclaw</span>
-<a id="__codelineno-50-27" name="__codelineno-50-27" href="#__codelineno-50-27"></a><span class="c1"># If you used nvm: /home/openclaw/.nvm/versions/node/v22.x.x/bin/openclaw</span>
-<a id="__codelineno-50-28" name="__codelineno-50-28" href="#__codelineno-50-28"></a><span class="na">ExecStart</span><span class="o">=</span><span class="s">/home/openclaw/.nvm/versions/node/v22.x.x/bin/openclaw gateway --port 18789</span>
-<a id="__codelineno-50-29" name="__codelineno-50-29" href="#__codelineno-50-29"></a>
-<a id="__codelineno-50-30" name="__codelineno-50-30" href="#__codelineno-50-30"></a><span class="c1"># --- Automatic restart ---</span>
-<a id="__codelineno-50-31" name="__codelineno-50-31" href="#__codelineno-50-31"></a><span class="na">Restart</span><span class="o">=</span><span class="s">on-failure</span>
-<a id="__codelineno-50-32" name="__codelineno-50-32" href="#__codelineno-50-32"></a><span class="na">RestartSec</span><span class="o">=</span><span class="s">10</span>
-<a id="__codelineno-50-33" name="__codelineno-50-33" href="#__codelineno-50-33"></a>
-<a id="__codelineno-50-34" name="__codelineno-50-34" href="#__codelineno-50-34"></a><span class="c1"># ============================================================</span>
-<a id="__codelineno-50-35" name="__codelineno-50-35" href="#__codelineno-50-35"></a><span class="c1"># SYSTEMD HARDENING - Process sandboxing</span>
-<a id="__codelineno-50-36" name="__codelineno-50-36" href="#__codelineno-50-36"></a><span class="c1"># ============================================================</span>
-<a id="__codelineno-50-37" name="__codelineno-50-37" href="#__codelineno-50-37"></a>
-<a id="__codelineno-50-38" name="__codelineno-50-38" href="#__codelineno-50-38"></a><span class="c1"># --- Protect filesystem ---</span>
-<a id="__codelineno-50-39" name="__codelineno-50-39" href="#__codelineno-50-39"></a><span class="c1"># Root filesystem read-only</span>
-<a id="__codelineno-50-40" name="__codelineno-50-40" href="#__codelineno-50-40"></a><span class="na">ProtectSystem</span><span class="o">=</span><span class="s">strict</span>
-<a id="__codelineno-50-41" name="__codelineno-50-41" href="#__codelineno-50-41"></a><span class="c1"># Other users&#39; home not accessible</span>
-<a id="__codelineno-50-42" name="__codelineno-50-42" href="#__codelineno-50-42"></a><span class="na">ProtectHome</span><span class="o">=</span><span class="s">read-only</span>
-<a id="__codelineno-50-43" name="__codelineno-50-43" href="#__codelineno-50-43"></a><span class="c1"># Specific paths with write access allowed</span>
-<a id="__codelineno-50-44" name="__codelineno-50-44" href="#__codelineno-50-44"></a><span class="na">ReadWritePaths</span><span class="o">=</span><span class="s">/home/openclaw/openclaw/workspace</span>
-<a id="__codelineno-50-45" name="__codelineno-50-45" href="#__codelineno-50-45"></a><span class="na">ReadWritePaths</span><span class="o">=</span><span class="s">/home/openclaw/openclaw/logs</span>
-<a id="__codelineno-50-46" name="__codelineno-50-46" href="#__codelineno-50-46"></a><span class="na">ReadWritePaths</span><span class="o">=</span><span class="s">/home/openclaw/.openclaw</span>
-<a id="__codelineno-50-47" name="__codelineno-50-47" href="#__codelineno-50-47"></a><span class="na">ReadWritePaths</span><span class="o">=</span><span class="s">/var/tmp/openclaw-compile-cache</span>
-<a id="__codelineno-50-48" name="__codelineno-50-48" href="#__codelineno-50-48"></a><span class="c1"># Private temp (isolated)</span>
-<a id="__codelineno-50-49" name="__codelineno-50-49" href="#__codelineno-50-49"></a><span class="na">PrivateTmp</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-50-50" name="__codelineno-50-50" href="#__codelineno-50-50"></a>
-<a id="__codelineno-50-51" name="__codelineno-50-51" href="#__codelineno-50-51"></a><span class="c1"># --- Restrict capabilities ---</span>
-<a id="__codelineno-50-52" name="__codelineno-50-52" href="#__codelineno-50-52"></a><span class="c1"># Don&#39;t allow gaining new privileges</span>
-<a id="__codelineno-50-53" name="__codelineno-50-53" href="#__codelineno-50-53"></a><span class="na">NoNewPrivileges</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-50-54" name="__codelineno-50-54" href="#__codelineno-50-54"></a><span class="c1"># No special capabilities</span>
-<a id="__codelineno-50-55" name="__codelineno-50-55" href="#__codelineno-50-55"></a><span class="na">CapabilityBoundingSet</span><span class="o">=</span>
-<a id="__codelineno-50-56" name="__codelineno-50-56" href="#__codelineno-50-56"></a><span class="na">AmbientCapabilities</span><span class="o">=</span>
-<a id="__codelineno-50-57" name="__codelineno-50-57" href="#__codelineno-50-57"></a>
-<a id="__codelineno-50-58" name="__codelineno-50-58" href="#__codelineno-50-58"></a><span class="c1"># --- Isolate network ---</span>
-<a id="__codelineno-50-59" name="__codelineno-50-59" href="#__codelineno-50-59"></a><span class="c1"># AF_NETLINK required for OpenClaw to list network interfaces</span>
-<a id="__codelineno-50-60" name="__codelineno-50-60" href="#__codelineno-50-60"></a><span class="na">RestrictAddressFamilies</span><span class="o">=</span><span class="s">AF_INET AF_INET6 AF_UNIX AF_NETLINK</span>
-<a id="__codelineno-50-61" name="__codelineno-50-61" href="#__codelineno-50-61"></a>
-<a id="__codelineno-50-62" name="__codelineno-50-62" href="#__codelineno-50-62"></a><span class="c1"># --- Restrict syscalls ---</span>
-<a id="__codelineno-50-63" name="__codelineno-50-63" href="#__codelineno-50-63"></a><span class="c1"># Relaxed filter — @system-service + @debug is required for Telegram channel</span>
-<a id="__codelineno-50-64" name="__codelineno-50-64" href="#__codelineno-50-64"></a><span class="c1"># The strict filter (without @debug) causes core dumps when Telegram connects</span>
-<a id="__codelineno-50-65" name="__codelineno-50-65" href="#__codelineno-50-65"></a><span class="na">SystemCallFilter</span><span class="o">=</span><span class="s">@system-service</span>
-<a id="__codelineno-50-66" name="__codelineno-50-66" href="#__codelineno-50-66"></a><span class="na">SystemCallFilter</span><span class="o">=</span><span class="s">~@privileged @resources @mount @clock @reboot @swap @raw-io @cpu-emulation</span>
-<a id="__codelineno-50-67" name="__codelineno-50-67" href="#__codelineno-50-67"></a><span class="c1"># Native architecture only</span>
-<a id="__codelineno-50-68" name="__codelineno-50-68" href="#__codelineno-50-68"></a><span class="na">SystemCallArchitectures</span><span class="o">=</span><span class="s">native</span>
-<a id="__codelineno-50-69" name="__codelineno-50-69" href="#__codelineno-50-69"></a>
-<a id="__codelineno-50-70" name="__codelineno-50-70" href="#__codelineno-50-70"></a><span class="c1"># --- Protect kernel ---</span>
-<a id="__codelineno-50-71" name="__codelineno-50-71" href="#__codelineno-50-71"></a><span class="na">ProtectKernelTunables</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-50-72" name="__codelineno-50-72" href="#__codelineno-50-72"></a><span class="na">ProtectKernelModules</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-50-73" name="__codelineno-50-73" href="#__codelineno-50-73"></a><span class="na">ProtectKernelLogs</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-50-74" name="__codelineno-50-74" href="#__codelineno-50-74"></a><span class="na">ProtectControlGroups</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-50-75" name="__codelineno-50-75" href="#__codelineno-50-75"></a>
-<a id="__codelineno-50-76" name="__codelineno-50-76" href="#__codelineno-50-76"></a><span class="c1"># --- Additional isolation ---</span>
-<a id="__codelineno-50-77" name="__codelineno-50-77" href="#__codelineno-50-77"></a><span class="c1"># No access to physical devices</span>
-<a id="__codelineno-50-78" name="__codelineno-50-78" href="#__codelineno-50-78"></a><span class="na">PrivateDevices</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-50-79" name="__codelineno-50-79" href="#__codelineno-50-79"></a><span class="c1"># Isolated hostname</span>
-<a id="__codelineno-50-80" name="__codelineno-50-80" href="#__codelineno-50-80"></a><span class="na">ProtectHostname</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-50-81" name="__codelineno-50-81" href="#__codelineno-50-81"></a><span class="c1"># System clock protected</span>
-<a id="__codelineno-50-82" name="__codelineno-50-82" href="#__codelineno-50-82"></a><span class="na">ProtectClock</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-50-83" name="__codelineno-50-83" href="#__codelineno-50-83"></a><span class="c1"># No real-time scheduling</span>
-<a id="__codelineno-50-84" name="__codelineno-50-84" href="#__codelineno-50-84"></a><span class="na">RestrictRealtime</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-50-85" name="__codelineno-50-85" href="#__codelineno-50-85"></a><span class="c1"># No SUID/SGID binaries</span>
-<a id="__codelineno-50-86" name="__codelineno-50-86" href="#__codelineno-50-86"></a><span class="na">RestrictSUIDSGID</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-50-87" name="__codelineno-50-87" href="#__codelineno-50-87"></a><span class="c1"># Block personality changes</span>
-<a id="__codelineno-50-88" name="__codelineno-50-88" href="#__codelineno-50-88"></a><span class="na">LockPersonality</span><span class="o">=</span><span class="s">true</span>
-<a id="__codelineno-50-89" name="__codelineno-50-89" href="#__codelineno-50-89"></a><span class="c1"># Prevent written memory execution (JIT may require disabling this)</span>
-<a id="__codelineno-50-90" name="__codelineno-50-90" href="#__codelineno-50-90"></a><span class="c1"># MemoryDenyWriteExecute=true</span>
-<a id="__codelineno-50-91" name="__codelineno-50-91" href="#__codelineno-50-91"></a>
-<a id="__codelineno-50-92" name="__codelineno-50-92" href="#__codelineno-50-92"></a><span class="c1"># --- Resource limits ---</span>
-<a id="__codelineno-50-93" name="__codelineno-50-93" href="#__codelineno-50-93"></a><span class="c1"># Maximum 50% CPU</span>
-<a id="__codelineno-50-94" name="__codelineno-50-94" href="#__codelineno-50-94"></a><span class="na">CPUQuota</span><span class="o">=</span><span class="s">50%</span>
-<a id="__codelineno-50-95" name="__codelineno-50-95" href="#__codelineno-50-95"></a><span class="c1"># Maximum 2GB RAM</span>
-<a id="__codelineno-50-96" name="__codelineno-50-96" href="#__codelineno-50-96"></a><span class="na">MemoryMax</span><span class="o">=</span><span class="s">2G</span>
-<a id="__codelineno-50-97" name="__codelineno-50-97" href="#__codelineno-50-97"></a><span class="c1"># Maximum 100 processes/threads</span>
-<a id="__codelineno-50-98" name="__codelineno-50-98" href="#__codelineno-50-98"></a><span class="na">TasksMax</span><span class="o">=</span><span class="s">100</span>
-<a id="__codelineno-50-99" name="__codelineno-50-99" href="#__codelineno-50-99"></a>
-<a id="__codelineno-50-100" name="__codelineno-50-100" href="#__codelineno-50-100"></a><span class="c1"># --- Logging ---</span>
-<a id="__codelineno-50-101" name="__codelineno-50-101" href="#__codelineno-50-101"></a><span class="na">StandardOutput</span><span class="o">=</span><span class="s">journal</span>
-<a id="__codelineno-50-102" name="__codelineno-50-102" href="#__codelineno-50-102"></a><span class="na">StandardError</span><span class="o">=</span><span class="s">journal</span>
-<a id="__codelineno-50-103" name="__codelineno-50-103" href="#__codelineno-50-103"></a><span class="na">SyslogIdentifier</span><span class="o">=</span><span class="s">openclaw</span>
-<a id="__codelineno-50-104" name="__codelineno-50-104" href="#__codelineno-50-104"></a>
-<a id="__codelineno-50-105" name="__codelineno-50-105" href="#__codelineno-50-105"></a><span class="k">[Install]</span>
-<a id="__codelineno-50-106" name="__codelineno-50-106" href="#__codelineno-50-106"></a><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="c1"># ============================================================</span>
+<a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a><span class="c1"># OpenClaw Systemd Service - With Complete Hardening</span>
+<a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a><span class="c1"># Reference: https://www.freedesktop.org/software/systemd/man/systemd.exec.html</span>
+<a id="__codelineno-51-4" name="__codelineno-51-4" href="#__codelineno-51-4"></a><span class="c1"># ============================================================</span>
+<a id="__codelineno-51-5" name="__codelineno-51-5" href="#__codelineno-51-5"></a>
+<a id="__codelineno-51-6" name="__codelineno-51-6" href="#__codelineno-51-6"></a><span class="k">[Unit]</span>
+<a id="__codelineno-51-7" name="__codelineno-51-7" href="#__codelineno-51-7"></a><span class="na">Description</span><span class="o">=</span><span class="s">OpenClaw AI Agent Gateway</span>
+<a id="__codelineno-51-8" name="__codelineno-51-8" href="#__codelineno-51-8"></a><span class="na">Documentation</span><span class="o">=</span><span class="s">https://docs.openclaw.ai/</span>
+<a id="__codelineno-51-9" name="__codelineno-51-9" href="#__codelineno-51-9"></a><span class="na">After</span><span class="o">=</span><span class="s">network.target tailscaled.service</span>
+<a id="__codelineno-51-10" name="__codelineno-51-10" href="#__codelineno-51-10"></a><span class="na">Wants</span><span class="o">=</span><span class="s">tailscaled.service</span>
+<a id="__codelineno-51-11" name="__codelineno-51-11" href="#__codelineno-51-11"></a><span class="na">StartLimitBurst</span><span class="o">=</span><span class="s">5</span>
+<a id="__codelineno-51-12" name="__codelineno-51-12" href="#__codelineno-51-12"></a><span class="na">StartLimitIntervalSec</span><span class="o">=</span><span class="s">300</span>
+<a id="__codelineno-51-13" name="__codelineno-51-13" href="#__codelineno-51-13"></a>
+<a id="__codelineno-51-14" name="__codelineno-51-14" href="#__codelineno-51-14"></a><span class="k">[Service]</span>
+<a id="__codelineno-51-15" name="__codelineno-51-15" href="#__codelineno-51-15"></a><span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+<a id="__codelineno-51-16" name="__codelineno-51-16" href="#__codelineno-51-16"></a><span class="na">User</span><span class="o">=</span><span class="s">openclaw</span>
+<a id="__codelineno-51-17" name="__codelineno-51-17" href="#__codelineno-51-17"></a><span class="na">Group</span><span class="o">=</span><span class="s">openclaw</span>
+<a id="__codelineno-51-18" name="__codelineno-51-18" href="#__codelineno-51-18"></a><span class="na">WorkingDirectory</span><span class="o">=</span><span class="s">/home/openclaw</span>
+<a id="__codelineno-51-19" name="__codelineno-51-19" href="#__codelineno-51-19"></a>
+<a id="__codelineno-51-20" name="__codelineno-51-20" href="#__codelineno-51-20"></a><span class="c1"># --- Load environment variables ---</span>
+<a id="__codelineno-51-21" name="__codelineno-51-21" href="#__codelineno-51-21"></a><span class="na">EnvironmentFile</span><span class="o">=</span><span class="s">/home/openclaw/openclaw/.env</span>
+<a id="__codelineno-51-22" name="__codelineno-51-22" href="#__codelineno-51-22"></a><span class="na">Environment</span><span class="o">=</span><span class="s">NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache</span>
+<a id="__codelineno-51-23" name="__codelineno-51-23" href="#__codelineno-51-23"></a><span class="na">Environment</span><span class="o">=</span><span class="s">OPENCLAW_NO_RESPAWN=1</span>
+<a id="__codelineno-51-24" name="__codelineno-51-24" href="#__codelineno-51-24"></a>
+<a id="__codelineno-51-25" name="__codelineno-51-25" href="#__codelineno-51-25"></a><span class="c1"># --- Start command ---</span>
+<a id="__codelineno-51-26" name="__codelineno-51-26" href="#__codelineno-51-26"></a><span class="c1"># IMPORTANT: First find the correct path by running: which openclaw</span>
+<a id="__codelineno-51-27" name="__codelineno-51-27" href="#__codelineno-51-27"></a><span class="c1"># If you used nvm: /home/openclaw/.nvm/versions/node/v22.x.x/bin/openclaw</span>
+<a id="__codelineno-51-28" name="__codelineno-51-28" href="#__codelineno-51-28"></a><span class="na">ExecStart</span><span class="o">=</span><span class="s">/home/openclaw/.nvm/versions/node/v22.x.x/bin/openclaw gateway --port 18789</span>
+<a id="__codelineno-51-29" name="__codelineno-51-29" href="#__codelineno-51-29"></a>
+<a id="__codelineno-51-30" name="__codelineno-51-30" href="#__codelineno-51-30"></a><span class="c1"># --- Automatic restart ---</span>
+<a id="__codelineno-51-31" name="__codelineno-51-31" href="#__codelineno-51-31"></a><span class="na">Restart</span><span class="o">=</span><span class="s">on-failure</span>
+<a id="__codelineno-51-32" name="__codelineno-51-32" href="#__codelineno-51-32"></a><span class="na">RestartSec</span><span class="o">=</span><span class="s">10</span>
+<a id="__codelineno-51-33" name="__codelineno-51-33" href="#__codelineno-51-33"></a>
+<a id="__codelineno-51-34" name="__codelineno-51-34" href="#__codelineno-51-34"></a><span class="c1"># ============================================================</span>
+<a id="__codelineno-51-35" name="__codelineno-51-35" href="#__codelineno-51-35"></a><span class="c1"># SYSTEMD HARDENING - Process sandboxing</span>
+<a id="__codelineno-51-36" name="__codelineno-51-36" href="#__codelineno-51-36"></a><span class="c1"># ============================================================</span>
+<a id="__codelineno-51-37" name="__codelineno-51-37" href="#__codelineno-51-37"></a>
+<a id="__codelineno-51-38" name="__codelineno-51-38" href="#__codelineno-51-38"></a><span class="c1"># --- Protect filesystem ---</span>
+<a id="__codelineno-51-39" name="__codelineno-51-39" href="#__codelineno-51-39"></a><span class="c1"># Root filesystem read-only</span>
+<a id="__codelineno-51-40" name="__codelineno-51-40" href="#__codelineno-51-40"></a><span class="na">ProtectSystem</span><span class="o">=</span><span class="s">strict</span>
+<a id="__codelineno-51-41" name="__codelineno-51-41" href="#__codelineno-51-41"></a><span class="c1"># Other users&#39; home not accessible</span>
+<a id="__codelineno-51-42" name="__codelineno-51-42" href="#__codelineno-51-42"></a><span class="na">ProtectHome</span><span class="o">=</span><span class="s">read-only</span>
+<a id="__codelineno-51-43" name="__codelineno-51-43" href="#__codelineno-51-43"></a><span class="c1"># Specific paths with write access allowed</span>
+<a id="__codelineno-51-44" name="__codelineno-51-44" href="#__codelineno-51-44"></a><span class="na">ReadWritePaths</span><span class="o">=</span><span class="s">/home/openclaw/openclaw/workspace</span>
+<a id="__codelineno-51-45" name="__codelineno-51-45" href="#__codelineno-51-45"></a><span class="na">ReadWritePaths</span><span class="o">=</span><span class="s">/home/openclaw/openclaw/logs</span>
+<a id="__codelineno-51-46" name="__codelineno-51-46" href="#__codelineno-51-46"></a><span class="na">ReadWritePaths</span><span class="o">=</span><span class="s">/home/openclaw/.openclaw</span>
+<a id="__codelineno-51-47" name="__codelineno-51-47" href="#__codelineno-51-47"></a><span class="na">ReadWritePaths</span><span class="o">=</span><span class="s">/var/tmp/openclaw-compile-cache</span>
+<a id="__codelineno-51-48" name="__codelineno-51-48" href="#__codelineno-51-48"></a><span class="c1"># Private temp (isolated)</span>
+<a id="__codelineno-51-49" name="__codelineno-51-49" href="#__codelineno-51-49"></a><span class="na">PrivateTmp</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-51-50" name="__codelineno-51-50" href="#__codelineno-51-50"></a>
+<a id="__codelineno-51-51" name="__codelineno-51-51" href="#__codelineno-51-51"></a><span class="c1"># --- Restrict capabilities ---</span>
+<a id="__codelineno-51-52" name="__codelineno-51-52" href="#__codelineno-51-52"></a><span class="c1"># Don&#39;t allow gaining new privileges</span>
+<a id="__codelineno-51-53" name="__codelineno-51-53" href="#__codelineno-51-53"></a><span class="na">NoNewPrivileges</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-51-54" name="__codelineno-51-54" href="#__codelineno-51-54"></a><span class="c1"># No special capabilities</span>
+<a id="__codelineno-51-55" name="__codelineno-51-55" href="#__codelineno-51-55"></a><span class="na">CapabilityBoundingSet</span><span class="o">=</span>
+<a id="__codelineno-51-56" name="__codelineno-51-56" href="#__codelineno-51-56"></a><span class="na">AmbientCapabilities</span><span class="o">=</span>
+<a id="__codelineno-51-57" name="__codelineno-51-57" href="#__codelineno-51-57"></a>
+<a id="__codelineno-51-58" name="__codelineno-51-58" href="#__codelineno-51-58"></a><span class="c1"># --- Isolate network ---</span>
+<a id="__codelineno-51-59" name="__codelineno-51-59" href="#__codelineno-51-59"></a><span class="c1"># AF_NETLINK required for OpenClaw to list network interfaces</span>
+<a id="__codelineno-51-60" name="__codelineno-51-60" href="#__codelineno-51-60"></a><span class="na">RestrictAddressFamilies</span><span class="o">=</span><span class="s">AF_INET AF_INET6 AF_UNIX AF_NETLINK</span>
+<a id="__codelineno-51-61" name="__codelineno-51-61" href="#__codelineno-51-61"></a>
+<a id="__codelineno-51-62" name="__codelineno-51-62" href="#__codelineno-51-62"></a><span class="c1"># --- Restrict syscalls ---</span>
+<a id="__codelineno-51-63" name="__codelineno-51-63" href="#__codelineno-51-63"></a><span class="c1"># Relaxed filter — @system-service + @debug is required for Telegram channel</span>
+<a id="__codelineno-51-64" name="__codelineno-51-64" href="#__codelineno-51-64"></a><span class="c1"># The strict filter (without @debug) causes core dumps when Telegram connects</span>
+<a id="__codelineno-51-65" name="__codelineno-51-65" href="#__codelineno-51-65"></a><span class="na">SystemCallFilter</span><span class="o">=</span><span class="s">@system-service</span>
+<a id="__codelineno-51-66" name="__codelineno-51-66" href="#__codelineno-51-66"></a><span class="na">SystemCallFilter</span><span class="o">=</span><span class="s">~@privileged @resources @mount @clock @reboot @swap @raw-io @cpu-emulation</span>
+<a id="__codelineno-51-67" name="__codelineno-51-67" href="#__codelineno-51-67"></a><span class="c1"># Native architecture only</span>
+<a id="__codelineno-51-68" name="__codelineno-51-68" href="#__codelineno-51-68"></a><span class="na">SystemCallArchitectures</span><span class="o">=</span><span class="s">native</span>
+<a id="__codelineno-51-69" name="__codelineno-51-69" href="#__codelineno-51-69"></a>
+<a id="__codelineno-51-70" name="__codelineno-51-70" href="#__codelineno-51-70"></a><span class="c1"># --- Protect kernel ---</span>
+<a id="__codelineno-51-71" name="__codelineno-51-71" href="#__codelineno-51-71"></a><span class="na">ProtectKernelTunables</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-51-72" name="__codelineno-51-72" href="#__codelineno-51-72"></a><span class="na">ProtectKernelModules</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-51-73" name="__codelineno-51-73" href="#__codelineno-51-73"></a><span class="na">ProtectKernelLogs</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-51-74" name="__codelineno-51-74" href="#__codelineno-51-74"></a><span class="na">ProtectControlGroups</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-51-75" name="__codelineno-51-75" href="#__codelineno-51-75"></a>
+<a id="__codelineno-51-76" name="__codelineno-51-76" href="#__codelineno-51-76"></a><span class="c1"># --- Additional isolation ---</span>
+<a id="__codelineno-51-77" name="__codelineno-51-77" href="#__codelineno-51-77"></a><span class="c1"># No access to physical devices</span>
+<a id="__codelineno-51-78" name="__codelineno-51-78" href="#__codelineno-51-78"></a><span class="na">PrivateDevices</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-51-79" name="__codelineno-51-79" href="#__codelineno-51-79"></a><span class="c1"># Isolated hostname</span>
+<a id="__codelineno-51-80" name="__codelineno-51-80" href="#__codelineno-51-80"></a><span class="na">ProtectHostname</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-51-81" name="__codelineno-51-81" href="#__codelineno-51-81"></a><span class="c1"># System clock protected</span>
+<a id="__codelineno-51-82" name="__codelineno-51-82" href="#__codelineno-51-82"></a><span class="na">ProtectClock</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-51-83" name="__codelineno-51-83" href="#__codelineno-51-83"></a><span class="c1"># No real-time scheduling</span>
+<a id="__codelineno-51-84" name="__codelineno-51-84" href="#__codelineno-51-84"></a><span class="na">RestrictRealtime</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-51-85" name="__codelineno-51-85" href="#__codelineno-51-85"></a><span class="c1"># No SUID/SGID binaries</span>
+<a id="__codelineno-51-86" name="__codelineno-51-86" href="#__codelineno-51-86"></a><span class="na">RestrictSUIDSGID</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-51-87" name="__codelineno-51-87" href="#__codelineno-51-87"></a><span class="c1"># Block personality changes</span>
+<a id="__codelineno-51-88" name="__codelineno-51-88" href="#__codelineno-51-88"></a><span class="na">LockPersonality</span><span class="o">=</span><span class="s">true</span>
+<a id="__codelineno-51-89" name="__codelineno-51-89" href="#__codelineno-51-89"></a><span class="c1"># Prevent written memory execution (JIT may require disabling this)</span>
+<a id="__codelineno-51-90" name="__codelineno-51-90" href="#__codelineno-51-90"></a><span class="c1"># MemoryDenyWriteExecute=true</span>
+<a id="__codelineno-51-91" name="__codelineno-51-91" href="#__codelineno-51-91"></a>
+<a id="__codelineno-51-92" name="__codelineno-51-92" href="#__codelineno-51-92"></a><span class="c1"># --- Resource limits ---</span>
+<a id="__codelineno-51-93" name="__codelineno-51-93" href="#__codelineno-51-93"></a><span class="c1"># Maximum 50% CPU</span>
+<a id="__codelineno-51-94" name="__codelineno-51-94" href="#__codelineno-51-94"></a><span class="na">CPUQuota</span><span class="o">=</span><span class="s">50%</span>
+<a id="__codelineno-51-95" name="__codelineno-51-95" href="#__codelineno-51-95"></a><span class="c1"># Maximum 2GB RAM</span>
+<a id="__codelineno-51-96" name="__codelineno-51-96" href="#__codelineno-51-96"></a><span class="na">MemoryMax</span><span class="o">=</span><span class="s">2G</span>
+<a id="__codelineno-51-97" name="__codelineno-51-97" href="#__codelineno-51-97"></a><span class="c1"># Maximum 100 processes/threads</span>
+<a id="__codelineno-51-98" name="__codelineno-51-98" href="#__codelineno-51-98"></a><span class="na">TasksMax</span><span class="o">=</span><span class="s">100</span>
+<a id="__codelineno-51-99" name="__codelineno-51-99" href="#__codelineno-51-99"></a>
+<a id="__codelineno-51-100" name="__codelineno-51-100" href="#__codelineno-51-100"></a><span class="c1"># --- Logging ---</span>
+<a id="__codelineno-51-101" name="__codelineno-51-101" href="#__codelineno-51-101"></a><span class="na">StandardOutput</span><span class="o">=</span><span class="s">journal</span>
+<a id="__codelineno-51-102" name="__codelineno-51-102" href="#__codelineno-51-102"></a><span class="na">StandardError</span><span class="o">=</span><span class="s">journal</span>
+<a id="__codelineno-51-103" name="__codelineno-51-103" href="#__codelineno-51-103"></a><span class="na">SyslogIdentifier</span><span class="o">=</span><span class="s">openclaw</span>
+<a id="__codelineno-51-104" name="__codelineno-51-104" href="#__codelineno-51-104"></a>
+<a id="__codelineno-51-105" name="__codelineno-51-105" href="#__codelineno-51-105"></a><span class="k">[Install]</span>
+<a id="__codelineno-51-106" name="__codelineno-51-106" href="#__codelineno-51-106"></a><span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
 </code></pre></div>
 <h3 id="verify-openclaw-path-before-activating">Verify OpenClaw path before activating<a class="headerlink" href="#verify-openclaw-path-before-activating" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="c1"># IMPORTANT: Verify the correct binary path</span>
-<a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a>which<span class="w"> </span>openclaw
-<a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a>
-<a id="__codelineno-51-4" name="__codelineno-51-4" href="#__codelineno-51-4"></a><span class="c1"># If the path is different from /home/openclaw/.local/bin/openclaw,</span>
-<a id="__codelineno-51-5" name="__codelineno-51-5" href="#__codelineno-51-5"></a><span class="c1"># edit the service file and update ExecStart with the correct path</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="c1"># IMPORTANT: Verify the correct binary path</span>
+<a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>which<span class="w"> </span>openclaw
+<a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>
+<a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="c1"># If the path is different from /home/openclaw/.local/bin/openclaw,</span>
+<a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a><span class="c1"># edit the service file and update ExecStart with the correct path</span>
 </code></pre></div>
 <h3 id="activate-service">Activate service<a class="headerlink" href="#activate-service" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="c1"># Reload systemd configuration</span>
-<a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
-<a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>
-<a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="c1"># Enable automatic startup</span>
-<a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>openclaw
-<a id="__codelineno-52-6" name="__codelineno-52-6" href="#__codelineno-52-6"></a>
-<a id="__codelineno-52-7" name="__codelineno-52-7" href="#__codelineno-52-7"></a><span class="c1"># Start service</span>
-<a id="__codelineno-52-8" name="__codelineno-52-8" href="#__codelineno-52-8"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>openclaw
-<a id="__codelineno-52-9" name="__codelineno-52-9" href="#__codelineno-52-9"></a>
-<a id="__codelineno-52-10" name="__codelineno-52-10" href="#__codelineno-52-10"></a><span class="c1"># View status</span>
-<a id="__codelineno-52-11" name="__codelineno-52-11" href="#__codelineno-52-11"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>openclaw
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="c1"># Reload systemd configuration</span>
+<a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+<a id="__codelineno-53-3" name="__codelineno-53-3" href="#__codelineno-53-3"></a>
+<a id="__codelineno-53-4" name="__codelineno-53-4" href="#__codelineno-53-4"></a><span class="c1"># Enable automatic startup</span>
+<a id="__codelineno-53-5" name="__codelineno-53-5" href="#__codelineno-53-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>openclaw
+<a id="__codelineno-53-6" name="__codelineno-53-6" href="#__codelineno-53-6"></a>
+<a id="__codelineno-53-7" name="__codelineno-53-7" href="#__codelineno-53-7"></a><span class="c1"># Start service</span>
+<a id="__codelineno-53-8" name="__codelineno-53-8" href="#__codelineno-53-8"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>openclaw
+<a id="__codelineno-53-9" name="__codelineno-53-9" href="#__codelineno-53-9"></a>
+<a id="__codelineno-53-10" name="__codelineno-53-10" href="#__codelineno-53-10"></a><span class="c1"># View status</span>
+<a id="__codelineno-53-11" name="__codelineno-53-11" href="#__codelineno-53-11"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>openclaw
 </code></pre></div>
 <p><strong>Expected output:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>● openclaw.service - OpenClaw AI Agent
-<a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a>     Loaded: loaded (/etc/systemd/system/openclaw.service; enabled; ...)
-<a id="__codelineno-53-3" name="__codelineno-53-3" href="#__codelineno-53-3"></a>     Active: active (running) since ...
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>● openclaw.service - OpenClaw AI Agent
+<a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a>     Loaded: loaded (/etc/systemd/system/openclaw.service; enabled; ...)
+<a id="__codelineno-54-3" name="__codelineno-54-3" href="#__codelineno-54-3"></a>     Active: active (running) since ...
 </code></pre></div></p>
 <div class="admonition info">
 <p class="admonition-title">Gateway startup time</p>
 <p>On a 4GB VPS, the gateway can take <strong>1-2 minutes</strong> to fully start and begin listening on port 18789. Use <code>ss -tln | grep 18789</code> to verify it's ready. If it doesn't show immediately, wait and retry.</p>
 </div>
 <h3 id="verify-logs">Verify logs<a class="headerlink" href="#verify-logs" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="c1"># View logs in real-time</span>
-<a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a>sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>openclaw<span class="w"> </span>-f
-<a id="__codelineno-54-3" name="__codelineno-54-3" href="#__codelineno-54-3"></a>
-<a id="__codelineno-54-4" name="__codelineno-54-4" href="#__codelineno-54-4"></a><span class="c1"># View last 50 logs</span>
-<a id="__codelineno-54-5" name="__codelineno-54-5" href="#__codelineno-54-5"></a>sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>openclaw<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="c1"># View logs in real-time</span>
+<a id="__codelineno-55-2" name="__codelineno-55-2" href="#__codelineno-55-2"></a>sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>openclaw<span class="w"> </span>-f
+<a id="__codelineno-55-3" name="__codelineno-55-3" href="#__codelineno-55-3"></a>
+<a id="__codelineno-55-4" name="__codelineno-55-4" href="#__codelineno-55-4"></a><span class="c1"># View last 50 logs</span>
+<a id="__codelineno-55-5" name="__codelineno-55-5" href="#__codelineno-55-5"></a>sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>openclaw<span class="w"> </span>-n<span class="w"> </span><span class="m">50</span>
 </code></pre></div>
 <hr />
 <h2 id="verify-service-hardening">Verify service hardening<a class="headerlink" href="#verify-service-hardening" title="Permanent link">&para;</a></h2>
 <p>systemd includes a tool to analyze service security:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a>systemd-analyze<span class="w"> </span>security<span class="w"> </span>openclaw.service
+<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a>systemd-analyze<span class="w"> </span>security<span class="w"> </span>openclaw.service
 </code></pre></div>
 <p><strong>Expected output:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a>  NAME                                 DESCRIPTION                              EXPOSURE
-<a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a>✓ PrivateDevices=                      Service has no access to hardware devices    0.2
-<a id="__codelineno-56-3" name="__codelineno-56-3" href="#__codelineno-56-3"></a>✓ PrivateTmp=                          Service has a private /tmp                   0.1
-<a id="__codelineno-56-4" name="__codelineno-56-4" href="#__codelineno-56-4"></a>✓ ProtectSystem=                       Service has strict read-only access          0.1
-<a id="__codelineno-56-5" name="__codelineno-56-5" href="#__codelineno-56-5"></a>...
-<a id="__codelineno-56-6" name="__codelineno-56-6" href="#__codelineno-56-6"></a>→ Overall exposure level for openclaw.service: 2.4 OK
+<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a>  NAME                                 DESCRIPTION                              EXPOSURE
+<a id="__codelineno-57-2" name="__codelineno-57-2" href="#__codelineno-57-2"></a>✓ PrivateDevices=                      Service has no access to hardware devices    0.2
+<a id="__codelineno-57-3" name="__codelineno-57-3" href="#__codelineno-57-3"></a>✓ PrivateTmp=                          Service has a private /tmp                   0.1
+<a id="__codelineno-57-4" name="__codelineno-57-4" href="#__codelineno-57-4"></a>✓ ProtectSystem=                       Service has strict read-only access          0.1
+<a id="__codelineno-57-5" name="__codelineno-57-5" href="#__codelineno-57-5"></a>...
+<a id="__codelineno-57-6" name="__codelineno-57-6" href="#__codelineno-57-6"></a>→ Overall exposure level for openclaw.service: 2.4 OK
 </code></pre></div></p>
 <div class="admonition success">
 <p class="admonition-title">Target: score &lt; 5.0</p>
@@ -3229,24 +3290,24 @@ for the version you're installing.</p>
 <h2 id="access-openclaw">Access OpenClaw<a class="headerlink" href="#access-openclaw" title="Permanent link">&para;</a></h2>
 <p>From your device (with Tailscale):</p>
 <h3 id="option-1-port-forwarding-via-ssh-recommended">Option 1: Port forwarding via SSH (RECOMMENDED)<a class="headerlink" href="#option-1-port-forwarding-via-ssh-recommended" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="c1"># Forward local port 18789 to VPS</span>
-<a id="__codelineno-57-2" name="__codelineno-57-2" href="#__codelineno-57-2"></a>ssh<span class="w"> </span>-L<span class="w"> </span><span class="m">18789</span>:127.0.0.1:18789<span class="w"> </span>openclaw@&lt;YOUR_TAILSCALE_IP&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a><span class="c1"># Forward local port 18789 to VPS</span>
+<a id="__codelineno-58-2" name="__codelineno-58-2" href="#__codelineno-58-2"></a>ssh<span class="w"> </span>-L<span class="w"> </span><span class="m">18789</span>:127.0.0.1:18789<span class="w"> </span>openclaw@&lt;YOUR_TAILSCALE_IP&gt;
 </code></pre></div>
 <p>Now access in your browser: <code>http://localhost:18789</code></p>
 <h4 id="authenticate-in-the-control-ui">Authenticate in the Control UI<a class="headerlink" href="#authenticate-in-the-control-ui" title="Permanent link">&para;</a></h4>
 <p>On first connect, the dashboard shows <strong>"unauthorized: gateway token missing"</strong>. Pass your token via URL:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a>http://127.0.0.1:18789/?#token=YOUR_GATEWAY_TOKEN
+<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a>http://127.0.0.1:18789/?#token=YOUR_GATEWAY_TOKEN
 </code></pre></div>
 <p>To find your token:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a>openclaw<span class="w"> </span>config<span class="w"> </span>get<span class="w"> </span>gateway.auth.token
+<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a>openclaw<span class="w"> </span>config<span class="w"> </span>get<span class="w"> </span>gateway.auth.token
 </code></pre></div>
 <p>The token is stored in the browser's localStorage — you only need to do this once per browser.</p>
 <h4 id="recommended-aliases-for-macoslinux">Recommended aliases for macOS/Linux<a class="headerlink" href="#recommended-aliases-for-macoslinux" title="Permanent link">&para;</a></h4>
 <p>Add these to your <code>~/.zshrc</code> or <code>~/.bashrc</code> on your <strong>local machine</strong> (not the VPS):</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a><span class="c1"># OPENCLAW</span>
-<a id="__codelineno-60-2" name="__codelineno-60-2" href="#__codelineno-60-2"></a><span class="nb">alias</span><span class="w"> </span><span class="nv">oclaw</span><span class="o">=</span><span class="s2">&quot;ssh openclaw@&lt;YOUR_TAILSCALE_IP&gt;&quot;</span>
-<a id="__codelineno-60-3" name="__codelineno-60-3" href="#__codelineno-60-3"></a><span class="nb">alias</span><span class="w"> </span><span class="nv">ooclaw</span><span class="o">=</span><span class="s1">&#39;pkill -f &quot;ssh.*18789.*openclaw&quot; 2&gt;/dev/null; sleep 0.5; ssh -f -L 18789:127.0.0.1:18789 openclaw@&lt;YOUR_TAILSCALE_IP&gt; sleep 9999 &amp;&amp; sleep 1 &amp;&amp; open http://127.0.0.1:18789&#39;</span>
-<a id="__codelineno-60-4" name="__codelineno-60-4" href="#__codelineno-60-4"></a><span class="nb">alias</span><span class="w"> </span><span class="nv">closeclaw</span><span class="o">=</span><span class="s1">&#39;pkill -f &quot;ssh.*18789.*openclaw&quot; 2&gt;/dev/null; echo &quot;Tunnel closed&quot;&#39;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a><span class="c1"># OPENCLAW</span>
+<a id="__codelineno-61-2" name="__codelineno-61-2" href="#__codelineno-61-2"></a><span class="nb">alias</span><span class="w"> </span><span class="nv">oclaw</span><span class="o">=</span><span class="s2">&quot;ssh openclaw@&lt;YOUR_TAILSCALE_IP&gt;&quot;</span>
+<a id="__codelineno-61-3" name="__codelineno-61-3" href="#__codelineno-61-3"></a><span class="nb">alias</span><span class="w"> </span><span class="nv">ooclaw</span><span class="o">=</span><span class="s1">&#39;pkill -f &quot;ssh.*18789.*openclaw&quot; 2&gt;/dev/null; sleep 0.5; ssh -f -L 18789:127.0.0.1:18789 openclaw@&lt;YOUR_TAILSCALE_IP&gt; sleep 9999 &amp;&amp; sleep 1 &amp;&amp; open http://127.0.0.1:18789&#39;</span>
+<a id="__codelineno-61-4" name="__codelineno-61-4" href="#__codelineno-61-4"></a><span class="nb">alias</span><span class="w"> </span><span class="nv">closeclaw</span><span class="o">=</span><span class="s1">&#39;pkill -f &quot;ssh.*18789.*openclaw&quot; 2&gt;/dev/null; echo &quot;Tunnel closed&quot;&#39;</span>
 </code></pre></div>
 <table>
 <thead>
@@ -3275,8 +3336,8 @@ for the version you're installing.</p>
 <p>Use your VPS Tailscale IP (e.g., <code>100.x.x.x</code>). On Linux, replace <code>open</code> with <code>xdg-open</code>.</p>
 </div>
 <h3 id="option-2-tailscale-serve">Option 2: Tailscale Serve<a class="headerlink" href="#option-2-tailscale-serve" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a><span class="c1"># On the VPS - expose port only within Tailscale</span>
-<a id="__codelineno-61-2" name="__codelineno-61-2" href="#__codelineno-61-2"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>serve<span class="w"> </span>--bg<span class="w"> </span><span class="m">18789</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a><span class="c1"># On the VPS - expose port only within Tailscale</span>
+<a id="__codelineno-62-2" name="__codelineno-62-2" href="#__codelineno-62-2"></a>sudo<span class="w"> </span>tailscale<span class="w"> </span>serve<span class="w"> </span>--bg<span class="w"> </span><span class="m">18789</span>
 </code></pre></div>
 <p>This exposes the port only within your Tailscale network at <code>https://your-vps.tail1234.ts.net</code></p>
 <h3 id="option-3-tailscale-funnel-not-recommended">Option 3: Tailscale Funnel (NOT RECOMMENDED)<a class="headerlink" href="#option-3-tailscale-funnel-not-recommended" title="Permanent link">&para;</a></h3>
@@ -3286,92 +3347,92 @@ for the version you're installing.</p>
 </div>
 <hr />
 <h2 id="final-security-verification">Final security verification<a class="headerlink" href="#final-security-verification" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;============================================&quot;</span>
-<a id="__codelineno-62-2" name="__codelineno-62-2" href="#__codelineno-62-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;SECURITY VERIFICATION - OPENCLAW&quot;</span>
-<a id="__codelineno-62-3" name="__codelineno-62-3" href="#__codelineno-62-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;============================================&quot;</span>
-<a id="__codelineno-62-4" name="__codelineno-62-4" href="#__codelineno-62-4"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
-<a id="__codelineno-62-5" name="__codelineno-62-5" href="#__codelineno-62-5"></a>
-<a id="__codelineno-62-6" name="__codelineno-62-6" href="#__codelineno-62-6"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- Listening ports ---&quot;</span>
-<a id="__codelineno-62-7" name="__codelineno-62-7" href="#__codelineno-62-7"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;(18789|22)&quot;</span>
-<a id="__codelineno-62-8" name="__codelineno-62-8" href="#__codelineno-62-8"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
-<a id="__codelineno-62-9" name="__codelineno-62-9" href="#__codelineno-62-9"></a>
-<a id="__codelineno-62-10" name="__codelineno-62-10" href="#__codelineno-62-10"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- Verify OpenClaw is NOT on 0.0.0.0 ---&quot;</span>
-<a id="__codelineno-62-11" name="__codelineno-62-11" href="#__codelineno-62-11"></a><span class="k">if</span><span class="w"> </span>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;:18789&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<a id="__codelineno-62-12" name="__codelineno-62-12" href="#__codelineno-62-12"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ DANGER: OpenClaw listening on all interfaces!&quot;</span>
-<a id="__codelineno-62-13" name="__codelineno-62-13" href="#__codelineno-62-13"></a><span class="k">else</span>
-<a id="__codelineno-62-14" name="__codelineno-62-14" href="#__codelineno-62-14"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ OpenClaw only listening on localhost&quot;</span>
-<a id="__codelineno-62-15" name="__codelineno-62-15" href="#__codelineno-62-15"></a><span class="k">fi</span>
-<a id="__codelineno-62-16" name="__codelineno-62-16" href="#__codelineno-62-16"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
-<a id="__codelineno-62-17" name="__codelineno-62-17" href="#__codelineno-62-17"></a>
-<a id="__codelineno-62-18" name="__codelineno-62-18" href="#__codelineno-62-18"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- Verify .env permissions ---&quot;</span>
-<a id="__codelineno-62-19" name="__codelineno-62-19" href="#__codelineno-62-19"></a><span class="nv">perms</span><span class="o">=</span><span class="k">$(</span>stat<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;%a&quot;</span><span class="w"> </span>~/openclaw/.env<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span>
-<a id="__codelineno-62-20" name="__codelineno-62-20" href="#__codelineno-62-20"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$perms</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;600&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<a id="__codelineno-62-21" name="__codelineno-62-21" href="#__codelineno-62-21"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ .env has permissions 600&quot;</span>
-<a id="__codelineno-62-22" name="__codelineno-62-22" href="#__codelineno-62-22"></a><span class="k">else</span>
-<a id="__codelineno-62-23" name="__codelineno-62-23" href="#__codelineno-62-23"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ .env has permissions </span><span class="nv">$perms</span><span class="s2"> (should be 600)&quot;</span>
-<a id="__codelineno-62-24" name="__codelineno-62-24" href="#__codelineno-62-24"></a><span class="k">fi</span>
-<a id="__codelineno-62-25" name="__codelineno-62-25" href="#__codelineno-62-25"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
-<a id="__codelineno-62-26" name="__codelineno-62-26" href="#__codelineno-62-26"></a>
-<a id="__codelineno-62-27" name="__codelineno-62-27" href="#__codelineno-62-27"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- Verify systemd service ---&quot;</span>
-<a id="__codelineno-62-28" name="__codelineno-62-28" href="#__codelineno-62-28"></a><span class="k">if</span><span class="w"> </span>systemctl<span class="w"> </span>is-active<span class="w"> </span>openclaw<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<a id="__codelineno-62-29" name="__codelineno-62-29" href="#__codelineno-62-29"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ openclaw service active&quot;</span>
-<a id="__codelineno-62-30" name="__codelineno-62-30" href="#__codelineno-62-30"></a><span class="k">else</span>
-<a id="__codelineno-62-31" name="__codelineno-62-31" href="#__codelineno-62-31"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ openclaw service NOT active&quot;</span>
-<a id="__codelineno-62-32" name="__codelineno-62-32" href="#__codelineno-62-32"></a><span class="k">fi</span>
-<a id="__codelineno-62-33" name="__codelineno-62-33" href="#__codelineno-62-33"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
-<a id="__codelineno-62-34" name="__codelineno-62-34" href="#__codelineno-62-34"></a>
-<a id="__codelineno-62-35" name="__codelineno-62-35" href="#__codelineno-62-35"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- systemd security score ---&quot;</span>
-<a id="__codelineno-62-36" name="__codelineno-62-36" href="#__codelineno-62-36"></a><span class="nv">score</span><span class="o">=</span><span class="k">$(</span>systemd-analyze<span class="w"> </span>security<span class="w"> </span>openclaw.service<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Overall&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $NF}&#39;</span><span class="k">)</span>
-<a id="__codelineno-62-37" name="__codelineno-62-37" href="#__codelineno-62-37"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Score: </span><span class="nv">$score</span><span class="s2">&quot;</span>
-<a id="__codelineno-62-38" name="__codelineno-62-38" href="#__codelineno-62-38"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
-<a id="__codelineno-62-39" name="__codelineno-62-39" href="#__codelineno-62-39"></a>
-<a id="__codelineno-62-40" name="__codelineno-62-40" href="#__codelineno-62-40"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;============================================&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;============================================&quot;</span>
+<a id="__codelineno-63-2" name="__codelineno-63-2" href="#__codelineno-63-2"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;SECURITY VERIFICATION - OPENCLAW&quot;</span>
+<a id="__codelineno-63-3" name="__codelineno-63-3" href="#__codelineno-63-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;============================================&quot;</span>
+<a id="__codelineno-63-4" name="__codelineno-63-4" href="#__codelineno-63-4"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-63-5" name="__codelineno-63-5" href="#__codelineno-63-5"></a>
+<a id="__codelineno-63-6" name="__codelineno-63-6" href="#__codelineno-63-6"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- Listening ports ---&quot;</span>
+<a id="__codelineno-63-7" name="__codelineno-63-7" href="#__codelineno-63-7"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;(18789|22)&quot;</span>
+<a id="__codelineno-63-8" name="__codelineno-63-8" href="#__codelineno-63-8"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-63-9" name="__codelineno-63-9" href="#__codelineno-63-9"></a>
+<a id="__codelineno-63-10" name="__codelineno-63-10" href="#__codelineno-63-10"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- Verify OpenClaw is NOT on 0.0.0.0 ---&quot;</span>
+<a id="__codelineno-63-11" name="__codelineno-63-11" href="#__codelineno-63-11"></a><span class="k">if</span><span class="w"> </span>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;:18789&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-63-12" name="__codelineno-63-12" href="#__codelineno-63-12"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ DANGER: OpenClaw listening on all interfaces!&quot;</span>
+<a id="__codelineno-63-13" name="__codelineno-63-13" href="#__codelineno-63-13"></a><span class="k">else</span>
+<a id="__codelineno-63-14" name="__codelineno-63-14" href="#__codelineno-63-14"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ OpenClaw only listening on localhost&quot;</span>
+<a id="__codelineno-63-15" name="__codelineno-63-15" href="#__codelineno-63-15"></a><span class="k">fi</span>
+<a id="__codelineno-63-16" name="__codelineno-63-16" href="#__codelineno-63-16"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-63-17" name="__codelineno-63-17" href="#__codelineno-63-17"></a>
+<a id="__codelineno-63-18" name="__codelineno-63-18" href="#__codelineno-63-18"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- Verify .env permissions ---&quot;</span>
+<a id="__codelineno-63-19" name="__codelineno-63-19" href="#__codelineno-63-19"></a><span class="nv">perms</span><span class="o">=</span><span class="k">$(</span>stat<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;%a&quot;</span><span class="w"> </span>~/openclaw/.env<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="k">)</span>
+<a id="__codelineno-63-20" name="__codelineno-63-20" href="#__codelineno-63-20"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$perms</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;600&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-63-21" name="__codelineno-63-21" href="#__codelineno-63-21"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ .env has permissions 600&quot;</span>
+<a id="__codelineno-63-22" name="__codelineno-63-22" href="#__codelineno-63-22"></a><span class="k">else</span>
+<a id="__codelineno-63-23" name="__codelineno-63-23" href="#__codelineno-63-23"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ .env has permissions </span><span class="nv">$perms</span><span class="s2"> (should be 600)&quot;</span>
+<a id="__codelineno-63-24" name="__codelineno-63-24" href="#__codelineno-63-24"></a><span class="k">fi</span>
+<a id="__codelineno-63-25" name="__codelineno-63-25" href="#__codelineno-63-25"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-63-26" name="__codelineno-63-26" href="#__codelineno-63-26"></a>
+<a id="__codelineno-63-27" name="__codelineno-63-27" href="#__codelineno-63-27"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- Verify systemd service ---&quot;</span>
+<a id="__codelineno-63-28" name="__codelineno-63-28" href="#__codelineno-63-28"></a><span class="k">if</span><span class="w"> </span>systemctl<span class="w"> </span>is-active<span class="w"> </span>openclaw<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<a id="__codelineno-63-29" name="__codelineno-63-29" href="#__codelineno-63-29"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ openclaw service active&quot;</span>
+<a id="__codelineno-63-30" name="__codelineno-63-30" href="#__codelineno-63-30"></a><span class="k">else</span>
+<a id="__codelineno-63-31" name="__codelineno-63-31" href="#__codelineno-63-31"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ openclaw service NOT active&quot;</span>
+<a id="__codelineno-63-32" name="__codelineno-63-32" href="#__codelineno-63-32"></a><span class="k">fi</span>
+<a id="__codelineno-63-33" name="__codelineno-63-33" href="#__codelineno-63-33"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-63-34" name="__codelineno-63-34" href="#__codelineno-63-34"></a>
+<a id="__codelineno-63-35" name="__codelineno-63-35" href="#__codelineno-63-35"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;--- systemd security score ---&quot;</span>
+<a id="__codelineno-63-36" name="__codelineno-63-36" href="#__codelineno-63-36"></a><span class="nv">score</span><span class="o">=</span><span class="k">$(</span>systemd-analyze<span class="w"> </span>security<span class="w"> </span>openclaw.service<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Overall&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $NF}&#39;</span><span class="k">)</span>
+<a id="__codelineno-63-37" name="__codelineno-63-37" href="#__codelineno-63-37"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Score: </span><span class="nv">$score</span><span class="s2">&quot;</span>
+<a id="__codelineno-63-38" name="__codelineno-63-38" href="#__codelineno-63-38"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<a id="__codelineno-63-39" name="__codelineno-63-39" href="#__codelineno-63-39"></a>
+<a id="__codelineno-63-40" name="__codelineno-63-40" href="#__codelineno-63-40"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;============================================&quot;</span>
 </code></pre></div>
 <hr />
 <h2 id="basic-monitoring">Basic monitoring<a class="headerlink" href="#basic-monitoring" title="Permanent link">&para;</a></h2>
 <h3 id="view-logs-in-real-time">View logs in real-time<a class="headerlink" href="#view-logs-in-real-time" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="c1"># systemd logs</span>
-<a id="__codelineno-63-2" name="__codelineno-63-2" href="#__codelineno-63-2"></a>sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>openclaw<span class="w"> </span>-f
-<a id="__codelineno-63-3" name="__codelineno-63-3" href="#__codelineno-63-3"></a>
-<a id="__codelineno-63-4" name="__codelineno-63-4" href="#__codelineno-63-4"></a><span class="c1"># Application logs (if configured)</span>
-<a id="__codelineno-63-5" name="__codelineno-63-5" href="#__codelineno-63-5"></a>tail<span class="w"> </span>-f<span class="w"> </span>~/openclaw/logs/openclaw.log
+<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="c1"># systemd logs</span>
+<a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a>sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>openclaw<span class="w"> </span>-f
+<a id="__codelineno-64-3" name="__codelineno-64-3" href="#__codelineno-64-3"></a>
+<a id="__codelineno-64-4" name="__codelineno-64-4" href="#__codelineno-64-4"></a><span class="c1"># Application logs (if configured)</span>
+<a id="__codelineno-64-5" name="__codelineno-64-5" href="#__codelineno-64-5"></a>tail<span class="w"> </span>-f<span class="w"> </span>~/openclaw/logs/openclaw.log
 </code></pre></div>
 <h3 id="detect-anomalous-behavior">Detect anomalous behavior<a class="headerlink" href="#detect-anomalous-behavior" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="c1"># Active network connections from OpenClaw process</span>
-<a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;(node|python)&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;127.0.0.1&quot;</span>
-<a id="__codelineno-64-3" name="__codelineno-64-3" href="#__codelineno-64-3"></a>
-<a id="__codelineno-64-4" name="__codelineno-64-4" href="#__codelineno-64-4"></a><span class="c1"># CPU/memory usage</span>
-<a id="__codelineno-64-5" name="__codelineno-64-5" href="#__codelineno-64-5"></a>ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;(node|python)&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>openclaw
-<a id="__codelineno-64-6" name="__codelineno-64-6" href="#__codelineno-64-6"></a>
-<a id="__codelineno-64-7" name="__codelineno-64-7" href="#__codelineno-64-7"></a><span class="c1"># Recently modified files in workspace</span>
-<a id="__codelineno-64-8" name="__codelineno-64-8" href="#__codelineno-64-8"></a>find<span class="w"> </span>~/openclaw/workspace<span class="w"> </span>-mmin<span class="w"> </span>-60<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span><span class="m">2</span>&gt;/dev/null
-<a id="__codelineno-64-9" name="__codelineno-64-9" href="#__codelineno-64-9"></a>
-<a id="__codelineno-64-10" name="__codelineno-64-10" href="#__codelineno-64-10"></a><span class="c1"># Verify no connections to suspicious IPs</span>
-<a id="__codelineno-64-11" name="__codelineno-64-11" href="#__codelineno-64-11"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;(node|python)&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $5}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d:<span class="w"> </span>-f1<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-u
+<div class="highlight"><pre><span></span><code><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="c1"># Active network connections from OpenClaw process</span>
+<a id="__codelineno-65-2" name="__codelineno-65-2" href="#__codelineno-65-2"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;(node|python)&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;127.0.0.1&quot;</span>
+<a id="__codelineno-65-3" name="__codelineno-65-3" href="#__codelineno-65-3"></a>
+<a id="__codelineno-65-4" name="__codelineno-65-4" href="#__codelineno-65-4"></a><span class="c1"># CPU/memory usage</span>
+<a id="__codelineno-65-5" name="__codelineno-65-5" href="#__codelineno-65-5"></a>ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;(node|python)&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>openclaw
+<a id="__codelineno-65-6" name="__codelineno-65-6" href="#__codelineno-65-6"></a>
+<a id="__codelineno-65-7" name="__codelineno-65-7" href="#__codelineno-65-7"></a><span class="c1"># Recently modified files in workspace</span>
+<a id="__codelineno-65-8" name="__codelineno-65-8" href="#__codelineno-65-8"></a>find<span class="w"> </span>~/openclaw/workspace<span class="w"> </span>-mmin<span class="w"> </span>-60<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+<a id="__codelineno-65-9" name="__codelineno-65-9" href="#__codelineno-65-9"></a>
+<a id="__codelineno-65-10" name="__codelineno-65-10" href="#__codelineno-65-10"></a><span class="c1"># Verify no connections to suspicious IPs</span>
+<a id="__codelineno-65-11" name="__codelineno-65-11" href="#__codelineno-65-11"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;(node|python)&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $5}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d:<span class="w"> </span>-f1<span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-u
 </code></pre></div>
 <hr />
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="error-eaddrinuse-address-already-in-use">Error: "EADDRINUSE: address already in use"<a class="headerlink" href="#error-eaddrinuse-address-already-in-use" title="Permanent link">&para;</a></h3>
 <p><strong>Cause</strong>: Port 18789 is already in use.</p>
 <p><strong>Solution</strong>:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="c1"># See what process is using the port</span>
-<a id="__codelineno-65-2" name="__codelineno-65-2" href="#__codelineno-65-2"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">18789</span>
-<a id="__codelineno-65-3" name="__codelineno-65-3" href="#__codelineno-65-3"></a>
-<a id="__codelineno-65-4" name="__codelineno-65-4" href="#__codelineno-65-4"></a><span class="c1"># Kill the process if necessary</span>
-<a id="__codelineno-65-5" name="__codelineno-65-5" href="#__codelineno-65-5"></a>sudo<span class="w"> </span><span class="nb">kill</span><span class="w"> </span><span class="k">$(</span>sudo<span class="w"> </span>lsof<span class="w"> </span>-t<span class="w"> </span>-i:18789<span class="k">)</span>
-<a id="__codelineno-65-6" name="__codelineno-65-6" href="#__codelineno-65-6"></a>
-<a id="__codelineno-65-7" name="__codelineno-65-7" href="#__codelineno-65-7"></a><span class="c1"># Restart service</span>
-<a id="__codelineno-65-8" name="__codelineno-65-8" href="#__codelineno-65-8"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>openclaw
+<div class="highlight"><pre><span></span><code><a id="__codelineno-66-1" name="__codelineno-66-1" href="#__codelineno-66-1"></a><span class="c1"># See what process is using the port</span>
+<a id="__codelineno-66-2" name="__codelineno-66-2" href="#__codelineno-66-2"></a>sudo<span class="w"> </span>ss<span class="w"> </span>-tlnp<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="m">18789</span>
+<a id="__codelineno-66-3" name="__codelineno-66-3" href="#__codelineno-66-3"></a>
+<a id="__codelineno-66-4" name="__codelineno-66-4" href="#__codelineno-66-4"></a><span class="c1"># Kill the process if necessary</span>
+<a id="__codelineno-66-5" name="__codelineno-66-5" href="#__codelineno-66-5"></a>sudo<span class="w"> </span><span class="nb">kill</span><span class="w"> </span><span class="k">$(</span>sudo<span class="w"> </span>lsof<span class="w"> </span>-t<span class="w"> </span>-i:18789<span class="k">)</span>
+<a id="__codelineno-66-6" name="__codelineno-66-6" href="#__codelineno-66-6"></a>
+<a id="__codelineno-66-7" name="__codelineno-66-7" href="#__codelineno-66-7"></a><span class="c1"># Restart service</span>
+<a id="__codelineno-66-8" name="__codelineno-66-8" href="#__codelineno-66-8"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>openclaw
 </code></pre></div></p>
 <h3 id="error-permission-denied-when-accessing-files">Error: "Permission denied" when accessing files<a class="headerlink" href="#error-permission-denied-when-accessing-files" title="Permanent link">&para;</a></h3>
 <p><strong>Cause</strong>: systemd hardening blocks access to non-allowed paths.</p>
 <p><strong>Solution</strong>:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-66-1" name="__codelineno-66-1" href="#__codelineno-66-1"></a><span class="c1"># Add the path to ReadWritePaths in the service</span>
-<a id="__codelineno-66-2" name="__codelineno-66-2" href="#__codelineno-66-2"></a>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/systemd/system/openclaw.service
-<a id="__codelineno-66-3" name="__codelineno-66-3" href="#__codelineno-66-3"></a><span class="c1"># Add: ReadWritePaths=/needed/path</span>
-<a id="__codelineno-66-4" name="__codelineno-66-4" href="#__codelineno-66-4"></a>
-<a id="__codelineno-66-5" name="__codelineno-66-5" href="#__codelineno-66-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
-<a id="__codelineno-66-6" name="__codelineno-66-6" href="#__codelineno-66-6"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>openclaw
+<div class="highlight"><pre><span></span><code><a id="__codelineno-67-1" name="__codelineno-67-1" href="#__codelineno-67-1"></a><span class="c1"># Add the path to ReadWritePaths in the service</span>
+<a id="__codelineno-67-2" name="__codelineno-67-2" href="#__codelineno-67-2"></a>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/systemd/system/openclaw.service
+<a id="__codelineno-67-3" name="__codelineno-67-3" href="#__codelineno-67-3"></a><span class="c1"># Add: ReadWritePaths=/needed/path</span>
+<a id="__codelineno-67-4" name="__codelineno-67-4" href="#__codelineno-67-4"></a>
+<a id="__codelineno-67-5" name="__codelineno-67-5" href="#__codelineno-67-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+<a id="__codelineno-67-6" name="__codelineno-67-6" href="#__codelineno-67-6"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>openclaw
 </code></pre></div></p>
 <h3 id="error-memorydenywriteexecute-with-nodejs">Error: "MemoryDenyWriteExecute" with Node.js<a class="headerlink" href="#error-memorydenywriteexecute-with-nodejs" title="Permanent link">&para;</a></h3>
 <p><strong>Cause</strong>: V8 (JavaScript engine) needs JIT which requires executable memory.</p>
@@ -3431,28 +3492,28 @@ for the version you're installing.</p>
 <hr />
 <h2 id="rollback-and-uninstallation">Rollback and uninstallation<a class="headerlink" href="#rollback-and-uninstallation" title="Permanent link">&para;</a></h2>
 <h3 id="stop-and-disable-openclaw">Stop and disable OpenClaw<a class="headerlink" href="#stop-and-disable-openclaw" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-67-1" name="__codelineno-67-1" href="#__codelineno-67-1"></a><span class="c1"># Stop the service</span>
-<a id="__codelineno-67-2" name="__codelineno-67-2" href="#__codelineno-67-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>openclaw
-<a id="__codelineno-67-3" name="__codelineno-67-3" href="#__codelineno-67-3"></a>
-<a id="__codelineno-67-4" name="__codelineno-67-4" href="#__codelineno-67-4"></a><span class="c1"># Disable automatic startup</span>
-<a id="__codelineno-67-5" name="__codelineno-67-5" href="#__codelineno-67-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>disable<span class="w"> </span>openclaw
-<a id="__codelineno-67-6" name="__codelineno-67-6" href="#__codelineno-67-6"></a>
-<a id="__codelineno-67-7" name="__codelineno-67-7" href="#__codelineno-67-7"></a><span class="c1"># Verify it&#39;s stopped</span>
-<a id="__codelineno-67-8" name="__codelineno-67-8" href="#__codelineno-67-8"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>openclaw
+<div class="highlight"><pre><span></span><code><a id="__codelineno-68-1" name="__codelineno-68-1" href="#__codelineno-68-1"></a><span class="c1"># Stop the service</span>
+<a id="__codelineno-68-2" name="__codelineno-68-2" href="#__codelineno-68-2"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>openclaw
+<a id="__codelineno-68-3" name="__codelineno-68-3" href="#__codelineno-68-3"></a>
+<a id="__codelineno-68-4" name="__codelineno-68-4" href="#__codelineno-68-4"></a><span class="c1"># Disable automatic startup</span>
+<a id="__codelineno-68-5" name="__codelineno-68-5" href="#__codelineno-68-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>disable<span class="w"> </span>openclaw
+<a id="__codelineno-68-6" name="__codelineno-68-6" href="#__codelineno-68-6"></a>
+<a id="__codelineno-68-7" name="__codelineno-68-7" href="#__codelineno-68-7"></a><span class="c1"># Verify it&#39;s stopped</span>
+<a id="__codelineno-68-8" name="__codelineno-68-8" href="#__codelineno-68-8"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>openclaw
 </code></pre></div>
 <h3 id="uninstall-openclaw">Uninstall OpenClaw<a class="headerlink" href="#uninstall-openclaw" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-68-1" name="__codelineno-68-1" href="#__codelineno-68-1"></a><span class="c1"># Remove the global npm package</span>
-<a id="__codelineno-68-2" name="__codelineno-68-2" href="#__codelineno-68-2"></a>npm<span class="w"> </span>uninstall<span class="w"> </span>-g<span class="w"> </span>openclaw
-<a id="__codelineno-68-3" name="__codelineno-68-3" href="#__codelineno-68-3"></a>
-<a id="__codelineno-68-4" name="__codelineno-68-4" href="#__codelineno-68-4"></a><span class="c1"># Remove configuration (OPTIONAL - contains secrets)</span>
-<a id="__codelineno-68-5" name="__codelineno-68-5" href="#__codelineno-68-5"></a>rm<span class="w"> </span>-rf<span class="w"> </span>~/.openclaw
-<a id="__codelineno-68-6" name="__codelineno-68-6" href="#__codelineno-68-6"></a>
-<a id="__codelineno-68-7" name="__codelineno-68-7" href="#__codelineno-68-7"></a><span class="c1"># Remove workspace and scripts (OPTIONAL - may contain data)</span>
-<a id="__codelineno-68-8" name="__codelineno-68-8" href="#__codelineno-68-8"></a>rm<span class="w"> </span>-rf<span class="w"> </span>~/openclaw
-<a id="__codelineno-68-9" name="__codelineno-68-9" href="#__codelineno-68-9"></a>
-<a id="__codelineno-68-10" name="__codelineno-68-10" href="#__codelineno-68-10"></a><span class="c1"># Remove systemd service</span>
-<a id="__codelineno-68-11" name="__codelineno-68-11" href="#__codelineno-68-11"></a>sudo<span class="w"> </span>rm<span class="w"> </span>/etc/systemd/system/openclaw.service
-<a id="__codelineno-68-12" name="__codelineno-68-12" href="#__codelineno-68-12"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+<div class="highlight"><pre><span></span><code><a id="__codelineno-69-1" name="__codelineno-69-1" href="#__codelineno-69-1"></a><span class="c1"># Remove the global npm package</span>
+<a id="__codelineno-69-2" name="__codelineno-69-2" href="#__codelineno-69-2"></a>npm<span class="w"> </span>uninstall<span class="w"> </span>-g<span class="w"> </span>openclaw
+<a id="__codelineno-69-3" name="__codelineno-69-3" href="#__codelineno-69-3"></a>
+<a id="__codelineno-69-4" name="__codelineno-69-4" href="#__codelineno-69-4"></a><span class="c1"># Remove configuration (OPTIONAL - contains secrets)</span>
+<a id="__codelineno-69-5" name="__codelineno-69-5" href="#__codelineno-69-5"></a>rm<span class="w"> </span>-rf<span class="w"> </span>~/.openclaw
+<a id="__codelineno-69-6" name="__codelineno-69-6" href="#__codelineno-69-6"></a>
+<a id="__codelineno-69-7" name="__codelineno-69-7" href="#__codelineno-69-7"></a><span class="c1"># Remove workspace and scripts (OPTIONAL - may contain data)</span>
+<a id="__codelineno-69-8" name="__codelineno-69-8" href="#__codelineno-69-8"></a>rm<span class="w"> </span>-rf<span class="w"> </span>~/openclaw
+<a id="__codelineno-69-9" name="__codelineno-69-9" href="#__codelineno-69-9"></a>
+<a id="__codelineno-69-10" name="__codelineno-69-10" href="#__codelineno-69-10"></a><span class="c1"># Remove systemd service</span>
+<a id="__codelineno-69-11" name="__codelineno-69-11" href="#__codelineno-69-11"></a>sudo<span class="w"> </span>rm<span class="w"> </span>/etc/systemd/system/openclaw.service
+<a id="__codelineno-69-12" name="__codelineno-69-12" href="#__codelineno-69-12"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
 </code></pre></div>
 <div class="admonition warning">
 <p class="admonition-title">Backup before removing</p>
@@ -3464,32 +3525,32 @@ for the version you're installing.</p>
 </ul>
 </div>
 <h3 id="uninstall-nodejs-if-no-longer-needed">Uninstall Node.js (if no longer needed)<a class="headerlink" href="#uninstall-nodejs-if-no-longer-needed" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-69-1" name="__codelineno-69-1" href="#__codelineno-69-1"></a><span class="c1"># If you used nvm</span>
-<a id="__codelineno-69-2" name="__codelineno-69-2" href="#__codelineno-69-2"></a>nvm<span class="w"> </span>deactivate
-<a id="__codelineno-69-3" name="__codelineno-69-3" href="#__codelineno-69-3"></a>nvm<span class="w"> </span>uninstall<span class="w"> </span><span class="m">22</span>
-<a id="__codelineno-69-4" name="__codelineno-69-4" href="#__codelineno-69-4"></a>
-<a id="__codelineno-69-5" name="__codelineno-69-5" href="#__codelineno-69-5"></a><span class="c1"># Remove nvm completely (optional)</span>
-<a id="__codelineno-69-6" name="__codelineno-69-6" href="#__codelineno-69-6"></a>rm<span class="w"> </span>-rf<span class="w"> </span>~/.nvm
-<a id="__codelineno-69-7" name="__codelineno-69-7" href="#__codelineno-69-7"></a><span class="c1"># Then remove the nvm lines from ~/.bashrc</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-70-1" name="__codelineno-70-1" href="#__codelineno-70-1"></a><span class="c1"># If you used nvm</span>
+<a id="__codelineno-70-2" name="__codelineno-70-2" href="#__codelineno-70-2"></a>nvm<span class="w"> </span>deactivate
+<a id="__codelineno-70-3" name="__codelineno-70-3" href="#__codelineno-70-3"></a>nvm<span class="w"> </span>uninstall<span class="w"> </span><span class="m">22</span>
+<a id="__codelineno-70-4" name="__codelineno-70-4" href="#__codelineno-70-4"></a>
+<a id="__codelineno-70-5" name="__codelineno-70-5" href="#__codelineno-70-5"></a><span class="c1"># Remove nvm completely (optional)</span>
+<a id="__codelineno-70-6" name="__codelineno-70-6" href="#__codelineno-70-6"></a>rm<span class="w"> </span>-rf<span class="w"> </span>~/.nvm
+<a id="__codelineno-70-7" name="__codelineno-70-7" href="#__codelineno-70-7"></a><span class="c1"># Then remove the nvm lines from ~/.bashrc</span>
 </code></pre></div>
 <h3 id="revert-systemd-hardening">Revert systemd hardening<a class="headerlink" href="#revert-systemd-hardening" title="Permanent link">&para;</a></h3>
 <p>The systemd service has already been removed. No residual hardening changes remain.</p>
 <h3 id="verify-complete-uninstallation">Verify complete uninstallation<a class="headerlink" href="#verify-complete-uninstallation" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-70-1" name="__codelineno-70-1" href="#__codelineno-70-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== Uninstallation verification ===&quot;</span>
-<a id="__codelineno-70-2" name="__codelineno-70-2" href="#__codelineno-70-2"></a>
-<a id="__codelineno-70-3" name="__codelineno-70-3" href="#__codelineno-70-3"></a><span class="c1"># OpenClaw</span>
-<a id="__codelineno-70-4" name="__codelineno-70-4" href="#__codelineno-70-4"></a>which<span class="w"> </span>openclaw<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ OpenClaw still installed&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ OpenClaw removed&quot;</span>
-<a id="__codelineno-70-5" name="__codelineno-70-5" href="#__codelineno-70-5"></a>
-<a id="__codelineno-70-6" name="__codelineno-70-6" href="#__codelineno-70-6"></a><span class="c1"># systemd service</span>
-<a id="__codelineno-70-7" name="__codelineno-70-7" href="#__codelineno-70-7"></a><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span>/etc/systemd/system/openclaw.service<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ systemd service exists&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ Service removed&quot;</span>
-<a id="__codelineno-70-8" name="__codelineno-70-8" href="#__codelineno-70-8"></a>
-<a id="__codelineno-70-9" name="__codelineno-70-9" href="#__codelineno-70-9"></a><span class="c1"># Configuration</span>
-<a id="__codelineno-70-10" name="__codelineno-70-10" href="#__codelineno-70-10"></a><span class="o">[</span><span class="w"> </span>-d<span class="w"> </span>~/.openclaw<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;⚠️  ~/.openclaw exists (remove manually if not needed)&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ Configuration removed&quot;</span>
-<a id="__codelineno-70-11" name="__codelineno-70-11" href="#__codelineno-70-11"></a>
-<a id="__codelineno-70-12" name="__codelineno-70-12" href="#__codelineno-70-12"></a><span class="c1"># Workspace</span>
-<a id="__codelineno-70-13" name="__codelineno-70-13" href="#__codelineno-70-13"></a><span class="o">[</span><span class="w"> </span>-d<span class="w"> </span>~/openclaw<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;⚠️  ~/openclaw exists (remove manually if not needed)&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ Workspace removed&quot;</span>
-<a id="__codelineno-70-14" name="__codelineno-70-14" href="#__codelineno-70-14"></a>
-<a id="__codelineno-70-15" name="__codelineno-70-15" href="#__codelineno-70-15"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;===================================&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-71-1" name="__codelineno-71-1" href="#__codelineno-71-1"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;=== Uninstallation verification ===&quot;</span>
+<a id="__codelineno-71-2" name="__codelineno-71-2" href="#__codelineno-71-2"></a>
+<a id="__codelineno-71-3" name="__codelineno-71-3" href="#__codelineno-71-3"></a><span class="c1"># OpenClaw</span>
+<a id="__codelineno-71-4" name="__codelineno-71-4" href="#__codelineno-71-4"></a>which<span class="w"> </span>openclaw<span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ OpenClaw still installed&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ OpenClaw removed&quot;</span>
+<a id="__codelineno-71-5" name="__codelineno-71-5" href="#__codelineno-71-5"></a>
+<a id="__codelineno-71-6" name="__codelineno-71-6" href="#__codelineno-71-6"></a><span class="c1"># systemd service</span>
+<a id="__codelineno-71-7" name="__codelineno-71-7" href="#__codelineno-71-7"></a><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span>/etc/systemd/system/openclaw.service<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;❌ systemd service exists&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ Service removed&quot;</span>
+<a id="__codelineno-71-8" name="__codelineno-71-8" href="#__codelineno-71-8"></a>
+<a id="__codelineno-71-9" name="__codelineno-71-9" href="#__codelineno-71-9"></a><span class="c1"># Configuration</span>
+<a id="__codelineno-71-10" name="__codelineno-71-10" href="#__codelineno-71-10"></a><span class="o">[</span><span class="w"> </span>-d<span class="w"> </span>~/.openclaw<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;⚠️  ~/.openclaw exists (remove manually if not needed)&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ Configuration removed&quot;</span>
+<a id="__codelineno-71-11" name="__codelineno-71-11" href="#__codelineno-71-11"></a>
+<a id="__codelineno-71-12" name="__codelineno-71-12" href="#__codelineno-71-12"></a><span class="c1"># Workspace</span>
+<a id="__codelineno-71-13" name="__codelineno-71-13" href="#__codelineno-71-13"></a><span class="o">[</span><span class="w"> </span>-d<span class="w"> </span>~/openclaw<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;⚠️  ~/openclaw exists (remove manually if not needed)&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;✅ Workspace removed&quot;</span>
+<a id="__codelineno-71-14" name="__codelineno-71-14" href="#__codelineno-71-14"></a>
+<a id="__codelineno-71-15" name="__codelineno-71-15" href="#__codelineno-71-15"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;===================================&quot;</span>
 </code></pre></div>
 <hr />
 <p><strong>Next:</strong> <a href="../06-llm-apis/">6. LLM APIs</a> — Model comparison and recommendations.</p>
