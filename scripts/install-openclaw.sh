@@ -557,22 +557,33 @@ Restart=on-failure
 RestartSec=10
 
 # === SYSTEMD HARDENING ===
+# Bare-metal approach: dedicated VPS + Tailscale VPN, no Docker needed.
+# Security enforced by exec-approvals allowlist + OS sudoers instead of
+# systemd privilege restrictions.
+
 # Filesystem isolation
-ProtectSystem=strict
+ProtectSystem=full
 ProtectHome=read-only
 ReadWritePaths=/home/openclaw/openclaw/workspace
 ReadWritePaths=/home/openclaw/openclaw/logs
 ReadWritePaths=/home/openclaw/.openclaw
 ReadWritePaths=/var/tmp/openclaw-compile-cache
+ReadWritePaths=/var/cache/apt
+ReadWritePaths=/var/lib/apt
+ReadWritePaths=/var/lib/dpkg
 PrivateTmp=true
 
 # Privilege control — relaxed for restricted sudo (see /etc/sudoers.d/openclaw)
-# sudo requires: SUID execution, privilege escalation, CAP_SETUID/SETGID, setuid() syscall
-# Security is enforced by exec-approvals allowlist + OS sudoers instead
+# sudo requires: SUID execution, privilege escalation, CAP_SETUID/SETGID
+# NOTE: PrivateDevices, LockPersonality, RestrictRealtime implicitly force
+# NoNewPrivileges=true, so they must also be false for sudo to work
 NoNewPrivileges=false
 CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_DAC_OVERRIDE CAP_FOWNER
 AmbientCapabilities=
 RestrictSUIDSGID=false
+PrivateDevices=false
+LockPersonality=false
+RestrictRealtime=false
 
 # Network restrictions
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
@@ -582,16 +593,13 @@ SystemCallFilter=@system-service
 SystemCallFilter=~@resources @mount @clock @reboot @swap @raw-io @cpu-emulation
 SystemCallArchitectures=native
 
-# Kernel protection (unchanged — no reason to relax these)
+# Kernel protection (maintained — no reason to relax these)
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectKernelLogs=true
 ProtectControlGroups=true
-PrivateDevices=true
 ProtectHostname=true
 ProtectClock=true
-RestrictRealtime=true
-LockPersonality=true
 
 # === Resource limits ===
 CPUQuota=50%

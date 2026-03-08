@@ -1501,55 +1501,47 @@ RestartSec=10
 # ============================================================
 
 # --- Proteger sistema de archivos ---
-# Sistema de archivos raíz en solo lectura
-ProtectSystem=strict
-# Home de otros usuarios no accesible
+# Enfoque bare-metal: VPS dedicado + Tailscale VPN, sin Docker.
+# Seguridad aplicada por exec-approvals allowlist + sudoers del SO.
+ProtectSystem=full
 ProtectHome=read-only
-# Paths específicos con escritura permitida
 ReadWritePaths=/home/openclaw/openclaw/workspace
 ReadWritePaths=/home/openclaw/openclaw/logs
 ReadWritePaths=/home/openclaw/.openclaw
 ReadWritePaths=/var/tmp/openclaw-compile-cache
-# Temp privado (aislado)
+ReadWritePaths=/var/cache/apt
+ReadWritePaths=/var/lib/apt
+ReadWritePaths=/var/lib/dpkg
 PrivateTmp=true
 
 # --- Control de privilegios ---
 # Relajado para sudo restringido (ver /etc/sudoers.d/openclaw)
-# sudo requiere: ejecución SUID, escalada de privilegios, CAP_SETUID/SETGID
-# La seguridad se aplica mediante exec-approvals + sudoers del SO
+# NOTA: PrivateDevices, LockPersonality, RestrictRealtime fuerzan implícitamente
+# NoNewPrivileges=true, así que también deben ser false para que sudo funcione
 NoNewPrivileges=false
 CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_DAC_OVERRIDE CAP_FOWNER
 AmbientCapabilities=
 RestrictSUIDSGID=false
+PrivateDevices=false
+LockPersonality=false
+RestrictRealtime=false
 
 # --- Aislar red ---
-# Solo permitir IPv4, IPv6, Unix sockets y Netlink (necesario para listar interfaces)
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 
 # --- Restringir syscalls ---
 # @privileged eliminado para permitir setuid()/setgid() para sudo
 SystemCallFilter=@system-service
 SystemCallFilter=~@resources @mount @clock @reboot @swap @raw-io @cpu-emulation
-# Solo arquitectura nativa
 SystemCallArchitectures=native
 
-# --- Proteger kernel (sin cambios) ---
+# --- Proteger kernel (mantenido) ---
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectKernelLogs=true
 ProtectControlGroups=true
-
-# --- Aislamiento adicional ---
-# Sin acceso a dispositivos físicos
-PrivateDevices=true
-# Hostname aislado
 ProtectHostname=true
-# Reloj del sistema protegido
 ProtectClock=true
-# Sin scheduling en tiempo real
-RestrictRealtime=true
-# Bloquear cambios de personalidad
-LockPersonality=true
 # Prevenir ejecución de memoria escrita (JIT puede requerir desactivar esto)
 # MemoryDenyWriteExecute=true
 

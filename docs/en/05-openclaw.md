@@ -1497,55 +1497,47 @@ RestartSec=10
 # ============================================================
 
 # --- Protect filesystem ---
-# Root filesystem read-only
-ProtectSystem=strict
-# Other users' home not accessible
+# Bare-metal approach: dedicated VPS + Tailscale VPN, no Docker needed.
+# Security enforced by exec-approvals allowlist + OS sudoers.
+ProtectSystem=full
 ProtectHome=read-only
-# Specific paths with write access allowed
 ReadWritePaths=/home/openclaw/openclaw/workspace
 ReadWritePaths=/home/openclaw/openclaw/logs
 ReadWritePaths=/home/openclaw/.openclaw
 ReadWritePaths=/var/tmp/openclaw-compile-cache
-# Private temp (isolated)
+ReadWritePaths=/var/cache/apt
+ReadWritePaths=/var/lib/apt
+ReadWritePaths=/var/lib/dpkg
 PrivateTmp=true
 
 # --- Privilege control ---
 # Relaxed for restricted sudo (see /etc/sudoers.d/openclaw)
-# sudo requires: SUID execution, privilege escalation, CAP_SETUID/SETGID
-# Security enforced by exec-approvals allowlist + OS sudoers instead
+# NOTE: PrivateDevices, LockPersonality, RestrictRealtime implicitly force
+# NoNewPrivileges=true, so they must also be false for sudo to work
 NoNewPrivileges=false
 CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_DAC_OVERRIDE CAP_FOWNER
 AmbientCapabilities=
 RestrictSUIDSGID=false
+PrivateDevices=false
+LockPersonality=false
+RestrictRealtime=false
 
 # --- Isolate network ---
-# AF_NETLINK required for OpenClaw to list network interfaces
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 
 # --- Restrict syscalls ---
 # @privileged removed to allow setuid()/setgid() for sudo
 SystemCallFilter=@system-service
 SystemCallFilter=~@resources @mount @clock @reboot @swap @raw-io @cpu-emulation
-# Native architecture only
 SystemCallArchitectures=native
 
-# --- Protect kernel (unchanged) ---
+# --- Protect kernel (maintained) ---
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectKernelLogs=true
 ProtectControlGroups=true
-
-# --- Additional isolation ---
-# No access to physical devices
-PrivateDevices=true
-# Isolated hostname
 ProtectHostname=true
-# System clock protected
 ProtectClock=true
-# No real-time scheduling
-RestrictRealtime=true
-# Block personality changes
-LockPersonality=true
 # Prevent written memory execution (JIT may require disabling this)
 # MemoryDenyWriteExecute=true
 
