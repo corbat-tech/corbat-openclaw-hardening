@@ -845,8 +845,8 @@ Environment="GEMINI_API_KEY=tu-api-key-de-google"
 Environment="GATEWAY_TOKEN=tu-token-del-gateway"
 
 # === Relajar hardening para apt-get (VPS dedicado) ===
-# Permite escritura en /var (apt necesita /var/cache/apt, /var/lib/dpkg)
-ProtectSystem=full
+# VPS dedicado + Tailscale + non-root + gateway token + sudoers restringido
+ProtectSystem=false
 
 # Desactivar filtros que activan NoNewPrivs implícitamente
 SystemCallFilter=
@@ -1527,7 +1527,7 @@ RestartSec=10
 # --- Proteger sistema de archivos ---
 # Enfoque bare-metal: VPS dedicado + Tailscale VPN, sin Docker.
 # Seguridad aplicada por exec-approvals allowlist + sudoers del SO.
-ProtectSystem=full
+ProtectSystem=false
 ProtectHome=read-only
 ReadWritePaths=/home/openclaw/openclaw/workspace
 ReadWritePaths=/home/openclaw/openclaw/logs

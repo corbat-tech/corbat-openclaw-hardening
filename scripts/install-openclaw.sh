@@ -562,7 +562,7 @@ RestartSec=10
 # systemd privilege restrictions.
 
 # Filesystem isolation
-ProtectSystem=full
+ProtectSystem=false
 ProtectHome=read-only
 ReadWritePaths=/home/openclaw/openclaw/workspace
 ReadWritePaths=/home/openclaw/openclaw/logs
