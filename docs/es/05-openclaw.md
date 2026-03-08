@@ -441,7 +441,7 @@ nano ~/.openclaw/openclaw.json
           "reasoning": false,
           "input": ["text", "image"],
           "contextWindow": 1048576,
-          "maxTokens": 65536,
+          "maxTokens": 65535,
           "compat": { "supportsStore": false }
         }]
       }
@@ -453,7 +453,10 @@ nano ~/.openclaw/openclaw.json
     "web": {
       "search": {
         "provider": "gemini",
-        "apiKey": "${GEMINI_API_KEY}"
+        "gemini": {
+          "apiKey": "${GEMINI_API_KEY}",
+          "model": "gemini-2.5-flash"
+        }
       }
     }
   },
@@ -485,14 +488,15 @@ nano ~/.openclaw/openclaw.json
 !!! tip "Proveedores de modelos"
     Añade los proveedores de modelos elegidos en `models.providers`. Opciones comunes:
 
-    | Proveedor | `baseUrl` | `api` | Tier gratuito | Notas |
-    |-----------|-----------|-------|---------------|-------|
-    | Google Gemini | `.../v1beta/openai` | `openai-completions` | Sí | Añadir `compat.supportsStore: false` (obligatorio) |
-    | Moonshot (Kimi K2.5) | `https://api.moonshot.ai/v1` | `openai-completions` | Sí | Separado de Kimi Coding (key y endpoint diferentes) |
-    | Kimi Coding | `https://api.kimi.com/coding/` | `anthropic-messages` | Suscripción | Añadir `headers.User-Agent: "claude-code/0.1.0"` (obligatorio para auth) |
-    | DeepSeek | `https://api.deepseek.com/v1` | `openai-completions` | Pago por uso | Muy bajo coste ($0.53/Mtok input para V3) |
-    | OpenAI | `https://api.openai.com/v1` | `openai-completions` | No | |
-    | Anthropic | `https://api.anthropic.com` | `anthropic-messages` | No | |
+    | Proveedor | `api` | Input/Output ($/MTok) | Notas |
+    |-----------|-------|----------------------|-------|
+    | Google Gemini 2.5 Flash | `openai-completions` | $0.30 / $2.50 | Añadir `compat.supportsStore: false` (obligatorio) |
+    | Google Gemini 2.5 Flash Lite | `openai-completions` | $0.10 / $0.40 | Ideal para heartbeats, modelo viable más barato |
+    | DeepSeek V3 | `openai-completions` | $0.28 / $0.42 | Mejor valor — 90% rendimiento de GPT a 1/50 del coste |
+    | Moonshot (Kimi K2.5) | `openai-completions` | $0.60 / $2.50 | Separado de Kimi Coding (key y endpoint diferentes) |
+    | Kimi Coding | `anthropic-messages` | Suscripción (~$19/mes) | Añadir `headers.User-Agent: "claude-code/0.1.0"` (obligatorio) |
+    | Anthropic Claude Sonnet 4.5 | `anthropic-messages` | $3.00 / $15.00 | |
+    | Anthropic Claude Opus 4.6 | `anthropic-messages` | $5.00 / $25.00 | |
 
     **Referencia de tipos de API:**
 
@@ -567,13 +571,28 @@ nano ~/.openclaw/openclaw.json
     **Opción B** — Config explícita en `tools.web.search` (mostrada en el JSON de ejemplo arriba):
     ```json
     "tools": {
-      "web": { "search": { "provider": "gemini", "apiKey": "${GEMINI_API_KEY}" } }
+      "web": {
+        "search": {
+          "provider": "gemini",
+          "gemini": { "apiKey": "${GEMINI_API_KEY}", "model": "gemini-2.5-flash" }
+        }
+      }
     }
     ```
 
     **Opción C** — Setup interactivo: `openclaw configure --section web`
 
     Nota: `GOOGLE_API_KEY` (para inferencia del modelo) y `GEMINI_API_KEY` (para búsqueda web) pueden usar el mismo valor de key, pero son nombres de variables diferentes.
+
+!!! info "Sustitución de variables en openclaw.json"
+    `openclaw.json` soporta `${VAR_NAME}` en valores string. Orden de resolución (gana la primera coincidencia):
+
+    1. Entorno del proceso (systemd `Environment=`)
+    2. `.env` en el directorio de trabajo actual
+    3. `~/.openclaw/.env` (fallback global)
+    4. `config.env.vars` en openclaw.json
+
+    Solo se sustituyen nombres en mayúsculas que coincidan con `[A-Z_][A-Z0-9_]*`. Usa `$${VAR}` para producir un literal `${VAR}`.
 
 !!! danger "Configuración de seguridad crítica"
     - `bind: "loopback"` — Solo escucha en localhost (nunca `0.0.0.0`)

@@ -124,7 +124,7 @@ nc -zv imap.gmail.com 993 -w 5
           "name": "Gemini 2.5 Flash",
           "input": ["text", "image"],
           "contextWindow": 1048576,
-          "maxTokens": 65536,
+          "maxTokens": 65535,
           "reasoning": false,
           "compat": { "supportsStore": false }
         }]
@@ -152,7 +152,10 @@ nc -zv imap.gmail.com 993 -w 5
     "web": {
       "search": {
         "provider": "gemini",
-        "apiKey": "${GEMINI_API_KEY}"
+        "gemini": {
+          "apiKey": "${GEMINI_API_KEY}",
+          "model": "gemini-2.5-flash"
+        }
       }
     }
   }
