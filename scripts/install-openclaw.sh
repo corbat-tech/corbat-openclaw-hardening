@@ -570,6 +570,7 @@ ReadWritePaths=/home/openclaw/.openclaw
 ReadWritePaths=/var/tmp/openclaw-compile-cache
 ReadWritePaths=/var/cache/apt
 ReadWritePaths=/var/lib/apt
+ReadWritePaths=/var/lib/apt/lists
 ReadWritePaths=/var/lib/dpkg
 ReadWritePaths=/var/log/apt
 ReadWritePaths=/tmp
