@@ -826,23 +826,45 @@ Esto crea `/etc/sudoers.d/openclaw` con acceso NOPASSWD a **solo** estos comando
 
 Todos los valores sensibles en `openclaw.json` usan referencias `${VAR_NAME}`. Los valores reales se almacenan por separado, nunca en el archivo JSON de configuración.
 
-#### Método 1: Overrides de entorno en systemd (recomendado para VPS)
+#### Método 1: EnvironmentFile + override systemd (recomendado para VPS)
 
-El método más seguro para despliegues en VPS dedicada. Los secrets se guardan en un archivo propiedad de root que solo systemd lee al arrancar.
+El método más seguro para despliegues en VPS dedicada. Las API keys van en un archivo dedicado con permisos restringidos; los overrides de hardening van en el drop-in de systemd.
+
+**Paso 1: Crear el archivo de entorno**
+
+```bash
+sudo mkdir -p /etc/openclaw
+sudo tee /etc/openclaw/env > /dev/null << 'EOF'
+KIMI_API_KEY=sk-kimi-tu-key
+GOOGLE_API_KEY=tu-api-key-de-google
+GEMINI_API_KEY=tu-api-key-de-google
+GATEWAY_TOKEN=tu-token-del-gateway
+EOF
+sudo chmod 600 /etc/openclaw/env
+sudo chown root:openclaw /etc/openclaw/env
+```
+
+!!! important "Variables de entorno necesarias"
+    | Variable | Uso |
+    |----------|-----|
+    | `KIMI_API_KEY` | Modelo principal (Kimi Coding) |
+    | `GOOGLE_API_KEY` | Modelo fallback (Gemini 2.5 Flash) |
+    | `GEMINI_API_KEY` | Web search — mismo valor que `GOOGLE_API_KEY` pero necesario como variable separada |
+    | `GATEWAY_TOKEN` | Autenticación del gateway |
+
+    `TELEGRAM_BOT_TOKEN` va en `~/.openclaw/.env` (leído por el proceso del gateway), no en el archivo de entorno.
+
+**Paso 2: Crear el override de systemd**
 
 ```bash
 sudo systemctl edit openclaw
 ```
 
-Añade tus API keys y overrides de hardening:
+Añade la referencia a `EnvironmentFile` y los overrides de hardening:
 
 ```ini
 [Service]
-# === API Keys ===
-Environment="KIMI_API_KEY=sk-kimi-tu-key"
-Environment="GOOGLE_API_KEY=tu-api-key-de-google"
-Environment="GEMINI_API_KEY=tu-api-key-de-google"
-Environment="GATEWAY_TOKEN=tu-token-del-gateway"
+EnvironmentFile=/etc/openclaw/env
 
 # === Relajar hardening para sudo/apt-get (VPS dedicado) ===
 # VPS dedicado + Tailscale + non-root + gateway token + sudoers restringido
@@ -857,15 +879,12 @@ ProtectKernelTunables=false
 ProtectKernelModules=false
 ```
 
-!!! important "Variables de entorno necesarias"
-    | Variable | Uso |
-    |----------|-----|
-    | `KIMI_API_KEY` | Modelo principal (Kimi Coding) |
-    | `GOOGLE_API_KEY` | Modelo fallback (Gemini 2.5 Flash) |
-    | `GEMINI_API_KEY` | Web search — mismo valor que `GOOGLE_API_KEY` pero necesario como variable separada |
-    | `GATEWAY_TOKEN` | Autenticación del gateway |
+**Paso 3: Aplicar y verificar**
 
-    `TELEGRAM_BOT_TOKEN` va en `~/.openclaw/.env` (leído por el proceso del gateway), no en systemd overrides.
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart openclaw
+```
 
 Verifica que `NoNewPrivileges` está desactivado (necesario para sudo):
 
@@ -874,40 +893,15 @@ cat /proc/$(pgrep -f "openclaw gateway")/status | grep NoNewPrivs
 # Esperado: NoNewPrivs: 0
 ```
 
-Guarda y aplica:
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl restart openclaw
-```
-
-!!! tip "Mejora futura: EnvironmentFile"
-    Para mayor seguridad, migra las API keys de las líneas `Environment=` del override a un archivo dedicado:
-
-    ```bash
-    # Crear archivo env con permisos restringidos
-    sudo mkdir -p /etc/openclaw
-    sudo tee /etc/openclaw/env > /dev/null << 'EOF'
-    KIMI_API_KEY=sk-kimi-tu-key
-    GOOGLE_API_KEY=tu-api-key-de-google
-    GEMINI_API_KEY=tu-api-key-de-google
-    GATEWAY_TOKEN=tu-token-del-gateway
-    EOF
-    sudo chmod 600 /etc/openclaw/env
-    ```
-
-    Luego reemplaza las líneas `Environment=` en el override con:
-
-    ```ini
-    EnvironmentFile=/etc/openclaw/env
-    ```
-
-    Esto evita que las API keys aparezcan en la salida de `systemctl show openclaw`.
+!!! success "Por qué EnvironmentFile en vez de Environment="
+    - Las API keys **no** aparecen en la salida de `systemctl show openclaw`
+    - El archivo es propiedad de `root:openclaw` con modo `600` — solo root puede leerlo, systemd lo carga al arrancar
+    - Más fácil actualizar keys sin editar el override de systemd
 
 El archivo de override se guarda en `/etc/systemd/system/openclaw.service.d/override.conf` con permisos solo de root.
 
 !!! note "Por qué el override incluye relajación de hardening"
-    `SystemCallFilter=` (vacío) en el override **resetea** todos los filtros de syscalls del servicio base. Junto con `PrivateDevices=false`, `LockPersonality=false` y `RestrictRealtime=false`, permite que `sudo` funcione para instalar paquetes. La seguridad se aplica mediante `exec-approvals` allowlist + sudoers del SO.
+    Las 7 directivas (`SystemCallFilter`, `PrivateDevices`, `LockPersonality`, `RestrictRealtime`, `ProtectKernelTunables`, `ProtectKernelModules`, `ProtectSystem`) fuerzan `NoNewPrivileges=true` implícitamente, lo que bloquea `sudo`. Ponerlas a `false` (o vacío para `SystemCallFilter`) lo previene. La seguridad se aplica mediante `exec-approvals` allowlist + sudoers del SO.
 
 #### Método 2: Archivo .env (para tokens de canales)
 

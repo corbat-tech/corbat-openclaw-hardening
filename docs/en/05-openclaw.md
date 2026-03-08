@@ -826,23 +826,45 @@ This creates `/etc/sudoers.d/openclaw` with NOPASSWD access to **only** these co
 
 All sensitive values in `openclaw.json` use `${VAR_NAME}` references. The actual values are stored separately, never in the JSON config file.
 
-#### Method 1: systemd environment overrides (recommended for VPS)
+#### Method 1: EnvironmentFile + systemd override (recommended for VPS)
 
-This is the most secure method for dedicated VPS deployments. Secrets are stored in a root-owned file that only systemd reads at startup.
+The most secure method for dedicated VPS deployments. API keys go in a dedicated file with restricted permissions; hardening overrides go in the systemd drop-in.
+
+**Step 1: Create the environment file**
+
+```bash
+sudo mkdir -p /etc/openclaw
+sudo tee /etc/openclaw/env > /dev/null << 'EOF'
+KIMI_API_KEY=sk-kimi-your-key
+GOOGLE_API_KEY=your-google-api-key
+GEMINI_API_KEY=your-google-api-key
+GATEWAY_TOKEN=your-gateway-token
+EOF
+sudo chmod 600 /etc/openclaw/env
+sudo chown root:openclaw /etc/openclaw/env
+```
+
+!!! important "Required environment variables"
+    | Variable | Purpose |
+    |----------|---------|
+    | `KIMI_API_KEY` | Primary model (Kimi Coding) |
+    | `GOOGLE_API_KEY` | Fallback model (Gemini 2.5 Flash) |
+    | `GEMINI_API_KEY` | Web search — same value as `GOOGLE_API_KEY` but required as a separate variable |
+    | `GATEWAY_TOKEN` | Gateway authentication |
+
+    `TELEGRAM_BOT_TOKEN` goes in `~/.openclaw/.env` (read by the gateway process), not in the environment file.
+
+**Step 2: Create the systemd override**
 
 ```bash
 sudo systemctl edit openclaw
 ```
 
-Add your API keys and hardening overrides:
+Add the `EnvironmentFile` reference and hardening overrides:
 
 ```ini
 [Service]
-# === API Keys ===
-Environment="KIMI_API_KEY=sk-kimi-your-key"
-Environment="GOOGLE_API_KEY=your-google-api-key"
-Environment="GEMINI_API_KEY=your-google-api-key"
-Environment="GATEWAY_TOKEN=your-gateway-token"
+EnvironmentFile=/etc/openclaw/env
 
 # === Relax hardening for sudo/apt-get (dedicated VPS) ===
 # Dedicated VPS + Tailscale + non-root + gateway token + restricted sudoers
@@ -857,15 +879,12 @@ ProtectKernelTunables=false
 ProtectKernelModules=false
 ```
 
-!!! important "Required environment variables"
-    | Variable | Purpose |
-    |----------|---------|
-    | `KIMI_API_KEY` | Primary model (Kimi Coding) |
-    | `GOOGLE_API_KEY` | Fallback model (Gemini 2.5 Flash) |
-    | `GEMINI_API_KEY` | Web search — same value as `GOOGLE_API_KEY` but required as a separate variable |
-    | `GATEWAY_TOKEN` | Gateway authentication |
+**Step 3: Apply and verify**
 
-    `TELEGRAM_BOT_TOKEN` goes in `~/.openclaw/.env` (read by the gateway process), not in systemd overrides.
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart openclaw
+```
 
 Verify that `NoNewPrivileges` is disabled (required for sudo):
 
@@ -874,39 +893,15 @@ cat /proc/$(pgrep -f "openclaw gateway")/status | grep NoNewPrivs
 # Expected: NoNewPrivs: 0
 ```
 
-Save and apply:
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl restart openclaw
-```
-
-!!! tip "Future improvement: EnvironmentFile"
-    For better security, migrate API keys from `Environment=` lines in the override to a dedicated file:
-
-    ```bash
-    # Create env file with restricted permissions
-    sudo tee /etc/openclaw/env > /dev/null << 'EOF'
-    KIMI_API_KEY=sk-kimi-your-key
-    GOOGLE_API_KEY=your-google-api-key
-    GEMINI_API_KEY=your-google-api-key
-    GATEWAY_TOKEN=your-gateway-token
-    EOF
-    sudo chmod 600 /etc/openclaw/env
-    ```
-
-    Then replace the `Environment=` lines in the override with:
-
-    ```ini
-    EnvironmentFile=/etc/openclaw/env
-    ```
-
-    This prevents API keys from appearing in `systemctl show openclaw` output.
+!!! success "Why EnvironmentFile instead of Environment="
+    - API keys do **not** appear in `systemctl show openclaw` output
+    - The file is owned by `root:openclaw` with mode `600` — only root can read it, systemd loads it at startup
+    - Easier to update keys without editing the systemd override
 
 The override file is stored at `/etc/systemd/system/openclaw.service.d/override.conf` with root-only permissions.
 
 !!! note "Why the override includes hardening relaxation"
-    Setting `SystemCallFilter=` (empty) in the override **resets** all syscall filters from the base service. Combined with `PrivateDevices=false`, `LockPersonality=false`, and `RestrictRealtime=false`, this allows `sudo` to work for package installation. Security is enforced by `exec-approvals` allowlist + OS sudoers instead.
+    All 7 directives (`SystemCallFilter`, `PrivateDevices`, `LockPersonality`, `RestrictRealtime`, `ProtectKernelTunables`, `ProtectKernelModules`, `ProtectSystem`) implicitly force `NoNewPrivileges=true`, which blocks `sudo`. Setting them to `false` (or empty for `SystemCallFilter`) prevents this. Security is enforced by `exec-approvals` allowlist + OS sudoers instead.
 
 #### Method 2: .env file (for channel tokens)
 
