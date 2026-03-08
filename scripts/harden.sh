@@ -196,6 +196,9 @@ else
     info "Tailscale already installed."
 fi
 
+# Ensure tailscaled starts on boot
+systemctl enable tailscaled
+
 # --- 4.2 Start Tailscale with tag ---
 info "Starting Tailscale..."
 echo ""
