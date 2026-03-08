@@ -427,7 +427,7 @@ nano ~/.openclaw/openclaw.json
       "botToken": "${TELEGRAM_BOT_TOKEN}",
       "dmPolicy": "allowlist",
       "allowFrom": ["TU_TELEGRAM_USER_ID"],
-      "streamMode": "partial"
+      "streaming": "partial"
     }
   },
   "models": {
@@ -450,8 +450,8 @@ nano ~/.openclaw/openclaw.json
     }
   },
   "tools": {
-    "profile": "coding",
-    "allow": ["group:web", "group:ui", "cron"],
+    "profile": "full",
+    "deny": ["gateway"],
     "web": {
       "search": {
         "enabled": true,
@@ -532,13 +532,12 @@ nano ~/.openclaw/openclaw.json
     - `google-generative-ai` + `.../v1beta` (nativo, sin `/openai`)
 
 !!! info "Configuración de tools"
-    La configuración recomendada usa `profile: "coding"` como base con allows adicionales:
+    La configuración recomendada usa `profile: "full"` con `deny: ["gateway"]`:
 
-    - `"group:web"` — Búsqueda web y HTTP fetch
-    - `"group:ui"` — Herramientas de browser y canvas
-    - `"cron"` — Tareas programadas
+    - `"full"` habilita todas las herramientas incluyendo web search, browser, canvas, cron y shell
+    - `"deny": ["gateway"]` impide que el agente modifique su propia configuración del gateway en runtime
 
-    La herramienta `"gateway"` NO se permite intencionalmente — permite al agente modificar su propia configuración del gateway en tiempo de ejecución, lo cual es un riesgo de seguridad en VPS.
+    Usar `profile: "coding"` con `allow: ["group:web"]` NO habilita correctamente `web_search` (posible bug). Usa `"full"` + `"deny"` en su lugar.
 
     Para un agente sin restricciones: `"tools": {}`
 
@@ -565,6 +564,9 @@ nano ~/.openclaw/openclaw.json
     | `group:messaging` | `message` |
 
     El perfil `coding` puede advertir sobre tools desconocidas (`apply_patch`, `image`) — es inofensivo, esas tools simplemente no se cargan sin sus plugins.
+
+    !!! warning "Problema conocido: perfil `coding` y `web_search`"
+        Usar `profile: "coding"` con `allow: ["group:web"]` NO habilita correctamente `web_search` (posible bug). Por eso recomendamos `profile: "full"` con `deny: ["gateway"]`.
 
 !!! info "Configuración de `web_search`"
     La herramienta `web_search` requiere una API key de búsqueda. OpenClaw auto-detecta en este orden: Brave → Gemini → Kimi → Perplexity → Grok.
@@ -797,7 +799,7 @@ Profesional, conciso, directo.
 
 ### Configurar TOOLS.md (herramientas)
 
-TOOLS.md proporciona contexto al agente sobre cómo debe usar sus herramientas. NO impone restricciones — el acceso a herramientas lo controlan `tools.profile` y `tools.allow` en `openclaw.json`. Piensa en TOOLS.md como directrices, no barreras.
+TOOLS.md proporciona contexto al agente sobre cómo debe usar sus herramientas. NO impone restricciones — el acceso a herramientas lo controlan `tools.profile` y `tools.deny` en `openclaw.json`. Piensa en TOOLS.md como directrices, no barreras.
 
 ```bash
 nano ~/openclaw/workspace/TOOLS.md
@@ -806,7 +808,7 @@ nano ~/openclaw/workspace/TOOLS.md
 ```markdown
 # Herramientas
 
-## Herramientas disponibles (via profile "coding" + allows)
+## Herramientas disponibles (via profile "full" − deny ["gateway"])
 
 ### Filesystem (group:fs)
 - read, write, edit, apply_patch
@@ -848,19 +850,22 @@ NO disponible — modificar la configuración del gateway en runtime es un riesg
 
 ### Sandbox y restricciones de herramientas
 
-Para un **VPS dedicado de un solo usuario** con el hardening systemd de esta guía, el modo sandbox `"off"` es la configuración recomendada. La seguridad se aplica mediante el aislamiento de systemd (ProtectSystem, ReadWritePaths, CapabilityBoundingSet, etc.) y las restricciones de herramientas (`tools.profile` + `tools.allow`).
+Para un **VPS dedicado de un solo usuario** con el hardening systemd de esta guía, el modo sandbox `"off"` es la configuración recomendada. La seguridad se aplica mediante el aislamiento de systemd (ProtectSystem, ReadWritePaths, CapabilityBoundingSet, etc.) y las restricciones de herramientas (`tools.profile` + `tools.deny`).
 
 El acceso a herramientas se controla en `openclaw.json` (ya configurado en el ejemplo JSON principal de arriba):
 
 ```json
 "sandbox": { "mode": "off" },
 "tools": {
-  "profile": "coding",
-  "allow": ["group:web", "group:ui", "cron"]
+  "profile": "full",
+  "deny": ["gateway"]
 }
 ```
 
-Esto da al agente: filesystem, shell, git, sessions, memory, web search, web fetch, browser, canvas y cron. La herramienta `gateway` se excluye intencionalmente — permitiría al agente modificar su propia configuración del gateway en runtime.
+Esto da al agente todas las herramientas (filesystem, shell, git, sessions, memory, web search, web fetch, browser, canvas, cron, etc.) excepto `gateway` — que se deniega porque permitiría al agente modificar su propia configuración del gateway en runtime.
+
+!!! warning "Bug del perfil `coding` con `web_search`"
+    Usar `profile: "coding"` con `allow: ["group:web"]` NO habilita correctamente `web_search` (posible bug de OpenClaw). Usa `"full"` + `"deny"` para asegurar que todas las herramientas funcionan correctamente.
 
 !!! info "Cuándo usar sandbox mode 'all' en su lugar"
     Usa `"all"` solo en **servidores compartidos o multi-usuario** donde no puedas confiar en otros usuarios. Containeriza toda la ejecución de herramientas en Docker, lo que proporciona un aislamiento más fuerte pero requiere Docker instalado y hace que los archivos `.env` y las variables de entorno del host no estén disponibles dentro del contenedor.
@@ -1860,19 +1865,27 @@ ls -la ~/.openclaw/
 
     **3. Streaming en Telegram para mejor UX:**
 
-    `telegram.streamMode = "partial"` — envía respuestas progresivas en vez de esperar a la respuesta completa.
+    `telegram.streaming = "partial"` — envía respuestas progresivas en vez de esperar a la respuesta completa. Nota: el campo correcto es `streaming`, NO `streamMode` (que causa error de validación del schema). `openclaw doctor` lo auto-corrige.
+
+    **4. Validación de schema — campos que NO existen:**
+
+    Estos campos causan errores `Config invalid`: `sendOptions`, `requestOptions`, `passthrough`, `extraBody`, `streamMode` (campo correcto: `streaming`).
+
+    **5. `daemon-reload` es obligatorio antes de restart:**
+
+    Después de editar systemd overrides (`sudo systemctl edit openclaw`), siempre ejecuta `sudo systemctl daemon-reload` antes de `sudo systemctl restart openclaw`. Sin daemon-reload, las nuevas variables de entorno NO se aplican.
 
 !!! info "Nuestra config vs configs populares de la comunidad"
     Tras comparar con configuraciones de producción de la comunidad (fuentes abajo), estas son las diferencias clave y nuestra justificación:
 
     | Ajuste | Esta guía | Común en producción | Nuestra justificación |
     |--------|----------|--------------------|-----------------------|
-    | `tools.profile` | `"coding"` | `"full"` | Seguridad: excluye `gateway` y `group:messaging` por defecto |
+    | `tools.profile` | `"full"` + `deny: ["gateway"]` | `"full"` | El perfil `coding` tiene un bug donde `web_search` no se habilita correctamente — usar `full` + `deny` |
     | `maxConcurrent` | `2` | `4` típico | Equilibrado para VPS de 4GB — aumentar a 4 para 8GB+ |
     | `heartbeat.model` | No configurado | Modelo barato cada 30m | Opcional — añadir si quieres check-ins proactivos del agente |
     | `subagents.model` | Hereda primary | Modelo diferente (más barato) | Ahorro de costes — usar DeepSeek V3 o Flash Lite para subagentes |
     | `telegram.dmPolicy` | `"allowlist"` | `"pairing"` | Seguridad: `allowlist` es más estricto — `pairing` permite a cualquiera solicitar acceso |
-    | `telegram.streamMode` | `"partial"` | Varía | Mejor UX — respuestas progresivas |
+    | `telegram.streaming` | `"partial"` | Varía | Mejor UX — respuestas progresivas (el campo es `streaming`, NO `streamMode`) |
 
     **Para añadir heartbeats** (check-ins proactivos del agente cada 30 minutos):
     ```json

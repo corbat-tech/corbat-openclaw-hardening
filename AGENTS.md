@@ -147,8 +147,8 @@ nc -zv imap.gmail.com 993 -w 5
   },
   "session": { "dmScope": "per-channel-peer" },
   "tools": {
-    "profile": "coding",
-    "allow": ["group:web", "group:ui", "cron"],
+    "profile": "full",
+    "deny": ["gateway"],
     "web": {
       "search": {
         "enabled": true,
@@ -250,7 +250,7 @@ After editing systemd overrides: `sudo systemctl daemon-reload && sudo systemctl
 - **Never** add `SystemCallFilter` in override.conf — causes NAMESPACE errors
 - **Never** deny `process` in tools — skills need it to run scripts
 - **Never** run `openclaw doctor --fix` after manual config — it overwrites provider settings
-- **Always** use `tools.profile: "coding"` with explicit allow list — exclude `gateway` for VPS security
+- **Always** use `tools.profile: "full"` with `deny: ["gateway"]` — `coding` profile has a bug where `web_search` doesn't enable correctly
 - **Always** use sandbox `"off"` on dedicated VPS with systemd hardening
 - **Always** restart after config changes: `sudo systemctl daemon-reload && sudo systemctl restart openclaw`
 

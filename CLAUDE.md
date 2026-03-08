@@ -40,7 +40,7 @@ AGENTS.md            # Agentic self-configuration guide for OpenClaw agents
 - **dmPolicy**: Use `"allowlist"` with `allowFrom` to restrict access. `"pairing"` ignores `allowFrom`
 - **SOUL.md path**: Must be in the workspace dir from `agents.defaults.workspace` (e.g., `~/openclaw/workspace/SOUL.md`), NOT in `~/.openclaw/workspace/`
 - **SystemCallFilter**: Do NOT deny `@debug` — it causes core dumps with Telegram channel. Do NOT add `SystemCallFilter` in override.conf — causes NAMESPACE errors
-- **Tools config**: Use `profile: "coding"` with `allow: ["group:web", "group:ui", "cron"]`. Exclude `gateway` from allow to prevent agent self-modification. Do NOT deny `process` — skills need it
+- **Tools config**: Use `profile: "full"` with `deny: ["gateway"]`. The `coding` profile has a bug where `web_search` doesn't enable correctly. Do NOT deny `process` — skills need it. The correct Telegram streaming field is `streaming` (NOT `streamMode`)
 - **Skills require `npm install`**: OpenClaw marks skills "ready" based on SKILL.md presence, but does NOT auto-install npm dependencies
 - **Root-level keys**: `sandbox`, `dmPolicy`, `security`, `tools.blocked` at root level are NOT recognized — they go inside `agents.defaults` or per-channel config
 - **Model compatibility**: `kimi-coding/kimi-for-coding` requires `User-Agent: claude-code/0.1.0` header and `reasoning: false`. `moonshot/kimi-k2.5` works with tools. `google/gemini-2.5-flash` works with `compat.supportsStore: false`

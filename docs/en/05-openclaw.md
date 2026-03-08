@@ -427,7 +427,7 @@ nano ~/.openclaw/openclaw.json
       "botToken": "${TELEGRAM_BOT_TOKEN}",
       "dmPolicy": "allowlist",
       "allowFrom": ["YOUR_TELEGRAM_USER_ID"],
-      "streamMode": "partial"
+      "streaming": "partial"
     }
   },
   "models": {
@@ -450,8 +450,8 @@ nano ~/.openclaw/openclaw.json
     }
   },
   "tools": {
-    "profile": "coding",
-    "allow": ["group:web", "group:ui", "cron"],
+    "profile": "full",
+    "deny": ["gateway"],
     "web": {
       "search": {
         "enabled": true,
@@ -532,13 +532,12 @@ nano ~/.openclaw/openclaw.json
     - `google-generative-ai` + `.../v1beta` (native, without `/openai`)
 
 !!! info "Tools configuration"
-    The recommended tools config uses `profile: "coding"` as base with additional allows:
+    The recommended tools config uses `profile: "full"` with `deny: ["gateway"]`:
 
-    - `"group:web"` — Web search and HTTP fetch
-    - `"group:ui"` — Browser and canvas tools
-    - `"cron"` — Scheduled tasks
+    - `"full"` enables all tools including web search, browser, canvas, cron, and shell
+    - `"deny": ["gateway"]` prevents the agent from modifying its own gateway config at runtime
 
-    The `"gateway"` tool is intentionally NOT allowed — it lets the agent modify its own gateway config at runtime, which is a security risk on a VPS.
+    Using `profile: "coding"` with `allow: ["group:web"]` does NOT correctly enable `web_search` (possible bug). Use `"full"` + `"deny"` instead.
 
     For a fully unrestricted agent: `"tools": {}`
 
@@ -565,6 +564,9 @@ nano ~/.openclaw/openclaw.json
     | `group:messaging` | `message` |
 
     The `coding` profile may warn about unknown tools (`apply_patch`, `image`) — this is harmless, those tools simply won't load without their plugins.
+
+    !!! warning "Known issue: `coding` profile and `web_search`"
+        Using `profile: "coding"` with `allow: ["group:web"]` does NOT correctly enable `web_search` (possible bug). This is why we recommend `profile: "full"` with `deny: ["gateway"]` instead.
 
 !!! info "`web_search` setup"
     The `web_search` tool requires a search provider API key. OpenClaw auto-detects in this order: Brave → Gemini → Kimi → Perplexity → Grok.
@@ -797,7 +799,7 @@ Professional, concise, direct.
 
 ### Configure TOOLS.md (tools)
 
-TOOLS.md provides context to the agent about how it should use its tools. It does NOT enforce restrictions — tool access is controlled by `tools.profile` and `tools.allow` in `openclaw.json`. Think of TOOLS.md as guidelines, not guardrails.
+TOOLS.md provides context to the agent about how it should use its tools. It does NOT enforce restrictions — tool access is controlled by `tools.profile` and `tools.deny` in `openclaw.json`. Think of TOOLS.md as guidelines, not guardrails.
 
 ```bash
 nano ~/openclaw/workspace/TOOLS.md
@@ -806,7 +808,7 @@ nano ~/openclaw/workspace/TOOLS.md
 ```markdown
 # Tools
 
-## Available tools (via profile "coding" + allows)
+## Available tools (via profile "full" − deny ["gateway"])
 
 ### Filesystem (group:fs)
 - read, write, edit, apply_patch
@@ -848,19 +850,22 @@ NOT available — modifying gateway config at runtime is a security risk.
 
 ### Sandbox and tool restrictions
 
-For a **dedicated single-user VPS** with the systemd hardening from this guide, sandbox mode `"off"` is the recommended setting. Security is enforced by systemd isolation (ProtectSystem, ReadWritePaths, CapabilityBoundingSet, etc.) and tool restrictions (`tools.profile` + `tools.allow`).
+For a **dedicated single-user VPS** with the systemd hardening from this guide, sandbox mode `"off"` is the recommended setting. Security is enforced by systemd isolation (ProtectSystem, ReadWritePaths, CapabilityBoundingSet, etc.) and tool restrictions (`tools.profile` + `tools.deny`).
 
 Tool access is controlled in `openclaw.json` (already configured in the main JSON example above):
 
 ```json
 "sandbox": { "mode": "off" },
 "tools": {
-  "profile": "coding",
-  "allow": ["group:web", "group:ui", "cron"]
+  "profile": "full",
+  "deny": ["gateway"]
 }
 ```
 
-This gives the agent: filesystem, shell, git, sessions, memory, web search, web fetch, browser, canvas, and cron. The `gateway` tool is intentionally excluded — it would let the agent modify its own gateway configuration at runtime.
+This gives the agent all tools (filesystem, shell, git, sessions, memory, web search, web fetch, browser, canvas, cron, etc.) except `gateway` — which is denied because it would let the agent modify its own gateway configuration at runtime.
+
+!!! warning "`coding` profile bug with web_search"
+    Using `profile: "coding"` with `allow: ["group:web"]` does NOT correctly enable `web_search` (possible OpenClaw bug). Use `"full"` + `"deny"` to ensure all tools work correctly.
 
 !!! info "When to use sandbox mode 'all' instead"
     Use `"all"` only on **shared or multi-user servers** where you cannot trust other users. It containerizes all tool execution in Docker, which provides stronger isolation but requires Docker installed and makes `.env` files and host environment variables unavailable inside the container.
@@ -1855,19 +1860,27 @@ ls -la ~/.openclaw/
 
     **3. Telegram streaming for better UX:**
 
-    `telegram.streamMode = "partial"` — sends progressive responses instead of waiting for the full answer.
+    `telegram.streaming = "partial"` — sends progressive responses instead of waiting for the full answer. Note: the correct field is `streaming`, NOT `streamMode` (which causes a schema validation error). `openclaw doctor` auto-corrects this.
+
+    **4. Schema validation — fields that do NOT exist:**
+
+    These fields cause `Config invalid` errors: `sendOptions`, `requestOptions`, `passthrough`, `extraBody`, `streamMode` (correct field: `streaming`).
+
+    **5. `daemon-reload` is mandatory before restart:**
+
+    After editing systemd overrides (`sudo systemctl edit openclaw`), always run `sudo systemctl daemon-reload` before `sudo systemctl restart openclaw`. Without daemon-reload, the new environment variables are NOT applied.
 
 !!! info "Our config vs popular community configs"
     After comparing with production configs from the community (sources below), here are the key differences and our rationale:
 
     | Setting | This guide | Common in production | Our rationale |
     |---------|-----------|---------------------|---------------|
-    | `tools.profile` | `"coding"` | `"full"` | Security: excludes `gateway` and `group:messaging` by default |
+    | `tools.profile` | `"full"` + `deny: ["gateway"]` | `"full"` | `coding` profile has a bug where `web_search` doesn't enable correctly — use `full` + `deny` |
     | `maxConcurrent` | `2` | `4` typical | Balanced for 4GB VPS — increase to 4 for 8GB+ |
     | `heartbeat.model` | Not configured | Cheap model every 30m | Optional — add if you want proactive agent check-ins |
     | `subagents.model` | Inherits primary | Different (cheaper) model | Cost saving — set to DeepSeek V3 or Flash Lite for subagents |
     | `telegram.dmPolicy` | `"allowlist"` | `"pairing"` | Security: `allowlist` is stricter — `pairing` allows anyone to request access |
-    | `telegram.streamMode` | `"partial"` | Varies | Better UX — progressive responses |
+    | `telegram.streaming` | `"partial"` | Varies | Better UX — progressive responses (field is `streaming`, NOT `streamMode`) |
 
     **To add heartbeats** (proactive agent check-ins every 30 minutes):
     ```json
