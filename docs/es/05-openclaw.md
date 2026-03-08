@@ -401,12 +401,12 @@ nano ~/.openclaw/openclaw.json
   "agents": {
     "defaults": {
       "model": {
-        "primary": "google/gemini-2.5-flash",
-        "fallbacks": ["tu-proveedor-fallback/modelo"]
+        "primary": "kimi-coding/kimi-for-coding",
+        "fallbacks": ["google/gemini-2.5-flash"]
       },
       "models": {
-        "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" },
-        "tu-proveedor-fallback/modelo": { "alias": "Modelo Fallback" }
+        "kimi-coding/kimi-for-coding": { "alias": "Kimi Coding" },
+        "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" }
       },
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
@@ -415,10 +415,16 @@ nano ~/.openclaw/openclaw.json
       "compaction": {
         "mode": "safeguard"
       },
-      "maxConcurrent": 2,
+      "maxConcurrent": 1,
       "subagents": {
         "maxConcurrent": 3
       }
+    }
+  },
+  "auth": {
+    "profiles": {
+      "kimi-coding:default": { "provider": "kimi-coding", "mode": "api_key" },
+      "google:default": { "provider": "google", "mode": "api_key" }
     }
   },
   "channels": {
@@ -433,17 +439,31 @@ nano ~/.openclaw/openclaw.json
   "models": {
     "mode": "merge",
     "providers": {
+      "kimi-coding": {
+        "api": "anthropic-messages",
+        "apiKey": "${KIMI_API_KEY}",
+        "baseUrl": "https://api.kimi.com/coding",
+        "headers": { "User-Agent": "claude-code/0.1.0" },
+        "models": [{
+          "id": "kimi-for-coding",
+          "name": "Kimi Coding",
+          "reasoning": false,
+          "input": ["text"],
+          "contextWindow": 262144,
+          "maxTokens": 32768
+        }]
+      },
       "google": {
-        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
-        "apiKey": "${GOOGLE_API_KEY}",
         "api": "openai-completions",
+        "apiKey": "${GOOGLE_API_KEY}",
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
         "models": [{
           "id": "gemini-2.5-flash",
           "name": "Gemini 2.5 Flash",
           "reasoning": false,
           "input": ["text", "image"],
           "contextWindow": 1048576,
-          "maxTokens": 65535,
+          "maxTokens": 65536,
           "compat": { "supportsStore": false }
         }]
       }
@@ -520,6 +540,8 @@ nano ~/.openclaw/openclaw.json
     - **Header User-Agent obligatorio**: La API de Kimi Coding rechaza peticiones sin `User-Agent: claude-code/0.1.0`. OpenClaw envía `OpenClaw-Gateway/1.0` por defecto, causando errores 401. Fix: añadir `"headers": { "User-Agent": "claude-code/0.1.0" }` a nivel de proveedor.
     - **El model ID debe ser `kimi-for-coding`**: No uses `k2p5` ni otros alias.
     - **`reasoning: true` puede fallar**: Los parámetros de extended-thinking pueden causar que Kimi rechace peticiones. Empieza con `false`.
+    - **baseUrl sin trailing slash**: Usa `https://api.kimi.com/coding` (no `/coding/`). OpenClaw elimina trailing slashes automáticamente, pero mejor no ponerlo.
+    - **`auth-profiles.json` tiene prioridad sobre env vars**: OpenClaw guarda API keys en `~/.openclaw/agents/main/agent/auth-profiles.json`. Si este archivo contiene una key inválida, tiene prioridad sobre `process.env.KIMI_API_KEY` de systemd, causando errores 401 persistentes incluso con la key correcta en el systemd override. Fix: vaciar el archivo (`echo '{}' > ~/.openclaw/agents/main/agent/auth-profiles.json`) y reiniciar.
     - **`openclaw doctor --fix` sobreescribe config manual**: Revierte la configuración de Kimi a templates rotos por defecto. NO ejecutes `--fix` después de configurar manualmente.
     - **Moonshot ≠ Kimi Coding**: Son proveedores separados con API keys diferentes (`MOONSHOT_API_KEY` vs `KIMI_API_KEY`) y endpoints distintos.
 
@@ -643,15 +665,21 @@ Añade tus API keys y tokens:
 
 ```ini
 [Service]
+Environment="KIMI_API_KEY=sk-kimi-tu-key"
 Environment="GOOGLE_API_KEY=tu-api-key-de-google"
 Environment="GEMINI_API_KEY=tu-api-key-de-google"
-Environment="MOONSHOT_API_KEY=sk-tu-key-de-moonshot"
 Environment="GATEWAY_TOKEN=tu-token-del-gateway"
 ```
 
-!!! important "Se requieren tanto GOOGLE_API_KEY como GEMINI_API_KEY"
-    Google Gemini requiere **ambas** variables de entorno configuradas (pueden tener el mismo valor).
-    `GOOGLE_API_KEY` es usada por el proveedor LLM para completions de chat, mientras que `GEMINI_API_KEY` es usada internamente por OpenClaw para búsqueda web (grounding) y otras funciones específicas de Google. Si solo configuras una, la búsqueda web no funcionará.
+!!! important "Variables de entorno necesarias"
+    | Variable | Uso |
+    |----------|-----|
+    | `KIMI_API_KEY` | Modelo principal (Kimi Coding — razonamiento) |
+    | `GOOGLE_API_KEY` | Modelo fallback (Gemini 2.5 Flash) |
+    | `GEMINI_API_KEY` | Web search — mismo valor que `GOOGLE_API_KEY` pero necesario como variable separada |
+    | `GATEWAY_TOKEN` | Autenticación del gateway |
+
+    `TELEGRAM_BOT_TOKEN` va en `~/.openclaw/.env` (leído por el proceso del gateway), no en systemd overrides.
 
 Guarda y aplica:
 
@@ -1591,7 +1619,8 @@ sudo ss -tp | grep -E "(node|python)" | awk '{print $5}' | cut -d: -f1 | sort -u
 | Error | Causa | Solución |
 |-------|-------|----------|
 | `400 status code (no body)` | El proveedor rechaza parámetros desconocidos | Añadir `"compat": { "supportsStore": false }` para Gemini. Revisar `reasoning` para Kimi. |
-| `401 authentication_error` | API key inválida o User-Agent incorrecto | Verificar key con curl (ver abajo). Añadir `"headers": { "User-Agent": "claude-code/0.1.0" }` para Kimi Coding. |
+| `401 authentication_error` | API key inválida, User-Agent incorrecto, o `auth-profiles.json` obsoleto | Verificar key con curl (ver abajo). Añadir `"headers": { "User-Agent": "claude-code/0.1.0" }` para Kimi. Verificar `auth-profiles.json` (ver abajo). |
+| `401` persiste tras arreglar API key | `auth-profiles.json` tiene una key obsoleta/inválida que sobreescribe env vars | Vaciar el archivo: `echo '{}' > ~/.openclaw/agents/main/agent/auth-profiles.json` y reiniciar. |
 | `404 Not Found` | Model ID o baseUrl incorrectos | Verificar model ID via endpoint `/v1/models` del proveedor. |
 | `MissingEnvVarError` | `${VAR}` en config pero variable no definida | Añadir variable al override de systemd o `~/.openclaw/.env`. |
 | `Config invalid: Unrecognized key` | Campo desconocido en openclaw.json | Eliminar el campo. Solo usar campos del schema documentado. |
@@ -1881,7 +1910,7 @@ ls -la ~/.openclaw/
     | Ajuste | Esta guía | Común en producción | Nuestra justificación |
     |--------|----------|--------------------|-----------------------|
     | `tools.profile` | `"full"` + `deny: ["gateway"]` | `"full"` | El perfil `coding` tiene un bug donde `web_search` no se habilita correctamente — usar `full` + `deny` |
-    | `maxConcurrent` | `2` | `4` típico | Equilibrado para VPS de 4GB — aumentar a 4 para 8GB+ |
+    | `maxConcurrent` | `1` | `4` típico | Conservador para VPS de 4GB — aumentar a 2-4 para 8GB+ |
     | `heartbeat.model` | No configurado | Modelo barato cada 30m | Opcional — añadir si quieres check-ins proactivos del agente |
     | `subagents.model` | Hereda primary | Modelo diferente (más barato) | Ahorro de costes — usar DeepSeek V3 o Flash Lite para subagentes |
     | `telegram.dmPolicy` | `"allowlist"` | `"pairing"` | Seguridad: `allowlist` es más estricto — `pairing` permite a cualquiera solicitar acceso |

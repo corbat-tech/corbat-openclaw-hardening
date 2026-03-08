@@ -75,12 +75,12 @@ nc -zv imap.gmail.com 993 -w 5
       "compaction": { "mode": "safeguard" },
       "maxConcurrent": 1,
       "model": {
-        "primary": "google/gemini-2.5-flash",
-        "fallbacks": ["kimi-coding/kimi-for-coding"]
+        "primary": "kimi-coding/kimi-for-coding",
+        "fallbacks": ["google/gemini-2.5-flash"]
       },
       "models": {
-        "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" },
-        "kimi-coding/kimi-for-coding": { "alias": "Kimi Coding" }
+        "kimi-coding/kimi-for-coding": { "alias": "Kimi Coding" },
+        "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" }
       },
       "sandbox": { "mode": "off" },
       "subagents": { "maxConcurrent": 3 },
@@ -98,7 +98,8 @@ nc -zv imap.gmail.com 993 -w 5
       "enabled": true,
       "botToken": "${TELEGRAM_BOT_TOKEN}",
       "dmPolicy": "allowlist",
-      "allowFrom": ["YOUR_TELEGRAM_USER_ID"]
+      "allowFrom": ["YOUR_TELEGRAM_USER_ID"],
+      "streaming": "partial"
     }
   },
   "commands": {
@@ -124,7 +125,7 @@ nc -zv imap.gmail.com 993 -w 5
           "name": "Gemini 2.5 Flash",
           "input": ["text", "image"],
           "contextWindow": 1048576,
-          "maxTokens": 65535,
+          "maxTokens": 65536,
           "reasoning": false,
           "compat": { "supportsStore": false }
         }]
@@ -132,7 +133,7 @@ nc -zv imap.gmail.com 993 -w 5
       "kimi-coding": {
         "api": "anthropic-messages",
         "apiKey": "${KIMI_API_KEY}",
-        "baseUrl": "https://api.kimi.com/coding/",
+        "baseUrl": "https://api.kimi.com/coding",
         "headers": { "User-Agent": "claude-code/0.1.0" },
         "models": [{
           "id": "kimi-for-coding",

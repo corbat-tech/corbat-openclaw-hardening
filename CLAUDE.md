@@ -43,7 +43,8 @@ AGENTS.md            # Agentic self-configuration guide for OpenClaw agents
 - **Tools config**: Use `profile: "full"` with `deny: ["gateway"]`. The `coding` profile has a bug where `web_search` doesn't enable correctly. Do NOT deny `process` — skills need it. The correct Telegram streaming field is `streaming` (NOT `streamMode`)
 - **Skills require `npm install`**: OpenClaw marks skills "ready" based on SKILL.md presence, but does NOT auto-install npm dependencies
 - **Root-level keys**: `sandbox`, `dmPolicy`, `security`, `tools.blocked` at root level are NOT recognized — they go inside `agents.defaults` or per-channel config
-- **Model compatibility**: `kimi-coding/kimi-for-coding` requires `User-Agent: claude-code/0.1.0` header and `reasoning: false`. `moonshot/kimi-k2.5` works with tools. `google/gemini-2.5-flash` works with `compat.supportsStore: false`
+- **Model compatibility**: `kimi-coding/kimi-for-coding` (primary) requires `User-Agent: claude-code/0.1.0` header, `reasoning: false`, and baseUrl without trailing slash (`https://api.kimi.com/coding`). `google/gemini-2.5-flash` (fallback) requires `compat.supportsStore: false`
+- **`auth-profiles.json`**: `~/.openclaw/agents/main/agent/auth-profiles.json` overrides env vars — if it has a stale key, it blocks auth even with correct systemd env vars. Fix: `echo '{}' > ~/.openclaw/agents/main/agent/auth-profiles.json`
 - **`openclaw doctor --fix`**: Do NOT run after manual config — it overwrites provider settings (especially Kimi) with broken defaults
 - **web_search**: Requires `GEMINI_API_KEY` env var (auto-detect) or explicit `tools.web.search.provider` config. Detection order: Brave → Gemini → Kimi → Perplexity → Grok
 - **Moonshot ≠ Kimi Coding**: Separate providers with different API keys (`MOONSHOT_API_KEY` vs `KIMI_API_KEY`) and endpoints
@@ -65,7 +66,7 @@ AGENTS.md            # Agentic self-configuration guide for OpenClaw agents
 - User: `openclaw` (dedicated non-root user)
 - Access: Tailscale only (no public SSH)
 - OpenClaw version: 2026.3.x
-- Recommended models: google/gemini-2.5-flash (free tier, primary), kimi-coding/kimi-for-coding (subscription, fallback)
+- Recommended models: kimi-coding/kimi-for-coding (subscription, primary), google/gemini-2.5-flash (free tier, fallback + web_search)
 - Google Gemini API: use `openai-completions` api with baseUrl `https://generativelanguage.googleapis.com/v1beta/openai` and `compat.supportsStore: false`
 - Channels: Telegram with allowlist
 - Email: Gmail with app password via himalaya skill

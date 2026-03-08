@@ -150,7 +150,7 @@ case "$PROVIDER_CHOICE" in
         PROVIDER_CONFIG=$(cat <<'PCONF'
     "providers": {
       "kimi-coding": {
-        "baseUrl": "https://api.kimi.com/coding/",
+        "baseUrl": "https://api.kimi.com/coding",
         "api": "anthropic-messages",
         "models": [
           {
