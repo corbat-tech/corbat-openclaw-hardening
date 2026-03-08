@@ -536,18 +536,58 @@ nano ~/.openclaw/exec-approvals.json
     "ask": "on-miss",
     "askFallback": "deny",
     "autoAllowSkills": true
-  }
+  },
+  "allowlist": [
+    "cat", "ls", "head", "tail", "grep", "find", "diff", "sort", "uniq", "wc", "stat", "du", "df",
+    "sed", "awk", "touch", "mkdir", "cp", "mv", "tar",
+    "date", "env", "whoami", "uname", "hostname", "uptime", "free", "top", "ps", "ss", "netstat", "lsof", "htop", "journalctl", "ping",
+    "git", "docker", "python3", "node", "npm", "npx", "corepack",
+    "curl", "wget",
+    "~/.local/bin/*", "/usr/local/bin/*",
+    "~/.nvm/versions/node/*/bin/openclaw",
+    "~/.nvm/versions/node/*/bin/coco"
+  ]
 }
 ```
 
 | Campo | Valor | Descripción |
 |-------|-------|-------------|
-| `security` | `"allowlist"` | Solo los comandos pre-aprobados se ejecutan sin preguntar |
-| `ask` | `"on-miss"` | Los comandos que no están en la allowlist disparan una solicitud de aprobación |
-| `askFallback` | `"deny"` | Si la solicitud de aprobación no se puede entregar, deniega por defecto |
+| `security` | `"allowlist"` | Solo los comandos en la lista se ejecutan sin preguntar |
+| `ask` | `"on-miss"` | Los comandos fuera de la allowlist disparan una solicitud de aprobación vía Telegram |
+| `askFallback` | `"deny"` | Si la solicitud no se puede entregar, deniega por defecto |
 | `autoAllowSkills` | `true` | Los skills instalados pueden ejecutar sus propios comandos sin preguntar |
+| `allowlist` | `[...]` | 48 comandos pre-aprobados (lectura, edición, sistema, dev, red) |
 
-La sección `approvals.exec` en `openclaw.json` reenvía las solicitudes de aprobación a tu Telegram. Cuando el agente quiere ejecutar un comando que no está en la allowlist, recibes un mensaje de Telegram pidiendo aprobación.
+**Comandos auto-aprobados (48 entradas):**
+
+| Categoría | Comandos |
+|-----------|----------|
+| Lectura/búsqueda | `cat`, `ls`, `head`, `tail`, `grep`, `find`, `diff`, `sort`, `uniq`, `wc`, `stat`, `du`, `df` |
+| Edición de archivos | `sed`, `awk`, `touch`, `mkdir`, `cp`, `mv`, `tar` |
+| Sistema/monitoreo | `date`, `env`, `whoami`, `uname`, `hostname`, `uptime`, `free`, `top`, `ps`, `ss`, `netstat`, `lsof`, `htop`, `journalctl`, `ping` |
+| Desarrollo | `git`, `docker`, `python3`, `node`, `npm`, `npx`, `corepack` |
+| Red (dev) | `curl`, `wget` |
+| Binarios locales | `~/.local/bin/*`, `/usr/local/bin/*`, binarios nvm (`openclaw`, `coco`) |
+
+**Comandos que REQUIEREN aprobación vía Telegram:**
+
+| Comando | Razón |
+|---------|-------|
+| `rm` / `rmdir` | Destructivo e irreversible |
+| `kill` | Podría matar OpenClaw o servicios críticos |
+| `systemctl` | Arrancar/parar servicios críticos |
+| `chmod` | Cambio de permisos puede bloquear acceso |
+| `ssh` / `scp` | Movimiento lateral a otros sistemas |
+
+**Comandos NUNCA permitidos** (no están en ninguna lista — siempre denegados):
+
+`sudo`, `su`, `dd`, `passwd`, `mkfs`, `fdisk`, `iptables`, `reboot`, `shutdown`
+
+!!! info "Flujo de aprobación"
+    1. El agente intenta ejecutar un comando que no está en la allowlist
+    2. OpenClaw envía una solicitud de aprobación a tu Telegram
+    3. Respondes: `/approve <id> allow-once` o `allow-always` o `deny`
+    4. Si `allow-always`, el comando se agrega a la allowlist permanentemente
 
 !!! warning "Reemplaza `YOUR_TELEGRAM_USER_ID` en ambos archivos"
     En `openclaw.json`, establece `approvals.exec.targets[0].to` con tu ID de usuario de Telegram (el mismo valor que `channels.telegram.allowFrom`).

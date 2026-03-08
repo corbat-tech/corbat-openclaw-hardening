@@ -536,18 +536,58 @@ nano ~/.openclaw/exec-approvals.json
     "ask": "on-miss",
     "askFallback": "deny",
     "autoAllowSkills": true
-  }
+  },
+  "allowlist": [
+    "cat", "ls", "head", "tail", "grep", "find", "diff", "sort", "uniq", "wc", "stat", "du", "df",
+    "sed", "awk", "touch", "mkdir", "cp", "mv", "tar",
+    "date", "env", "whoami", "uname", "hostname", "uptime", "free", "top", "ps", "ss", "netstat", "lsof", "htop", "journalctl", "ping",
+    "git", "docker", "python3", "node", "npm", "npx", "corepack",
+    "curl", "wget",
+    "~/.local/bin/*", "/usr/local/bin/*",
+    "~/.nvm/versions/node/*/bin/openclaw",
+    "~/.nvm/versions/node/*/bin/coco"
+  ]
 }
 ```
 
 | Field | Value | Description |
 |-------|-------|-------------|
-| `security` | `"allowlist"` | Only pre-approved commands run without asking |
-| `ask` | `"on-miss"` | Commands not in the allowlist trigger an approval request |
+| `security` | `"allowlist"` | Only commands in the list run without asking |
+| `ask` | `"on-miss"` | Commands not in the allowlist trigger an approval request via Telegram |
 | `askFallback` | `"deny"` | If the approval request can't be delivered, deny by default |
 | `autoAllowSkills` | `true` | Installed skills can execute their own commands without asking |
+| `allowlist` | `[...]` | 48 pre-approved commands (read, edit, system, dev, network) |
 
-The `approvals.exec` section in `openclaw.json` forwards approval requests to your Telegram. When the agent wants to run a command not in the allowlist, you receive a Telegram message asking for approval.
+**Auto-approved commands (48 entries):**
+
+| Category | Commands |
+|----------|----------|
+| Read/search | `cat`, `ls`, `head`, `tail`, `grep`, `find`, `diff`, `sort`, `uniq`, `wc`, `stat`, `du`, `df` |
+| File editing | `sed`, `awk`, `touch`, `mkdir`, `cp`, `mv`, `tar` |
+| System/monitoring | `date`, `env`, `whoami`, `uname`, `hostname`, `uptime`, `free`, `top`, `ps`, `ss`, `netstat`, `lsof`, `htop`, `journalctl`, `ping` |
+| Development | `git`, `docker`, `python3`, `node`, `npm`, `npx`, `corepack` |
+| Network (dev) | `curl`, `wget` |
+| Local binaries | `~/.local/bin/*`, `/usr/local/bin/*`, nvm binaries (`openclaw`, `coco`) |
+
+**Commands that REQUIRE approval via Telegram:**
+
+| Command | Reason |
+|---------|--------|
+| `rm` / `rmdir` | Destructive and irreversible |
+| `kill` | Could kill OpenClaw or critical services |
+| `systemctl` | Start/stop critical services |
+| `chmod` | Permission changes can lock out access |
+| `ssh` / `scp` | Lateral movement to other systems |
+
+**Commands NEVER allowed** (not in any list — always denied):
+
+`sudo`, `su`, `dd`, `passwd`, `mkfs`, `fdisk`, `iptables`, `reboot`, `shutdown`
+
+!!! info "Approval flow"
+    1. Agent attempts to execute a command not in the allowlist
+    2. OpenClaw sends an approval request to your Telegram
+    3. You respond: `/approve <id> allow-once` or `allow-always` or `deny`
+    4. If `allow-always`, the command is added to the allowlist permanently
 
 !!! warning "Replace `YOUR_TELEGRAM_USER_ID` in both files"
     In `openclaw.json`, set `approvals.exec.targets[0].to` to your Telegram user ID (same value as `channels.telegram.allowFrom`).

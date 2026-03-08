@@ -390,7 +390,17 @@ cat > ~/.openclaw/exec-approvals.json << 'EAEOF'
     "ask": "on-miss",
     "askFallback": "deny",
     "autoAllowSkills": true
-  }
+  },
+  "allowlist": [
+    "cat", "ls", "head", "tail", "grep", "find", "diff", "sort", "uniq", "wc", "stat", "du", "df",
+    "sed", "awk", "touch", "mkdir", "cp", "mv", "tar",
+    "date", "env", "whoami", "uname", "hostname", "uptime", "free", "top", "ps", "ss", "netstat", "lsof", "htop", "journalctl", "ping",
+    "git", "docker", "python3", "node", "npm", "npx", "corepack",
+    "curl", "wget",
+    "~/.local/bin/*", "/usr/local/bin/*",
+    "~/.nvm/versions/node/*/bin/openclaw",
+    "~/.nvm/versions/node/*/bin/coco"
+  ]
 }
 EAEOF
 

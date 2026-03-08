@@ -265,11 +265,21 @@ Create `~/.openclaw/exec-approvals.json`:
     "ask": "on-miss",
     "askFallback": "deny",
     "autoAllowSkills": true
-  }
+  },
+  "allowlist": [
+    "cat", "ls", "head", "tail", "grep", "find", "diff", "sort", "uniq", "wc", "stat", "du", "df",
+    "sed", "awk", "touch", "mkdir", "cp", "mv", "tar",
+    "date", "env", "whoami", "uname", "hostname", "uptime", "free", "top", "ps", "ss", "netstat", "lsof", "htop", "journalctl", "ping",
+    "git", "docker", "python3", "node", "npm", "npx", "corepack",
+    "curl", "wget",
+    "~/.local/bin/*", "/usr/local/bin/*",
+    "~/.nvm/versions/node/*/bin/openclaw",
+    "~/.nvm/versions/node/*/bin/coco"
+  ]
 }
 ```
 
-This ensures commands not in the allowlist require your approval via Telegram (configured in `approvals.exec` in openclaw.json).
+Commands not in the allowlist (`rm`, `kill`, `systemctl`, `chmod`, `ssh`, `scp`) require approval via Telegram. Commands like `sudo`, `su`, `dd`, `reboot` are never allowed (not in any list).
 
 ### 9. Security rules
 
