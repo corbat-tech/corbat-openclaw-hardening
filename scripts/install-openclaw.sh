@@ -557,6 +557,7 @@ Restart=on-failure
 RestartSec=10
 
 # === SYSTEMD HARDENING ===
+# Filesystem isolation
 ProtectSystem=strict
 ProtectHome=read-only
 ReadWritePaths=/home/openclaw/openclaw/workspace
@@ -564,13 +565,24 @@ ReadWritePaths=/home/openclaw/openclaw/logs
 ReadWritePaths=/home/openclaw/.openclaw
 ReadWritePaths=/var/tmp/openclaw-compile-cache
 PrivateTmp=true
-NoNewPrivileges=true
-CapabilityBoundingSet=
+
+# Privilege control — relaxed for restricted sudo (see /etc/sudoers.d/openclaw)
+# sudo requires: SUID execution, privilege escalation, CAP_SETUID/SETGID, setuid() syscall
+# Security is enforced by exec-approvals allowlist + OS sudoers instead
+NoNewPrivileges=false
+CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_DAC_OVERRIDE CAP_FOWNER
 AmbientCapabilities=
+RestrictSUIDSGID=false
+
+# Network restrictions
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+
+# Syscall filtering — @privileged removed to allow setuid()/setgid() for sudo
 SystemCallFilter=@system-service
-SystemCallFilter=~@privileged @resources @mount @clock @reboot @swap @raw-io @cpu-emulation
+SystemCallFilter=~@resources @mount @clock @reboot @swap @raw-io @cpu-emulation
 SystemCallArchitectures=native
+
+# Kernel protection (unchanged — no reason to relax these)
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectKernelLogs=true
@@ -579,7 +591,6 @@ PrivateDevices=true
 ProtectHostname=true
 ProtectClock=true
 RestrictRealtime=true
-RestrictSUIDSGID=true
 LockPersonality=true
 
 # === Resource limits ===

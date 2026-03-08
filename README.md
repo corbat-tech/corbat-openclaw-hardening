@@ -19,7 +19,7 @@ Complete security guide for deploying [OpenClaw](https://openclaw.ai) AI agents 
 | **Tailscale Security Hardening** | ACLs, tags, MagicDNS, Tailnet Lock |
 | **OWASP Agentic Top 10 2026** | AA1-AA10 mitigations |
 | **NIST AI Agent Standards Initiative** | Identity, isolation, auditability, human control |
-| **Systemd Sandboxing** | ProtectSystem, NoNewPrivileges, CapabilityBoundingSet |
+| **Systemd Sandboxing** | ProtectSystem, CapabilityBoundingSet, SystemCallFilter, restricted sudo |
 
 ## What's Covered
 
@@ -40,7 +40,7 @@ Complete security guide for deploying [OpenClaw](https://openclaw.ai) AI agents 
 - **Post-quantum SSH** - `sntrup761x25519-sha512` key exchange algorithm
 - **SecretRef** - Native encrypted credential management (replaces plaintext .env)
 - **Gateway TLS pairing** - Protection against ClawJacked WebSocket hijacking
-- **Systemd sandboxing** - ProtectSystem, NoNewPrivileges, CapabilityBoundingSet, ReadWritePaths
+- **Systemd sandboxing** - ProtectSystem, CapabilityBoundingSet, SystemCallFilter, ReadWritePaths, restricted sudo via sudoers
 - **Double-layer firewall** - Hetzner Cloud Firewall (perimeter) + UFW (host)
 - **CrowdSec option** - Community threat intelligence as Fail2Ban alternative
 - **Canonical Livepatch** - Kernel patches without reboot

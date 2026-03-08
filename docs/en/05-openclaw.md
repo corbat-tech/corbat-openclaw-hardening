@@ -1509,26 +1509,27 @@ ReadWritePaths=/var/tmp/openclaw-compile-cache
 # Private temp (isolated)
 PrivateTmp=true
 
-# --- Restrict capabilities ---
-# Don't allow gaining new privileges
-NoNewPrivileges=true
-# No special capabilities
-CapabilityBoundingSet=
+# --- Privilege control ---
+# Relaxed for restricted sudo (see /etc/sudoers.d/openclaw)
+# sudo requires: SUID execution, privilege escalation, CAP_SETUID/SETGID
+# Security enforced by exec-approvals allowlist + OS sudoers instead
+NoNewPrivileges=false
+CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_DAC_OVERRIDE CAP_FOWNER
 AmbientCapabilities=
+RestrictSUIDSGID=false
 
 # --- Isolate network ---
 # AF_NETLINK required for OpenClaw to list network interfaces
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 
 # --- Restrict syscalls ---
-# Relaxed filter — @system-service + @debug is required for Telegram channel
-# The strict filter (without @debug) causes core dumps when Telegram connects
+# @privileged removed to allow setuid()/setgid() for sudo
 SystemCallFilter=@system-service
-SystemCallFilter=~@privileged @resources @mount @clock @reboot @swap @raw-io @cpu-emulation
+SystemCallFilter=~@resources @mount @clock @reboot @swap @raw-io @cpu-emulation
 # Native architecture only
 SystemCallArchitectures=native
 
-# --- Protect kernel ---
+# --- Protect kernel (unchanged) ---
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectKernelLogs=true
@@ -1543,8 +1544,6 @@ ProtectHostname=true
 ProtectClock=true
 # No real-time scheduling
 RestrictRealtime=true
-# No SUID/SGID binaries
-RestrictSUIDSGID=true
 # Block personality changes
 LockPersonality=true
 # Prevent written memory execution (JIT may require disabling this)

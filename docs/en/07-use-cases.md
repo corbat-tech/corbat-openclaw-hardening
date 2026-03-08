@@ -88,7 +88,7 @@ By the end of this section you will have:
 | Tool | Group | Function | Risk mitigation |
 |------|-------|----------|-----------------|
 | `read`, `write`, `edit`, `apply_patch` | `group:fs` | File operations | Restricted to workspace via systemd `ReadWritePaths` |
-| `exec`, `bash`, `process` | `group:runtime` | Command execution | Systemd `CapabilityBoundingSet`, `NoNewPrivileges` |
+| `exec`, `bash`, `process` | `group:runtime` | Command execution | `exec-approvals` allowlist + restricted `sudoers` |
 | `web_search`, `web_fetch` | `group:web` | Web search and fetch | Requires API key (Gemini) |
 | `browser`, `canvas` | `group:ui` | Web browsing, visual content | SOUL.md guidelines |
 | `sessions_*`, `session_status` | `group:sessions` | Sub-agent sessions | Controlled by `maxConcurrent` |
