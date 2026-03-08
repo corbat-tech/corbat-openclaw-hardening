@@ -1,17 +1,68 @@
-# AGENTS.md — Agentic Self-Configuration Guide
+# AGENTS.md — OpenClaw VPS Hardening: Agent Knowledge Base
 
-> This file is for you, the AI agent. Follow these steps to configure this OpenClaw deployment correctly.
+> **For any AI agent** (OpenClaw, Claude Code, Cursor, Copilot, etc.) working with this repository or assisting with deployment. This is the single source of truth for all OpenClaw deployment knowledge discovered through real production use.
 
-## Who am I?
+---
 
-You are an AI assistant deployed on a hardened VPS following this guide.
-Configure your identity in `~/.openclaw/AGENTS.md` on the server.
+## What is this project?
+
+OpenClaw VPS Hardening Guide — a bilingual (EN/ES) documentation site that guides users through deploying OpenClaw on a hardened VPS. Built with MkDocs Material and hosted on GitHub Pages.
+
+### Repository structure
+
+```
+docs/
+  en/          # English documentation (01-preparation through 10-final-checklist)
+  es/          # Spanish documentation (mirrors EN exactly)
+scripts/
+  harden.sh          # VPS hardening automation (sections 3-4)
+  install-openclaw.sh # OpenClaw installation automation (section 5)
+  verify-hardening.sh # Security compliance checker
+  setup.sh            # Master script (harden + install)
+mkdocs.yml           # MkDocs configuration with i18n
+AGENTS.md            # This file — agent knowledge base
+CLAUDE.md            # Claude Code pointer (references this file)
+```
+
+---
+
+## Reference deployment
+
+- **Provider**: Hetzner (any VPS provider works)
+- **OS**: Ubuntu 24.04
+- **User**: `openclaw` (dedicated non-root user)
+- **Access**: Tailscale only (no public SSH)
+- **OpenClaw version**: 2026.3.x
+- **Primary model**: kimi-coding/kimi-for-coding (subscription)
+- **Fallback model**: google/gemini-2.5-flash (free tier + web_search)
+- **Google Gemini API**: `openai-completions` with baseUrl `https://generativelanguage.googleapis.com/v1beta/openai` and `compat.supportsStore: false`
+- **Channels**: Telegram with allowlist
+- **Email**: Gmail with app password via himalaya skill
+
+---
+
+## Deployment flow (step by step)
+
+Step-by-step reference for an AI agent assisting a user with OpenClaw deployment on a fresh VPS.
+
+1. **Provision VPS** — User creates Hetzner CPX22 (or equivalent), Ubuntu 24.04, pasting cloud-init from section 02 during creation.
+2. **First SSH** — User connects as `root` via public IP, downloads `harden.sh` and `install-openclaw.sh` from this repo.
+3. **Run harden.sh** — Executes sections 3-4: creates `openclaw` user, hardens SSH, configures UFW, installs Tailscale.
+4. **Approve Tailscale** — User opens the auth URL printed by the script and approves the node in the Tailscale admin console.
+5. **Reconnect via Tailscale** — User disconnects public SSH, reconnects as `openclaw@<tailscale-ip>`. Disable public SSH in Hetzner firewall.
+6. **Run install-openclaw.sh** — Executes section 5: installs OpenClaw, generates `openclaw.json`, creates systemd unit.
+7. **Configure API keys** — Create `/etc/openclaw/env` with all secrets (see Required env vars below). Add `EnvironmentFile=/etc/openclaw/env` to the systemd override.
+8. **Start service** — `sudo systemctl start openclaw && sudo journalctl -u openclaw -f` — verify clean startup, no auth errors.
+9. **Test Telegram** — If Telegram channel configured, send a test message to the bot and confirm response.
+10. **Run verification** — Execute the final checklist script or manually walk through section 10.
+
+---
 
 ## Self-configuration checklist
 
-When asked to configure or verify your setup, follow these steps in order:
+When asked to configure or verify a deployment, follow these steps in order:
 
-### 1. Verify your environment
+### 1. Verify environment
 
 ```bash
 # Check OpenClaw version
@@ -27,23 +78,37 @@ systemctl status openclaw --no-pager
 openclaw skills list
 ```
 
-### 2. Verify API keys are configured
+### 2. Verify API keys
 
-API keys must be stored in systemd overrides, NOT in openclaw.json or .bashrc:
+All secrets must be in `/etc/openclaw/env` (mode `600`, `root:openclaw`), loaded via `EnvironmentFile=` in the systemd override:
 
 ```bash
-# Check if override exists
+# Check if override exists with EnvironmentFile
 cat /etc/systemd/system/openclaw.service.d/override.conf 2>/dev/null
+
+# Check if env file exists with correct permissions
+sudo ls -la /etc/openclaw/env
 ```
 
-If API keys are missing, guide the user to add them:
+If API keys are missing, guide the user:
 ```bash
+# Create the env file
+sudo mkdir -p /etc/openclaw
+sudo nano /etc/openclaw/env
+# Add: KIMI_API_KEY=sk-...
+# Add: GOOGLE_API_KEY=...
+# Add: GEMINI_API_KEY=...  (same value as GOOGLE_API_KEY)
+# Add: GATEWAY_TOKEN=...
+# Add: TELEGRAM_BOT_TOKEN=...  (if using Telegram)
+
+sudo chmod 600 /etc/openclaw/env
+sudo chown root:openclaw /etc/openclaw/env
+
+# Add EnvironmentFile to systemd override
 sudo systemctl edit openclaw
 # Add:
 #   [Service]
-#   Environment="MOONSHOT_API_KEY=sk-..."
-#   Environment="GOOGLE_API_KEY=..."
-#   Environment="GEMINI_API_KEY=..."  # same value as GOOGLE_API_KEY, needed for web search
+#   EnvironmentFile=/etc/openclaw/env
 ```
 
 ### 3. Verify network connectivity
@@ -58,7 +123,7 @@ The Hetzner Cloud Firewall must allow these outbound ports:
 | 993  | TCP      | IMAP (email reading) |
 | 41641 | UDP     | Tailscale (WireGuard) |
 | 3478 | UDP      | STUN (Tailscale NAT traversal) |
-| 53   | UDP      | DNS |
+| 53   | UDP+TCP  | DNS (UDP primary, TCP fallback) |
 
 Test connectivity:
 ```bash
@@ -66,7 +131,9 @@ nc -zv smtp.gmail.com 587 -w 5
 nc -zv imap.gmail.com 993 -w 5
 ```
 
-### 4. Recommended openclaw.json structure
+---
+
+## Recommended openclaw.json
 
 ```json
 {
@@ -176,7 +243,86 @@ nc -zv imap.gmail.com 993 -w 5
 }
 ```
 
-### 5. Model selection guide
+---
+
+## OpenClaw configuration facts (verified v2026.3.x)
+
+These are field-tested, not theoretical. Discovered through real production deployment.
+
+### Sandbox & architecture
+- **Sandbox**: Use `"off"` for dedicated single-user VPS (bare-metal approach — no Docker needed). Use `"all"` only for shared/multi-user servers (requires Docker, env vars don't pass through). The VPS itself functions as the sandbox when protected by Tailscale + exec-approvals + sudoers
+- **No Docker**: Architectural decision — dedicated VPS + Tailscale eliminates multi-tenancy/network risks. Docker adds operational complexity without security benefit in this threat model
+
+### Skills
+- **Skills install path**: `npx playbooks add skill` installs to `~/.agents/skills/<skill-name>/` (global scope), NOT `~/.openclaw/skills/`
+- **Skills auto-discover** from `~/.agents/skills/`, `~/.openclaw/skills/`, and `<workspace>/skills/` — no `skills` section needed in `openclaw.json`
+- **Skills require `npm install`**: OpenClaw marks skills "ready" based on SKILL.md presence, but does NOT auto-install npm dependencies
+- **Verify skill paths**: Always run `find /home/openclaw -name "SKILL.md" -path "*<skill-name>*"` to confirm
+
+### Secrets & auth
+- **Secrets CLI**: `openclaw secrets configure` (interactive wizard), `openclaw secrets audit`, `openclaw secrets reload` — there is NO `openclaw secrets set` command
+- **Secrets storage**: Store ALL API keys and tokens in `/etc/openclaw/env` (mode `600`, `root:openclaw`), loaded via `EnvironmentFile=` in the systemd override. NOT in `.bashrc`, `~/.openclaw/.env`, or plaintext in `openclaw.json`. Reference with `${VAR_NAME}`
+- **Google Gemini requires two env vars**: Both `GOOGLE_API_KEY` and `GEMINI_API_KEY` must be set (same value). `GOOGLE_API_KEY` for LLM completions, `GEMINI_API_KEY` for web search/grounding
+- **`auth-profiles.json`**: `~/.openclaw/agents/main/agent/auth-profiles.json` overrides env vars — if it has a stale key, it blocks auth even with correct systemd env vars. Fix: `echo '{}' > ~/.openclaw/agents/main/agent/auth-profiles.json`
+
+### Config structure
+- **dmPolicy**: Use `"allowlist"` with `allowFrom` to restrict access. `"pairing"` ignores `allowFrom`
+- **SOUL.md path**: Must be in the workspace dir from `agents.defaults.workspace` (e.g., `~/openclaw/workspace/SOUL.md`), NOT in `~/.openclaw/workspace/`
+- **Root-level keys**: `sandbox`, `dmPolicy`, `security`, `tools.blocked` at root level are NOT recognized — they go inside `agents.defaults` or per-channel config
+- **Tools config**: Use `profile: "full"` with `deny: ["gateway"]`. The `coding` profile has a bug where `web_search` doesn't enable correctly. Do NOT deny `process` — skills need it. The correct Telegram streaming field is `streaming` (NOT `streamMode`)
+- **Invalid schema fields**: `sendOptions`, `requestOptions`, `passthrough`, `extraBody`, `streamMode` — all cause "Config invalid" errors
+
+### Systemd hardening
+- **SystemCallFilter**: Disabled (reset via `SystemCallFilter=` in override.conf) for sudo/apt compatibility. Only `SystemCallArchitectures=native` remains in base service. Security enforced by exec-approvals + sudoers instead
+- **Systemd hardening (moderate)**: Base service + override.conf pattern. Override resets `SystemCallFilter=` (empty), sets `CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_AUDIT_WRITE CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER`, `ProtectSystem=false`, `PrivateDevices/LockPersonality/RestrictRealtime/ProtectKernelTunables/ProtectKernelModules=false`. With `ProtectSystem=false` and `ProtectHome=false`, ReadWritePaths are unnecessary. Only `PrivateTmp=true` remains. API keys stored in `/etc/openclaw/env` (mode `600`, `root:openclaw`) loaded via `EnvironmentFile=` — keys never appear in `systemctl show` output
+- **daemon-reload is mandatory**: Between `systemctl edit` and restart — without it, env var changes are NOT applied
+- **Service name**: The systemd service is `openclaw.service`, NOT `openclaw-gateway.service`
+
+### Model compatibility
+- **Kimi Coding**: `kimi-coding/kimi-for-coding` requires `User-Agent: claude-code/0.1.0` header, `reasoning: false`, and baseUrl without trailing slash (`https://api.kimi.com/coding`)
+- **Gemini**: `google/gemini-2.5-flash` requires `compat.supportsStore: false`
+- **Moonshot ≠ Kimi Coding**: Separate providers with different API keys (`MOONSHOT_API_KEY` vs `KIMI_API_KEY`) and endpoints
+
+### Execution control
+- **Execution approvals**: `~/.openclaw/exec-approvals.json` — schema v1 with `socket` (path + auto-generated token), `agents.main.allowlist` with `{ "pattern": "/usr/bin/..." }` entries (absolute paths, glob supported). 44 auto-approved patterns including `/usr/bin/sudo`. `sudo` is allowed in exec-approvals BUT restricted by OS sudoers (`/etc/sudoers.d/openclaw`) to only: apt install/update, pip3 install, systemctl restart/start/stop/status/enable/disable. Destructive commands (`rm`, `kill`, `chmod`, `ssh`) require Telegram approval. `su`, `dd`, `reboot` never allowed
+- **Restricted sudo**: `/etc/sudoers.d/openclaw` with `NOPASSWD` for specific commands only. Defense in depth: exec-approvals controls binary invocation, sudoers controls what sudo can do. Must be created manually via SSH (openclaw user doesn't have sudo during install)
+
+### Web search
+- **web_search**: Requires `GEMINI_API_KEY` env var (auto-detect) or explicit `tools.web.search.provider` config. Detection order: Brave → Gemini → Kimi → Perplexity → Grok
+- **web_search config**: Needs 3 fields: `enabled: true`, `gemini.model` explicit, `fetch.enabled: true`
+- **web_search apiKey**: Must be nested under provider: `gemini.apiKey`, NOT `search.apiKey`
+
+### Dangerous commands
+- **`openclaw doctor --fix`**: Do NOT run after manual config — it overwrites provider settings (especially Kimi) with broken defaults
+- **Hetzner Cloud Firewall**: Must include outbound TCP 587 (SMTP), TCP 993 (IMAP), UDP 3478 (STUN), TCP 53 (DNS fallback) in addition to 443, 80, 41641, UDP 53
+
+---
+
+## Config precedence (important for debugging)
+
+```
+auth-profiles.json > process.env (systemd/EnvironmentFile) > ~/.openclaw/.env > openclaw.json env.vars
+```
+
+Our guide centralizes all secrets in `/etc/openclaw/env` (loaded via `EnvironmentFile=` in the systemd override), so they arrive as process.env — second highest priority.
+
+If auth fails despite correct env vars, check `~/.openclaw/agents/main/agent/auth-profiles.json` for stale keys.
+
+---
+
+## Required env vars
+
+| Variable | Where | Purpose |
+|---|---|---|
+| `KIMI_API_KEY` | `/etc/openclaw/env` | Kimi Coding LLM (primary model) |
+| `GOOGLE_API_KEY` | `/etc/openclaw/env` | Google Gemini LLM completions |
+| `GEMINI_API_KEY` | `/etc/openclaw/env` | Gemini web search/grounding (same value as GOOGLE_API_KEY) |
+| `GATEWAY_TOKEN` | `/etc/openclaw/env` | OpenClaw gateway authentication |
+| `TELEGRAM_BOT_TOKEN` | `/etc/openclaw/env` | Telegram channel (if configured) |
+
+---
+
+## Model selection guide
 
 | Model | Provider | Tool calls | Cost | Best for |
 |-------|----------|-----------|------|----------|
@@ -189,7 +335,9 @@ To switch models, change `agents.defaults.model.primary` and restart:
 sudo systemctl restart openclaw
 ```
 
-### 6. Skills installation
+---
+
+## Skills installation
 
 ```bash
 # Install a skill
@@ -204,7 +352,9 @@ openclaw skills list
 
 Skills auto-discover from `~/.agents/skills/`. No config needed in openclaw.json.
 
-### 7. Email setup (himalaya)
+---
+
+## Email setup (himalaya)
 
 ```bash
 # Install skill
@@ -242,19 +392,9 @@ EOF
 himalaya envelope list
 ```
 
-### 8. Secrets storage
+---
 
-Store all sensitive values securely — **never** as plaintext in `openclaw.json`:
-
-| Secret type | Where to store | How to reference |
-|-------------|---------------|-----------------|
-| API keys (LLM providers) | `sudo systemctl edit openclaw` → `Environment="KEY=value"` | `${KEY}` in openclaw.json |
-| Channel tokens (Telegram) | `/etc/openclaw/env` (chmod 600, root:openclaw) | `${TELEGRAM_BOT_TOKEN}` |
-| Gateway token | `sudo systemctl edit openclaw` → `Environment="GATEWAY_TOKEN=value"` | `${GATEWAY_TOKEN}` |
-
-After editing systemd overrides: `sudo systemctl daemon-reload && sudo systemctl restart openclaw`
-
-### 8b. Execution approvals (exec-approvals.json)
+## Execution approvals (exec-approvals.json)
 
 The install script generates `~/.openclaw/exec-approvals.json` with a unique socket token. Structure:
 
@@ -332,7 +472,9 @@ The install script generates `~/.openclaw/exec-approvals.json` with a unique soc
 
 Commands not in the allowlist (`rm`, `kill`, `chmod`, `ssh`, `scp`) require approval via Telegram. Commands like `su`, `dd`, `reboot` are never allowed (not in any list).
 
-### 9. Security rules
+---
+
+## Security rules
 
 - **Never** store API keys in openclaw.json — use `${VAR_NAME}` references
 - **Never** add `SystemCallFilter` in override.conf — causes NAMESPACE errors
@@ -344,11 +486,37 @@ Commands not in the allowlist (`rm`, `kill`, `chmod`, `ssh`, `scp`) require appr
 - **Always** create `/etc/sudoers.d/openclaw` to restrict `sudo` to apt, pip3, systemctl only
 - **Always** restart after config changes: `sudo systemctl daemon-reload && sudo systemctl restart openclaw`
 
-### 10. Troubleshooting
+---
+
+## Quick diagnostic commands
 
 ```bash
-# Service won't start — check logs
-sudo journalctl -u openclaw -n 30 --no-pager
+# Service status and recent logs
+sudo systemctl status openclaw
+sudo journalctl -u openclaw -n 50 --no-pager
+
+# Live log stream (use during startup/testing)
+sudo journalctl -u openclaw -f
+
+# Check effective env vars reaching the process
+sudo cat /proc/$(pidof openclaw)/environ | tr '\0' '\n' | sort
+
+# Verify config files
+cat ~/.openclaw/openclaw.json | jq .
+cat ~/.openclaw/agents/main/agent/auth-profiles.json
+
+# Reset stale auth profiles
+echo '{}' > ~/.openclaw/agents/main/agent/auth-profiles.json
+
+# Restart after config changes
+sudo systemctl daemon-reload && sudo systemctl restart openclaw
+
+# Verify systemd hardening
+sudo systemctl show openclaw | grep -E 'ProtectHome|ProtectSystem|NoNewPrivileges'
+
+# Tailscale connectivity
+tailscale status
+tailscale ping <peer>
 
 # Port already in use
 sudo kill $(sudo lsof -t -i:18789) && sudo systemctl restart openclaw
@@ -364,10 +532,12 @@ nc -zv smtp.gmail.com 587 -w 5
 nc -zv imap.gmail.com 993 -w 5
 ```
 
+---
+
 ## Documentation
 
 The full hardening guide is in this repository:
 - English: `docs/en/` (sections 01 through 10)
 - Spanish: `docs/es/` (mirrors EN exactly)
 
-Refer to `docs/en/05-openclaw.md` (or `docs/es/05-openclaw.md`) for the complete installation and configuration guide including the "Quick reference: essential commands" section.
+Refer to `docs/en/05-openclaw.md` (or `docs/es/05-openclaw.md`) for the complete installation and configuration guide.
