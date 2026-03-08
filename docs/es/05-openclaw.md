@@ -1475,6 +1475,153 @@ sudo systemctl restart openclaw
 
 ---
 
+## Referencia rápida: comandos esenciales
+
+### Gestión del servicio
+
+```bash
+# Reiniciar OpenClaw
+sudo systemctl restart openclaw
+
+# Ver estado del servicio
+sudo systemctl status openclaw
+
+# Detener OpenClaw
+sudo systemctl stop openclaw
+
+# Iniciar OpenClaw
+sudo systemctl start openclaw
+```
+
+### Logs y depuración
+
+```bash
+# Ver logs recientes (últimas 50 líneas)
+sudo journalctl -u openclaw -n 50 --no-pager
+
+# Seguir logs en tiempo real (Ctrl+C para parar)
+sudo journalctl -u openclaw -f
+
+# Ver log detallado del gateway (día actual)
+cat /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log | tail -100
+
+# Filtrar logs solo errores
+sudo journalctl -u openclaw --no-pager | grep -i error
+```
+
+### Archivos de configuración
+
+```bash
+# Editar config principal (modelo, tools, canales)
+nano ~/.openclaw/openclaw.json
+
+# Editar personalidad e instrucciones del agente
+nano ~/.openclaw/AGENTS.md
+
+# Editar overrides de systemd (secrets, variables de entorno)
+sudo systemctl edit openclaw
+# — o directamente —
+sudo nano /etc/systemd/system/openclaw.service.d/override.conf
+
+# Después de editar overrides de systemd, siempre ejecutar:
+sudo systemctl daemon-reload && sudo systemctl restart openclaw
+```
+
+### Secrets y API keys
+
+```bash
+# Guardar API keys de forma segura en systemd (recomendado para VPS)
+sudo systemctl edit openclaw
+# Añadir líneas como:
+#   [Service]
+#   Environment="MOONSHOT_API_KEY=sk-tu-key"
+#   Environment="GOOGLE_API_KEY=tu-key"
+
+# Referenciar en openclaw.json con: ${MOONSHOT_API_KEY}
+
+# Wizard interactivo de secrets
+openclaw secrets configure
+
+# Auditar secrets configurados
+openclaw secrets audit
+```
+
+### Gestión de modelos
+
+```bash
+# Cambiar modelo principal — editar openclaw.json:
+#   "agents" → "defaults" → "model" → "primary"
+# Ejemplos:
+#   "moonshot/kimi-k2.5"      (Kimi — gratis)
+#   "google/gemini-2.5-flash"  (Gemini — tier gratuito)
+
+# Listar modelos disponibles
+openclaw models list
+
+# Reiniciar después de cambiar modelo
+sudo systemctl restart openclaw
+```
+
+### Gestión de skills
+
+```bash
+# Listar skills instalados y su estado
+openclaw skills list
+
+# Instalar un skill desde ClawHub
+npx playbooks add skill openclaw/skills --skill <nombre-skill>
+
+# Los skills se instalan en:
+ls ~/.agents/skills/
+
+# Después de instalar un skill, verificar dependencias npm:
+cd ~/.agents/skills/<nombre-skill> && npm install
+
+# Eliminar un skill
+rm -rf ~/.agents/skills/<nombre-skill>
+```
+
+### Red y conectividad
+
+```bash
+# Probar SMTP saliente (envío de email)
+nc -zv smtp.gmail.com 587 -w 5
+
+# Probar IMAP saliente (lectura de email)
+nc -zv imap.gmail.com 993 -w 5
+
+# Ver qué puerto usa el gateway de OpenClaw
+sudo ss -tlnp | grep 18789
+
+# Matar proceso huérfano del gateway (si restart falla)
+sudo kill $(sudo lsof -t -i:18789)
+```
+
+### Salud y seguridad
+
+```bash
+# Ejecutar doctor de OpenClaw
+openclaw doctor
+
+# Auditoría de seguridad
+openclaw security audit
+
+# Verificar permisos de archivos
+ls -la ~/.openclaw/
+# Debe ser: drwx------ (700) para el directorio
+# Debe ser: -rw------- (600) para openclaw.json
+```
+
+!!! tip "Flujo de trabajo para cambios de configuración"
+    El flujo típico para cualquier cambio de configuración es:
+
+    1. Editar el archivo (`nano ~/.openclaw/openclaw.json`)
+    2. Reiniciar el servicio (`sudo systemctl restart openclaw`)
+    3. Revisar logs (`sudo journalctl -u openclaw -n 20 --no-pager`)
+    4. Probar vía Telegram (`/new` → enviar un mensaje)
+
+---
+
 ## Resumen
 
 | Configuración | Estado |

@@ -1470,6 +1470,153 @@ sudo systemctl restart openclaw
 
 ---
 
+## Quick reference: essential commands
+
+### Service management
+
+```bash
+# Restart OpenClaw
+sudo systemctl restart openclaw
+
+# Check service status
+sudo systemctl status openclaw
+
+# Stop OpenClaw
+sudo systemctl stop openclaw
+
+# Start OpenClaw
+sudo systemctl start openclaw
+```
+
+### Logs and debugging
+
+```bash
+# View recent logs (last 50 lines)
+sudo journalctl -u openclaw -n 50 --no-pager
+
+# Follow logs in real time (Ctrl+C to stop)
+sudo journalctl -u openclaw -f
+
+# View detailed gateway log (current day)
+cat /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log | tail -100
+
+# Filter logs for errors only
+sudo journalctl -u openclaw --no-pager | grep -i error
+```
+
+### Configuration files
+
+```bash
+# Edit main config (model, tools, channels)
+nano ~/.openclaw/openclaw.json
+
+# Edit agent personality and instructions
+nano ~/.openclaw/AGENTS.md
+
+# Edit systemd overrides (secrets, env vars)
+sudo systemctl edit openclaw
+# — or directly —
+sudo nano /etc/systemd/system/openclaw.service.d/override.conf
+
+# After editing systemd overrides, always run:
+sudo systemctl daemon-reload && sudo systemctl restart openclaw
+```
+
+### Secrets and API keys
+
+```bash
+# Store API keys securely in systemd (recommended for VPS)
+sudo systemctl edit openclaw
+# Add lines like:
+#   [Service]
+#   Environment="MOONSHOT_API_KEY=sk-your-key"
+#   Environment="GOOGLE_API_KEY=your-key"
+
+# Reference in openclaw.json with: ${MOONSHOT_API_KEY}
+
+# Interactive secrets wizard
+openclaw secrets configure
+
+# Audit configured secrets
+openclaw secrets audit
+```
+
+### Model management
+
+```bash
+# Change primary model — edit openclaw.json:
+#   "agents" → "defaults" → "model" → "primary"
+# Examples:
+#   "moonshot/kimi-k2.5"    (Kimi — free)
+#   "google/gemini-2.5-flash" (Gemini — free tier)
+
+# List available models
+openclaw models list
+
+# Restart after changing model
+sudo systemctl restart openclaw
+```
+
+### Skills management
+
+```bash
+# List installed skills and their status
+openclaw skills list
+
+# Install a skill from ClawHub
+npx playbooks add skill openclaw/skills --skill <skill-name>
+
+# Skills are installed at:
+ls ~/.agents/skills/
+
+# After installing a skill, check for npm dependencies:
+cd ~/.agents/skills/<skill-name> && npm install
+
+# Remove a skill
+rm -rf ~/.agents/skills/<skill-name>
+```
+
+### Network and connectivity
+
+```bash
+# Test outbound SMTP (email sending)
+nc -zv smtp.gmail.com 587 -w 5
+
+# Test outbound IMAP (email reading)
+nc -zv imap.gmail.com 993 -w 5
+
+# Check what port OpenClaw gateway is using
+sudo ss -tlnp | grep 18789
+
+# Kill orphan gateway process (if restart fails)
+sudo kill $(sudo lsof -t -i:18789)
+```
+
+### Health and security
+
+```bash
+# Run OpenClaw doctor
+openclaw doctor
+
+# Security audit
+openclaw security audit
+
+# Check file permissions
+ls -la ~/.openclaw/
+# Should be: drwx------ (700) for directory
+# Should be: -rw------- (600) for openclaw.json
+```
+
+!!! tip "Workflow for config changes"
+    The typical workflow for any configuration change is:
+
+    1. Edit the file (`nano ~/.openclaw/openclaw.json`)
+    2. Restart the service (`sudo systemctl restart openclaw`)
+    3. Check logs (`sudo journalctl -u openclaw -n 20 --no-pager`)
+    4. Test via Telegram (`/new` → send a message)
+
+---
+
 ## Summary
 
 | Configuration | Status |
