@@ -87,7 +87,10 @@ By the end of this section you will have:
 | **Inbound** | TCP | 22 | Any | SSH (temporary, will be closed after Tailscale) |
 | **Outbound** | TCP | 443 | Any | HTTPS (LLM APIs) |
 | **Outbound** | TCP | 80 | Any | HTTP (updates) |
+| **Outbound** | TCP | 587 | Any | SMTP (email sending) |
+| **Outbound** | TCP | 993 | Any | IMAP (email reading) |
 | **Outbound** | UDP | 41641 | Any | Tailscale (WireGuard) |
+| **Outbound** | UDP | 3478 | Any | STUN (Tailscale NAT traversal) |
 | **Outbound** | UDP | 53 | Any | DNS |
 
 !!! info "Inbound deny-all by default"
