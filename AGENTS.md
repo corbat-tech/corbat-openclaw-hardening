@@ -71,7 +71,6 @@ nc -zv imap.gmail.com 993 -w 5
 {
   "auth": {
     "profiles": {
-      "your-provider:default": { "provider": "your-provider", "mode": "api_key" },
       "google:default": { "provider": "google", "mode": "api_key" }
     }
   },
@@ -87,9 +86,9 @@ nc -zv imap.gmail.com 993 -w 5
     "mode": "merge",
     "providers": {
       "google": {
-        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta",
         "apiKey": "${GOOGLE_API_KEY}",
-        "api": "openai-completions",
+        "api": "google-generative-ai",
         "models": [{
           "id": "gemini-2.5-flash",
           "name": "Gemini 2.5 Flash",
@@ -104,22 +103,18 @@ nc -zv imap.gmail.com 993 -w 5
   "agents": {
     "defaults": {
       "model": {
-        "primary": "your-provider/your-model",
-        "fallbacks": ["google/gemini-2.5-flash"]
+        "primary": "google/gemini-2.5-flash",
+        "fallbacks": ["your-fallback-provider/model"]
       },
       "models": {
-        "your-provider/your-model": { "alias": "Primary Model" },
-        "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" }
+        "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" },
+        "your-fallback-provider/model": { "alias": "Fallback Model" }
       },
       "sandbox": { "mode": "off" },
       "compaction": { "mode": "safeguard" }
     }
   },
-  "tools": {
-    "profile": "coding",
-    "allow": ["group:web"],
-    "deny": ["group:automation"]
-  }
+  "tools": {}
 }
 ```
 

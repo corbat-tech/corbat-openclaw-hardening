@@ -400,12 +400,12 @@ nano ~/.openclaw/openclaw.json
   "agents": {
     "defaults": {
       "model": {
-        "primary": "your-provider/your-model",
-        "fallbacks": ["google/gemini-2.5-flash"]
+        "primary": "google/gemini-2.5-flash",
+        "fallbacks": ["tu-proveedor-fallback/modelo"]
       },
       "models": {
-        "your-provider/your-model": { "alias": "Primary Model" },
-        "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" }
+        "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" },
+        "tu-proveedor-fallback/modelo": { "alias": "Modelo Fallback" }
       },
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
@@ -432,9 +432,9 @@ nano ~/.openclaw/openclaw.json
     "mode": "merge",
     "providers": {
       "google": {
-        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta",
         "apiKey": "${GOOGLE_API_KEY}",
-        "api": "openai-completions",
+        "api": "google-generative-ai",
         "models": [{
           "id": "gemini-2.5-flash",
           "name": "Gemini 2.5 Flash",
@@ -446,11 +446,7 @@ nano ~/.openclaw/openclaw.json
       }
     }
   },
-  "tools": {
-    "profile": "coding",
-    "allow": ["group:web"],
-    "deny": ["group:automation"]
-  },
+  "tools": {},
   "session": {
     "dmScope": "per-channel-peer"
   },
@@ -476,7 +472,7 @@ nano ~/.openclaw/openclaw.json
 
     | Proveedor | `baseUrl` | `api` | Tier gratuito |
     |-----------|-----------|-------|---------------|
-    | Google Gemini | `https://generativelanguage.googleapis.com/v1beta/openai` | `openai-completions` | Sí |
+    | Google Gemini | `https://generativelanguage.googleapis.com/v1beta` | `google-generative-ai` | Sí |
     | Moonshot (Kimi K2.5) | `https://api.moonshot.ai/v1` | `openai-completions` | Sí |
     | Kimi Code | `https://api.kimi.com/coding/` | `anthropic-messages` | Suscripción |
     | OpenAI | `https://api.openai.com/v1` | `openai-completions` | No |
@@ -484,12 +480,20 @@ nano ~/.openclaw/openclaw.json
 
     Configura `"fallbacks"` en `agents.defaults.model` para que el agente cambie automáticamente si el proveedor principal cae.
 
+!!! info "Configuración de tools"
+    Por defecto, `"tools": {}` da al agente acceso a todas las herramientas sin restricciones. Para más control:
+
+    - `"profile": "coding"` — Habilita fs, runtime (bash, exec, process), sessions, memory
+    - `"allow": ["group:web"]` — Añade herramientas de acceso web
+    - `"deny": ["group:automation"]` — Bloquea cron y modificación del gateway
+
+    Ejemplo de config restringida: `"tools": { "profile": "coding", "allow": ["group:web"], "deny": ["group:automation"] }`
+
 !!! danger "Configuración de seguridad crítica"
     - `bind: "loopback"` — Solo escucha en localhost (nunca `0.0.0.0`)
     - `sandbox.mode: "off"` — Se apoya en el hardening de systemd para aislamiento (recomendado para VPS dedicada). Usa `"all"` para servidores compartidos
     - `auth.mode: "token"` — Acceso al Gateway requiere token de autenticación
     - **Todos los secrets usan referencias `${VAR_NAME}`** — Nunca guardes tokens o API keys como texto plano en este archivo
-    - `tools.deny: ["group:automation"]` — Bloquea solo cron y modificación del gateway. NO denegar `process` — los skills lo necesitan para ejecutar scripts
     - `session.dmScope: "per-channel-peer"` — Aísla las sesiones DM para prevenir filtración de contexto
     - `tls: {}` — TLS habilitado con valores por defecto
 

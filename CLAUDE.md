@@ -61,6 +61,7 @@ AGENTS.md            # Agentic self-configuration guide for OpenClaw agents
 - User: `openclaw` (dedicated non-root user)
 - Access: Tailscale only (no public SSH)
 - OpenClaw version: 2026.3.x
-- Recommended models: moonshot/kimi-k2.5 (free), google/gemini-2.5-flash (free tier)
+- Recommended models: google/gemini-2.5-flash (free tier, primary), kimi-coding/kimi-for-coding (subscription, fallback)
+- Google Gemini API: use `google-generative-ai` api format with baseUrl `https://generativelanguage.googleapis.com/v1beta` (NOT openai-completions)
 - Channels: Telegram with allowlist
 - Email: Gmail with app password via himalaya skill
