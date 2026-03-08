@@ -179,10 +179,10 @@ if [ ! -f "$CONFIG_FILE" ]; then
 fi
 
 if [ -f "$CONFIG_FILE" ]; then
-    if grep -A1 '"mode"' "$CONFIG_FILE" | grep -q '"all"'; then
-        check "Sandbox mode = all" "pass"
+    if grep -A1 '"mode"' "$CONFIG_FILE" | grep -q '"off"'; then
+        check "Sandbox mode = off (dedicated VPS)" "pass"
     else
-        check "Sandbox mode = all" "fail" "critical"
+        check "Sandbox mode = off (dedicated VPS)" "warn"
     fi
 
     if grep -q '"dmPolicy"' "$CONFIG_FILE" && grep -A1 '"dmPolicy"' "$CONFIG_FILE" | grep -q '"pairing"\|"closed"'; then

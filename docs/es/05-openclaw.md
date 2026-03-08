@@ -1099,7 +1099,7 @@ NO disponible — modificar la configuración del gateway en runtime es un riesg
 
 ### Sandbox y restricciones de herramientas
 
-Para un **VPS dedicado de un solo usuario** con el hardening systemd de esta guía, el modo sandbox `"off"` es la configuración recomendada. La seguridad se aplica mediante el aislamiento de systemd (ProtectSystem, ReadWritePaths, CapabilityBoundingSet, etc.) y las restricciones de herramientas (`tools.profile` + `tools.deny`).
+Para un **VPS dedicado de un solo usuario** con el hardening de esta guía, el modo sandbox `"off"` es la configuración recomendada. La seguridad se aplica mediante `exec-approvals` allowlist, `sudoers` restringido, aislamiento del VPS dedicado (Tailscale VPN, usuario non-root) y restricciones de herramientas (`tools.profile` + `tools.deny`).
 
 El acceso a herramientas se controla en `openclaw.json` (ya configurado en el ejemplo JSON principal de arriba):
 

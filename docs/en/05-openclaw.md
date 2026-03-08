@@ -1099,7 +1099,7 @@ NOT available — modifying gateway config at runtime is a security risk.
 
 ### Sandbox and tool restrictions
 
-For a **dedicated single-user VPS** with the systemd hardening from this guide, sandbox mode `"off"` is the recommended setting. Security is enforced by systemd isolation (ProtectSystem, ReadWritePaths, CapabilityBoundingSet, etc.) and tool restrictions (`tools.profile` + `tools.deny`).
+For a **dedicated single-user VPS** with the hardening from this guide, sandbox mode `"off"` is the recommended setting. Security is enforced by `exec-approvals` allowlist, restricted `sudoers`, dedicated VPS isolation (Tailscale VPN, non-root user), and tool restrictions (`tools.profile` + `tools.deny`).
 
 Tool access is controlled in `openclaw.json` (already configured in the main JSON example above):
 

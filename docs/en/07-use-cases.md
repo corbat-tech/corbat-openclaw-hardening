@@ -402,7 +402,7 @@ Output filtering prevents the agent from exposing sensitive data in its response
 ```
 
 !!! info "Defense in depth"
-    SOUL.md provides behavioral guardrails. Combined with systemd hardening (`ProtectSystem=strict`, `ReadWritePaths` limited to workspace), even if the agent ignores SOUL.md instructions, it cannot access most sensitive files at the OS level.
+    SOUL.md provides behavioral guardrails. Combined with `exec-approvals` allowlist, restricted `sudoers`, and dedicated VPS isolation (Tailscale VPN, non-root user), even if the agent ignores SOUL.md instructions, it cannot perform unauthorized actions at the OS level.
 
 ---
 
