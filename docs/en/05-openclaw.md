@@ -595,7 +595,8 @@ nano ~/.openclaw/exec-approvals.json
         { "pattern": "/home/openclaw/.nvm/**/coco" },
         { "pattern": "/home/openclaw/.nvm/**/corepack" },
         { "pattern": "/home/openclaw/.local/bin/*" },
-        { "pattern": "/usr/local/bin/*" }
+        { "pattern": "/usr/local/bin/*" },
+        { "pattern": "/usr/bin/sudo" }
       ]
     }
   }
@@ -618,7 +619,7 @@ nano ~/.openclaw/exec-approvals.json
 
 **Allowlist structure**: Each entry uses `{ "pattern": "/full/path/to/binary" }` with absolute paths. Glob patterns (`*`, `**`) supported for variable paths (e.g., nvm binaries).
 
-**Auto-approved commands (43 entries):**
+**Auto-approved commands (44 entries):**
 
 | Category | Patterns |
 |----------|----------|
@@ -628,6 +629,7 @@ nano ~/.openclaw/exec-approvals.json
 | Development | `/usr/bin/git`, `docker`, `python3`, `~/.nvm/**/node`, `npm`, `npx`, `corepack` |
 | Network (dev) | `/usr/bin/curl`, `wget` |
 | Local binaries | `~/.nvm/**/openclaw`, `~/.nvm/**/coco`, `~/.local/bin/*`, `/usr/local/bin/*` |
+| Restricted sudo | `/usr/bin/sudo` (limited by sudoers — see below) |
 
 **Commands that REQUIRE approval via Telegram:**
 
@@ -635,13 +637,12 @@ nano ~/.openclaw/exec-approvals.json
 |---------|--------|
 | `rm` / `rmdir` | Destructive and irreversible |
 | `kill` | Could kill OpenClaw or critical services |
-| `systemctl` | Start/stop critical services |
 | `chmod` | Permission changes can lock out access |
 | `ssh` / `scp` | Lateral movement to other systems |
 
 **Commands NEVER allowed** (not in any list — always denied):
 
-`sudo`, `su`, `dd`, `passwd`, `mkfs`, `fdisk`, `iptables`, `reboot`, `shutdown`
+`su`, `dd`, `passwd`, `mkfs`, `fdisk`, `iptables`, `reboot`, `shutdown`
 
 !!! info "Approval flow"
     1. Agent attempts to execute a command not in the allowlist
@@ -651,6 +652,37 @@ nano ~/.openclaw/exec-approvals.json
 
 !!! warning "Replace `YOUR_TELEGRAM_USER_ID` in both files"
     In `openclaw.json`, set `approvals.exec.targets[0].to` to your Telegram user ID (same value as `channels.telegram.allowFrom`).
+
+### Configure restricted sudo (sudoers)
+
+The agent needs `sudo` for package installation and service management, but unrestricted `sudo` would be a security risk. The solution: allow `sudo` in the exec-approvals allowlist, but restrict what it can actually do via OS-level sudoers rules.
+
+```bash
+echo 'openclaw ALL=(ALL) NOPASSWD: /usr/bin/apt-get install *, /usr/bin/apt install *, /usr/bin/apt-get update, /usr/bin/apt update, /usr/bin/pip3 install *, /usr/bin/systemctl restart *, /usr/bin/systemctl status *, /usr/bin/systemctl start *, /usr/bin/systemctl stop *, /usr/bin/systemctl enable *, /usr/bin/systemctl disable *' \
+  | sudo tee /etc/sudoers.d/openclaw > /dev/null \
+  && sudo chmod 0440 /etc/sudoers.d/openclaw
+```
+
+This creates `/etc/sudoers.d/openclaw` with NOPASSWD access to **only** these commands:
+
+| Allowed sudo command | Purpose |
+|---------------------|---------|
+| `apt-get install *` / `apt install *` | Install packages |
+| `apt-get update` / `apt update` | Update package lists |
+| `pip3 install *` | Install Python packages |
+| `systemctl restart *` | Restart services |
+| `systemctl status *` | Check service status |
+| `systemctl start *` / `stop *` | Start/stop services |
+| `systemctl enable *` / `disable *` | Enable/disable services |
+
+!!! success "Defense in depth: two layers of protection"
+    1. **OpenClaw exec-approvals**: Controls which binaries the agent can invoke (`sudo` is in the allowlist)
+    2. **OS sudoers**: Controls what `sudo` can actually do (only the commands listed above)
+
+    Any `sudo` command not in the sudoers list (e.g., `sudo rm -rf /`, `sudo reboot`) will be **rejected by the OS** even though OpenClaw allows `sudo` to execute.
+
+!!! warning "This step requires SSH access"
+    The sudoers file must be created manually via SSH as root or with an existing sudo-capable user. The install script cannot create it because the `openclaw` user doesn't have sudo yet at that point.
 
 !!! tip "Model providers"
     Add your chosen model provider(s) to `models.providers`. Common options:

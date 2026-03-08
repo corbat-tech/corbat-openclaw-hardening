@@ -447,7 +447,8 @@ cat > ~/.openclaw/exec-approvals.json << EAEOF
         { "pattern": "/home/openclaw/.nvm/**/coco" },
         { "pattern": "/home/openclaw/.nvm/**/corepack" },
         { "pattern": "/home/openclaw/.local/bin/*" },
-        { "pattern": "/usr/local/bin/*" }
+        { "pattern": "/usr/local/bin/*" },
+        { "pattern": "/usr/bin/sudo" }
       ]
     }
   }
@@ -618,6 +619,18 @@ AUDIT
 fi
 
 # =============================================================================
+# 5.11 Configure restricted sudo (sudoers)
+# =============================================================================
+
+info "=== Configuring restricted sudo ==="
+
+echo 'openclaw ALL=(ALL) NOPASSWD: /usr/bin/apt-get install *, /usr/bin/apt install *, /usr/bin/apt-get update, /usr/bin/apt update, /usr/bin/pip3 install *, /usr/bin/systemctl restart *, /usr/bin/systemctl status *, /usr/bin/systemctl start *, /usr/bin/systemctl stop *, /usr/bin/systemctl enable *, /usr/bin/systemctl disable *' \
+  | sudo tee /etc/sudoers.d/openclaw > /dev/null \
+  && sudo chmod 0440 /etc/sudoers.d/openclaw
+
+info "Restricted sudo configured: apt, pip3, systemctl only."
+
+# =============================================================================
 # SUMMARY
 # =============================================================================
 
@@ -635,6 +648,8 @@ echo "  Sandbox:        off (systemd hardening provides isolation)"
 echo "  Docker:         $(docker --version 2>/dev/null || echo 'not found')"
 echo "  Bind:           loopback only"
 echo "  Tools:          full (gateway denied)"
+echo "  Exec approvals: allowlist (44 patterns + sudo restricted)"
+echo "  Sudo:           restricted (apt, pip3, systemctl only)"
 if [ -n "$TELEGRAM_TOKEN" ]; then
 echo "  Telegram:       configured (dmPolicy: ${TELEGRAM_DM_POLICY})"
 fi

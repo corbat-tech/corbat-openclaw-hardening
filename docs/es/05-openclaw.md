@@ -595,7 +595,8 @@ nano ~/.openclaw/exec-approvals.json
         { "pattern": "/home/openclaw/.nvm/**/coco" },
         { "pattern": "/home/openclaw/.nvm/**/corepack" },
         { "pattern": "/home/openclaw/.local/bin/*" },
-        { "pattern": "/usr/local/bin/*" }
+        { "pattern": "/usr/local/bin/*" },
+        { "pattern": "/usr/bin/sudo" }
       ]
     }
   }
@@ -618,7 +619,7 @@ nano ~/.openclaw/exec-approvals.json
 
 **Estructura del allowlist**: Cada entrada usa `{ "pattern": "/ruta/absoluta/al/binario" }` con rutas absolutas. Se soportan patrones glob (`*`, `**`) para rutas variables (ej. binarios nvm).
 
-**Comandos auto-aprobados (43 entradas):**
+**Comandos auto-aprobados (44 entradas):**
 
 | Categoría | Patrones |
 |-----------|----------|
@@ -628,6 +629,7 @@ nano ~/.openclaw/exec-approvals.json
 | Desarrollo | `/usr/bin/git`, `docker`, `python3`, `~/.nvm/**/node`, `npm`, `npx`, `corepack` |
 | Red (dev) | `/usr/bin/curl`, `wget` |
 | Binarios locales | `~/.nvm/**/openclaw`, `~/.nvm/**/coco`, `~/.local/bin/*`, `/usr/local/bin/*` |
+| Sudo restringido | `/usr/bin/sudo` (limitado por sudoers — ver abajo) |
 
 **Comandos que REQUIEREN aprobación vía Telegram:**
 
@@ -635,13 +637,12 @@ nano ~/.openclaw/exec-approvals.json
 |---------|-------|
 | `rm` / `rmdir` | Destructivo e irreversible |
 | `kill` | Podría matar OpenClaw o servicios críticos |
-| `systemctl` | Arrancar/parar servicios críticos |
 | `chmod` | Cambio de permisos puede bloquear acceso |
 | `ssh` / `scp` | Movimiento lateral a otros sistemas |
 
 **Comandos NUNCA permitidos** (no están en ninguna lista — siempre denegados):
 
-`sudo`, `su`, `dd`, `passwd`, `mkfs`, `fdisk`, `iptables`, `reboot`, `shutdown`
+`su`, `dd`, `passwd`, `mkfs`, `fdisk`, `iptables`, `reboot`, `shutdown`
 
 !!! info "Flujo de aprobación"
     1. El agente intenta ejecutar un comando que no está en la allowlist
@@ -651,6 +652,37 @@ nano ~/.openclaw/exec-approvals.json
 
 !!! warning "Reemplaza `YOUR_TELEGRAM_USER_ID` en ambos archivos"
     En `openclaw.json`, establece `approvals.exec.targets[0].to` con tu ID de usuario de Telegram (el mismo valor que `channels.telegram.allowFrom`).
+
+### Configurar sudo restringido (sudoers)
+
+El agente necesita `sudo` para instalar paquetes y gestionar servicios, pero un `sudo` sin restricciones sería un riesgo de seguridad. La solución: permitir `sudo` en el allowlist de exec-approvals, pero restringir lo que puede hacer mediante reglas sudoers a nivel de SO.
+
+```bash
+echo 'openclaw ALL=(ALL) NOPASSWD: /usr/bin/apt-get install *, /usr/bin/apt install *, /usr/bin/apt-get update, /usr/bin/apt update, /usr/bin/pip3 install *, /usr/bin/systemctl restart *, /usr/bin/systemctl status *, /usr/bin/systemctl start *, /usr/bin/systemctl stop *, /usr/bin/systemctl enable *, /usr/bin/systemctl disable *' \
+  | sudo tee /etc/sudoers.d/openclaw > /dev/null \
+  && sudo chmod 0440 /etc/sudoers.d/openclaw
+```
+
+Esto crea `/etc/sudoers.d/openclaw` con acceso NOPASSWD a **solo** estos comandos:
+
+| Comando sudo permitido | Propósito |
+|------------------------|-----------|
+| `apt-get install *` / `apt install *` | Instalar paquetes |
+| `apt-get update` / `apt update` | Actualizar listas de paquetes |
+| `pip3 install *` | Instalar paquetes Python |
+| `systemctl restart *` | Reiniciar servicios |
+| `systemctl status *` | Verificar estado de servicios |
+| `systemctl start *` / `stop *` | Iniciar/detener servicios |
+| `systemctl enable *` / `disable *` | Habilitar/deshabilitar servicios |
+
+!!! success "Defensa en profundidad: dos capas de protección"
+    1. **OpenClaw exec-approvals**: Controla qué binarios puede invocar el agente (`sudo` está en la allowlist)
+    2. **Sudoers del SO**: Controla qué puede hacer `sudo` realmente (solo los comandos listados arriba)
+
+    Cualquier comando `sudo` que no esté en la lista de sudoers (ej. `sudo rm -rf /`, `sudo reboot`) será **rechazado por el SO** aunque OpenClaw permita la ejecución de `sudo`.
+
+!!! warning "Este paso requiere acceso SSH"
+    El archivo sudoers debe crearse manualmente vía SSH como root o con un usuario que ya tenga sudo. El script de instalación no puede crearlo porque el usuario `openclaw` no tiene sudo en ese momento.
 
 !!! tip "Proveedores de modelos"
     Añade los proveedores de modelos elegidos en `models.providers`. Opciones comunes:

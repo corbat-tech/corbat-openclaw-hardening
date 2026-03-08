@@ -320,14 +320,17 @@ The install script generates `~/.openclaw/exec-approvals.json` with a unique soc
         { "pattern": "/home/openclaw/.nvm/**/coco" },
         { "pattern": "/home/openclaw/.nvm/**/corepack" },
         { "pattern": "/home/openclaw/.local/bin/*" },
-        { "pattern": "/usr/local/bin/*" }
+        { "pattern": "/usr/local/bin/*" },
+        { "pattern": "/usr/bin/sudo" }
       ]
     }
   }
 }
 ```
 
-Commands not in the allowlist (`rm`, `kill`, `systemctl`, `chmod`, `ssh`, `scp`) require approval via Telegram. Commands like `sudo`, `su`, `dd`, `reboot` are never allowed (not in any list).
+`sudo` is in the allowlist but restricted by OS sudoers (`/etc/sudoers.d/openclaw`) to only: `apt install`, `apt update`, `pip3 install`, `systemctl restart/start/stop/status/enable/disable`.
+
+Commands not in the allowlist (`rm`, `kill`, `chmod`, `ssh`, `scp`) require approval via Telegram. Commands like `su`, `dd`, `reboot` are never allowed (not in any list).
 
 ### 9. Security rules
 
@@ -338,6 +341,7 @@ Commands not in the allowlist (`rm`, `kill`, `systemctl`, `chmod`, `ssh`, `scp`)
 - **Always** use `tools.profile: "full"` with `deny: ["gateway"]` — `coding` profile has a bug where `web_search` doesn't enable correctly
 - **Always** use sandbox `"off"` on dedicated VPS with systemd hardening
 - **Always** configure `exec-approvals.json` with `security: "allowlist"` — prevents uncontrolled command execution
+- **Always** create `/etc/sudoers.d/openclaw` to restrict `sudo` to apt, pip3, systemctl only
 - **Always** restart after config changes: `sudo systemctl daemon-reload && sudo systemctl restart openclaw`
 
 ### 10. Troubleshooting
