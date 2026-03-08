@@ -395,7 +395,7 @@ nano ~/.openclaw/openclaw.json
       },
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
-        "mode": "all"
+        "mode": "off"
       },
       "compaction": {
         "mode": "safeguard"
@@ -433,7 +433,7 @@ nano ~/.openclaw/openclaw.json
 
 !!! danger "Critical security configuration"
     - `bind: "loopback"` — Only listens on localhost (never `0.0.0.0`)
-    - `sandbox.mode: "all"` — **All** tool execution containerized (most secure level)
+    - `sandbox.mode: "off"` — Relies on systemd hardening for isolation (recommended for dedicated VPS). Use `"all"` for shared servers
     - `auth.mode: "token"` — Gateway access requires authentication token
     - `session.dmScope: "per-channel-peer"` — Isolates DM sessions to prevent context leakage
     - `tls: {}` — TLS enabled with defaults
@@ -441,20 +441,25 @@ nano ~/.openclaw/openclaw.json
 !!! warning "Removed in v2026.3.x"
     The keys `dmPolicy`, `security`, and `tools.blocked` at root level are **not recognized** by OpenClaw 2026.3.x. DM policy is configured per channel when you add channels. Run `openclaw doctor` to validate your config.
 
-!!! info "Sandbox 'all' vs 'always'"
-    Starting with OpenClaw v2026.2.x, mode `"all"` replaces `"always"` and containerizes **all** tool execution (including the main thread). It is the most secure mode for production.
+!!! info "Sandbox 'all' vs 'off' — choosing the right mode"
+    - **`"all"`** — Containerizes all tool execution in Docker. Most secure, but skills `.env` files and host environment variables are NOT available inside the container. Requires injecting env vars via `skills.entries[name].env` in `openclaw.json`. Best for multi-user or shared servers.
+    - **`"off"`** — No containerization. Skills `.env` files work normally, auto-discovery is seamless. Relies on systemd hardening + tools restrictions for security. **Recommended for dedicated single-user VPS** with the hardening from this guide (systemd isolation + Tailscale + allowlist).
+
+    Starting with OpenClaw v2026.2.x, mode `"all"` replaces `"always"`.
 
 ### Configure credentials with SecretRef (RECOMMENDED)
 
 Starting with OpenClaw v2026.3.x, the **SecretRef** mechanism allows managing credentials securely without plaintext `.env` files. Supports up to 64 targets.
 
 ```bash
-# Add API key securely (stored encrypted)
-openclaw secrets set ANTHROPIC_API_KEY
-# It will prompt for the value interactively (not shown on screen)
+# Interactive secrets wizard (configures providers + maps refs)
+openclaw secrets configure
 
-# Verify it was saved
-openclaw secrets list
+# Audit secrets for plaintext leaks or unresolved refs
+openclaw secrets audit
+
+# Reload secrets at runtime (no restart needed)
+openclaw secrets reload
 
 # Use in openclaw.json with SecretRef
 ```
@@ -878,6 +883,164 @@ sudo systemctl restart openclaw
     sudo systemctl restart openclaw
     ```
     Then send `/new` to the bot again.
+
+### Install and configure skills
+
+Skills extend your agent's capabilities (email, web scraping, calendar, etc.). Install them with the `npx playbooks` command.
+
+!!! danger "Always audit skills before installing"
+    After the ClawHub supply chain attack (February 2026), **never install skills blindly**. Audit source code, check author reputation, and verify with `openclaw security audit` after installation.
+
+**Install a skill globally** (recommended for dedicated VPS):
+
+```bash
+npx playbooks add skill openclaw/skills --skill <skill-name>
+# When prompted for scope, select "Global"
+```
+
+**Recommended skills for business/development use:**
+
+| Skill | Purpose |
+|-------|---------|
+| `imap-smtp-email` | Send and receive emails via IMAP/SMTP |
+| `web-search` | Search the web for information |
+| `github` | Interact with GitHub repositories |
+| `memory` | Persistent memory across sessions |
+
+#### Configure email (imap-smtp-email skill)
+
+After installing the `imap-smtp-email` skill, configure credentials.
+
+**Step 1 — Store credentials with SecretRef (recommended):**
+
+```bash
+openclaw secrets set IMAP_HOST
+# Enter: imap.your-provider.com
+
+openclaw secrets set IMAP_USER
+# Enter: your@email.com
+
+openclaw secrets set IMAP_PASS
+# Enter: your-email-password
+
+openclaw secrets set SMTP_HOST
+# Enter: smtp.your-provider.com
+
+openclaw secrets set SMTP_USER
+# Enter: your@email.com
+
+openclaw secrets set SMTP_PASS
+# Enter: your-email-password
+
+# Verify all secrets are stored
+openclaw secrets list
+```
+
+**Step 2 — Configure skill in openclaw.json:**
+
+```bash
+nano ~/.openclaw/openclaw.json
+```
+
+Add the `skills` section at root level:
+
+```json
+"skills": {
+  "entries": {
+    "imap-smtp-email": {
+      "enabled": true,
+      "env": {
+        "IMAP_HOST": { "$secretRef": "IMAP_HOST" },
+        "IMAP_PORT": "993",
+        "IMAP_USER": { "$secretRef": "IMAP_USER" },
+        "IMAP_PASS": { "$secretRef": "IMAP_PASS" },
+        "IMAP_TLS": "true",
+        "IMAP_MAILBOX": "INBOX",
+        "SMTP_HOST": { "$secretRef": "SMTP_HOST" },
+        "SMTP_PORT": "587",
+        "SMTP_SECURE": "false",
+        "SMTP_USER": { "$secretRef": "SMTP_USER" },
+        "SMTP_PASS": { "$secretRef": "SMTP_PASS" }
+      }
+    }
+  }
+}
+```
+
+**Step 3 — Restart and verify:**
+
+```bash
+sudo systemctl restart openclaw
+openclaw security audit
+```
+
+!!! info "Common IMAP/SMTP settings"
+    | Provider | IMAP Host | IMAP Port | SMTP Host | SMTP Port |
+    |----------|-----------|-----------|-----------|-----------|
+    | IONOS | imap.ionos.com | 993 (SSL/TLS) | smtp.ionos.com | 587 (STARTTLS) |
+    | Gmail | imap.gmail.com | 993 (SSL/TLS) | smtp.gmail.com | 587 (STARTTLS) |
+    | Outlook | outlook.office365.com | 993 (SSL/TLS) | smtp.office365.com | 587 (STARTTLS) |
+
+!!! warning "Gmail requires app-specific passwords"
+    If using Gmail, enable 2FA and generate an app-specific password. Do not use your account password.
+
+!!! tip "Alternative: .env file"
+    If `openclaw secrets set` is not available in your version, create a `.env` file in the skill folder:
+
+    ```bash
+    mkdir -p ~/.openclaw/skills/imap-smtp-email
+    nano ~/.openclaw/skills/imap-smtp-email/.env
+    ```
+
+    ```bash
+    IMAP_HOST=imap.your-provider.com
+    IMAP_PORT=993
+    IMAP_USER=your@email.com
+    IMAP_PASS=your-password
+    IMAP_TLS=true
+    IMAP_MAILBOX=INBOX
+    SMTP_HOST=smtp.your-provider.com
+    SMTP_PORT=587
+    SMTP_SECURE=false
+    SMTP_USER=your@email.com
+    SMTP_PASS=your-password
+    ```
+
+    ```bash
+    chmod 600 ~/.openclaw/skills/imap-smtp-email/.env
+    ```
+
+### Configure AGENTS.md (specialized agents)
+
+AGENTS.md defines specialized agents that your main agent can delegate tasks to. Place it in the workspace:
+
+```bash
+nano ~/openclaw/workspace/AGENTS.md
+```
+
+```markdown
+# Agents
+
+## researcher
+- Role: Web research, competitive analysis, market intelligence
+- Tools: web-search, web-fetch
+- Instructions: Always cite sources. Return structured summaries.
+
+## email-drafter
+- Role: Draft and review business emails, outreach campaigns
+- Tools: imap-smtp-email
+- Instructions: Never send without owner approval. Always show draft first.
+  Match recipient's language. Professional but warm tone.
+
+## developer
+- Role: Code review, debugging, documentation, architecture
+- Tools: read, write, edit, bash, glob, grep
+- Instructions: Follow project conventions. Write tests for new features.
+  Use English for code and comments.
+```
+
+!!! tip "Agents are optional"
+    You can start without AGENTS.md — the main agent handles everything. Add specialized agents when you want to improve quality for specific task types.
 
 ---
 

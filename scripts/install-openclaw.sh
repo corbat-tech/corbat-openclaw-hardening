@@ -290,7 +290,7 @@ cat > ~/.openclaw/openclaw.json << OCEOF
       },
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
-        "mode": "all"
+        "mode": "off"
       },
       "compaction": {
         "mode": "safeguard"
@@ -517,7 +517,7 @@ echo "  Config:         ~/.openclaw/openclaw.json"
 echo "  Workspace:      ~/openclaw/workspace"
 echo "  Gateway:        127.0.0.1:18789"
 echo "  Gateway token:  ${GATEWAY_TOKEN}"
-echo "  Sandbox:        all (Docker containerized)"
+echo "  Sandbox:        off (systemd hardening provides isolation)"
 echo "  Docker:         $(docker --version 2>/dev/null || echo 'not found')"
 echo "  Bind:           loopback only"
 echo "  Tools:          coding + web (automation/process blocked)"

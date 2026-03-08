@@ -395,7 +395,7 @@ nano ~/.openclaw/openclaw.json
       },
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
-        "mode": "all"
+        "mode": "off"
       },
       "compaction": {
         "mode": "safeguard"
@@ -433,7 +433,7 @@ nano ~/.openclaw/openclaw.json
 
 !!! danger "Configuración de seguridad crítica"
     - `bind: "loopback"` — Solo escucha en localhost (nunca `0.0.0.0`)
-    - `sandbox.mode: "all"` — **Toda** ejecución de herramientas containerizada (nivel más seguro)
+    - `sandbox.mode: "off"` — Se apoya en el hardening de systemd para aislamiento (recomendado para VPS dedicada). Usa `"all"` para servidores compartidos
     - `auth.mode: "token"` — Acceso al Gateway requiere token de autenticación
     - `session.dmScope: "per-channel-peer"` — Aísla sesiones DM para prevenir filtración de contexto
     - `tls: {}` — TLS habilitado con valores por defecto
@@ -441,20 +441,25 @@ nano ~/.openclaw/openclaw.json
 !!! warning "Eliminado en v2026.3.x"
     Las claves `dmPolicy`, `security` y `tools.blocked` a nivel raíz **no son reconocidas** por OpenClaw 2026.3.x. La política de DM se configura por canal cuando los añades. Ejecuta `openclaw doctor` para validar tu config.
 
-!!! info "Sandbox 'all' vs 'always'"
-    A partir de OpenClaw v2026.2.x, el modo `"all"` reemplaza a `"always"` y containeriza **toda** ejecución de herramientas (incluyendo el hilo principal). Es el modo más seguro para producción.
+!!! info "Sandbox 'all' vs 'off' — elegir el modo correcto"
+    - **`"all"`** — Containeriza toda ejecución de herramientas en Docker. Más seguro, pero los archivos `.env` de skills y variables de entorno del host NO están disponibles dentro del contenedor. Requiere inyectar env vars via `skills.entries[name].env` en `openclaw.json`. Mejor para servidores compartidos o multi-usuario.
+    - **`"off"`** — Sin containerización. Los archivos `.env` de skills funcionan normalmente, el auto-discovery es transparente. Se apoya en el hardening de systemd + restricciones de tools para seguridad. **Recomendado para VPS dedicada de un solo usuario** con el hardening de esta guía (aislamiento systemd + Tailscale + allowlist).
+
+    A partir de OpenClaw v2026.2.x, el modo `"all"` reemplaza a `"always"`.
 
 ### Configurar credenciales con SecretRef (RECOMENDADO)
 
 A partir de OpenClaw v2026.3.x, el mecanismo **SecretRef** permite gestionar credenciales de forma segura sin archivos `.env` en texto plano. Soporta hasta 64 targets.
 
 ```bash
-# Añadir API key de forma segura (se almacena cifrada)
-openclaw secrets set ANTHROPIC_API_KEY
-# Te pedirá el valor de forma interactiva (no se muestra en pantalla)
+# Wizard interactivo de secrets (configura providers + mapea refs)
+openclaw secrets configure
 
-# Verificar que se guardó
-openclaw secrets list
+# Auditar secrets por texto plano o refs sin resolver
+openclaw secrets audit
+
+# Recargar secrets en runtime (sin reiniciar)
+openclaw secrets reload
 
 # Usar en openclaw.json con SecretRef
 ```
@@ -878,6 +883,164 @@ sudo systemctl restart openclaw
     sudo systemctl restart openclaw
     ```
     Luego envía `/new` al bot de nuevo.
+
+### Instalar y configurar skills
+
+Los skills amplían las capacidades de tu agente (email, web scraping, calendario, etc.). Instálalos con el comando `npx playbooks`.
+
+!!! danger "Audita siempre los skills antes de instalar"
+    Tras el ataque a la cadena de suministro de ClawHub (febrero 2026), **nunca instales skills a ciegas**. Audita el código fuente, verifica la reputación del autor y ejecuta `openclaw security audit` después de la instalación.
+
+**Instalar un skill globalmente** (recomendado para VPS dedicado):
+
+```bash
+npx playbooks add skill openclaw/skills --skill <nombre-skill>
+# Cuando pregunte por el scope, selecciona "Global"
+```
+
+**Skills recomendados para uso empresarial/desarrollo:**
+
+| Skill | Propósito |
+|-------|-----------|
+| `imap-smtp-email` | Enviar y recibir emails via IMAP/SMTP |
+| `web-search` | Buscar información en la web |
+| `github` | Interactuar con repositorios de GitHub |
+| `memory` | Memoria persistente entre sesiones |
+
+#### Configurar email (skill imap-smtp-email)
+
+Después de instalar el skill `imap-smtp-email`, configura las credenciales.
+
+**Paso 1 — Guardar credenciales con SecretRef (recomendado):**
+
+```bash
+openclaw secrets set IMAP_HOST
+# Introduce: imap.tu-proveedor.com
+
+openclaw secrets set IMAP_USER
+# Introduce: tu@email.com
+
+openclaw secrets set IMAP_PASS
+# Introduce: tu-contraseña-de-email
+
+openclaw secrets set SMTP_HOST
+# Introduce: smtp.tu-proveedor.com
+
+openclaw secrets set SMTP_USER
+# Introduce: tu@email.com
+
+openclaw secrets set SMTP_PASS
+# Introduce: tu-contraseña-de-email
+
+# Verifica que todos los secretos estén guardados
+openclaw secrets list
+```
+
+**Paso 2 — Configurar skill en openclaw.json:**
+
+```bash
+nano ~/.openclaw/openclaw.json
+```
+
+Añade la sección `skills` a nivel raíz:
+
+```json
+"skills": {
+  "entries": {
+    "imap-smtp-email": {
+      "enabled": true,
+      "env": {
+        "IMAP_HOST": { "$secretRef": "IMAP_HOST" },
+        "IMAP_PORT": "993",
+        "IMAP_USER": { "$secretRef": "IMAP_USER" },
+        "IMAP_PASS": { "$secretRef": "IMAP_PASS" },
+        "IMAP_TLS": "true",
+        "IMAP_MAILBOX": "INBOX",
+        "SMTP_HOST": { "$secretRef": "SMTP_HOST" },
+        "SMTP_PORT": "587",
+        "SMTP_SECURE": "false",
+        "SMTP_USER": { "$secretRef": "SMTP_USER" },
+        "SMTP_PASS": { "$secretRef": "SMTP_PASS" }
+      }
+    }
+  }
+}
+```
+
+**Paso 3 — Reiniciar y verificar:**
+
+```bash
+sudo systemctl restart openclaw
+openclaw security audit
+```
+
+!!! info "Configuración IMAP/SMTP por proveedor"
+    | Proveedor | Host IMAP | Puerto IMAP | Host SMTP | Puerto SMTP |
+    |-----------|-----------|-------------|-----------|-------------|
+    | IONOS | imap.ionos.com | 993 (SSL/TLS) | smtp.ionos.com | 587 (STARTTLS) |
+    | Gmail | imap.gmail.com | 993 (SSL/TLS) | smtp.gmail.com | 587 (STARTTLS) |
+    | Outlook | outlook.office365.com | 993 (SSL/TLS) | smtp.office365.com | 587 (STARTTLS) |
+
+!!! warning "Gmail requiere contraseñas de aplicación"
+    Si usas Gmail, activa 2FA y genera una contraseña de aplicación. No uses la contraseña de tu cuenta.
+
+!!! tip "Alternativa: archivo .env"
+    Si `openclaw secrets set` no está disponible en tu versión, crea un archivo `.env` en la carpeta del skill:
+
+    ```bash
+    mkdir -p ~/.openclaw/skills/imap-smtp-email
+    nano ~/.openclaw/skills/imap-smtp-email/.env
+    ```
+
+    ```bash
+    IMAP_HOST=imap.tu-proveedor.com
+    IMAP_PORT=993
+    IMAP_USER=tu@email.com
+    IMAP_PASS=tu-contraseña
+    IMAP_TLS=true
+    IMAP_MAILBOX=INBOX
+    SMTP_HOST=smtp.tu-proveedor.com
+    SMTP_PORT=587
+    SMTP_SECURE=false
+    SMTP_USER=tu@email.com
+    SMTP_PASS=tu-contraseña
+    ```
+
+    ```bash
+    chmod 600 ~/.openclaw/skills/imap-smtp-email/.env
+    ```
+
+### Configurar AGENTS.md (agentes especializados)
+
+AGENTS.md define agentes especializados a los que tu agente principal puede delegar tareas. Colócalo en el workspace:
+
+```bash
+nano ~/openclaw/workspace/AGENTS.md
+```
+
+```markdown
+# Agents
+
+## researcher
+- Role: Web research, competitive analysis, market intelligence
+- Tools: web-search, web-fetch
+- Instructions: Always cite sources. Return structured summaries.
+
+## email-drafter
+- Role: Draft and review business emails, outreach campaigns
+- Tools: imap-smtp-email
+- Instructions: Never send without owner approval. Always show draft first.
+  Match recipient's language. Professional but warm tone.
+
+## developer
+- Role: Code review, debugging, documentation, architecture
+- Tools: read, write, edit, bash, glob, grep
+- Instructions: Follow project conventions. Write tests for new features.
+  Use English for code and comments.
+```
+
+!!! tip "Los agents son opcionales"
+    Puedes empezar sin AGENTS.md — el agente principal maneja todo. Añade agentes especializados cuando quieras mejorar la calidad para tipos de tareas específicos.
 
 ---
 
