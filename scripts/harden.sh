@@ -199,6 +199,19 @@ fi
 # Ensure tailscaled starts on boot
 systemctl enable tailscaled
 
+# Ensure sshd waits for Tailscale before starting (prevents bind failure on reboot)
+mkdir -p /etc/systemd/system/ssh.service.d
+tee /etc/systemd/system/ssh.service.d/after-tailscale.conf > /dev/null << 'EOF'
+[Unit]
+After=tailscaled.service
+Wants=tailscaled.service
+
+[Service]
+RestartSec=5
+Restart=on-failure
+EOF
+systemctl daemon-reload
+
 # --- 4.2 Start Tailscale with tag ---
 info "Starting Tailscale..."
 echo ""
