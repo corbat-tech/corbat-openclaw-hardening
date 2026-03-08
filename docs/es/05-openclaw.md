@@ -871,6 +871,7 @@ EnvironmentFile=/etc/openclaw/env
 # VPS dedicado + Tailscale. Fecha: 2026-03-08
 ProtectSystem=false
 SystemCallFilter=
+CapabilityBoundingSet=
 PrivateDevices=false
 LockPersonality=false
 RestrictRealtime=false
@@ -911,7 +912,7 @@ sudo systemctl show openclaw | grep -i api_key
 El archivo de override se guarda en `/etc/systemd/system/openclaw.service.d/override.conf` con permisos solo de root.
 
 !!! note "Por qué el override incluye relajación de hardening"
-    Las 7 directivas (`SystemCallFilter`, `PrivateDevices`, `LockPersonality`, `RestrictRealtime`, `ProtectKernelTunables`, `ProtectKernelModules`, `ProtectSystem`) fuerzan `NoNewPrivileges=true` implícitamente, lo que bloquea `sudo`. Ponerlas a `false` (o vacío para `SystemCallFilter`) lo previene. La seguridad se aplica mediante `exec-approvals` allowlist + sudoers del SO.
+    Las 8 directivas (`ProtectSystem`, `SystemCallFilter`, `CapabilityBoundingSet`, `PrivateDevices`, `LockPersonality`, `RestrictRealtime`, `ProtectKernelTunables`, `ProtectKernelModules`) fuerzan `NoNewPrivileges=true` implícitamente o bloquean `sudo` de otras formas. Ponerlas a `false` (o vacío para `SystemCallFilter`/`CapabilityBoundingSet`) lo previene. La seguridad se aplica mediante `exec-approvals` allowlist + sudoers del SO.
 
 #### Método 2: Archivo .env (para tokens de canales)
 
@@ -1558,7 +1559,7 @@ PrivateTmp=true
 # NOTA: PrivateDevices, LockPersonality, RestrictRealtime fuerzan implícitamente
 # NoNewPrivileges=true, así que también deben ser false para que sudo funcione
 NoNewPrivileges=false
-CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_DAC_OVERRIDE CAP_FOWNER
+CapabilityBoundingSet=
 AmbientCapabilities=
 RestrictSUIDSGID=false
 PrivateDevices=false

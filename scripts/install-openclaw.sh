@@ -570,7 +570,7 @@ PrivateTmp=true
 # NOTE: PrivateDevices, LockPersonality, RestrictRealtime implicitly force
 # NoNewPrivileges=true, so they must also be false for sudo to work
 NoNewPrivileges=false
-CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_DAC_OVERRIDE CAP_FOWNER
+CapabilityBoundingSet=
 AmbientCapabilities=
 RestrictSUIDSGID=false
 PrivateDevices=false
