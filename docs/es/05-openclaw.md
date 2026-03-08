@@ -432,21 +432,25 @@ nano ~/.openclaw/openclaw.json
     "mode": "merge",
     "providers": {
       "google": {
-        "baseUrl": "https://generativelanguage.googleapis.com/v1beta",
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
         "apiKey": "${GOOGLE_API_KEY}",
-        "api": "google-generative-ai",
+        "api": "openai-completions",
         "models": [{
           "id": "gemini-2.5-flash",
           "name": "Gemini 2.5 Flash",
           "reasoning": false,
           "input": ["text", "image"],
           "contextWindow": 1048576,
-          "maxTokens": 65535
+          "maxTokens": 65536,
+          "compat": { "supportsStore": false }
         }]
       }
     }
   },
-  "tools": {},
+  "tools": {
+    "profile": "coding",
+    "allow": ["group:web", "group:ui", "pdf", "cron"]
+  },
   "session": {
     "dmScope": "per-channel-peer"
   },
@@ -470,24 +474,27 @@ nano ~/.openclaw/openclaw.json
 !!! tip "Proveedores de modelos"
     Añade el proveedor de tu modelo elegido en `models.providers`. Opciones comunes:
 
-    | Proveedor | `baseUrl` | `api` | Tier gratuito |
-    |-----------|-----------|-------|---------------|
-    | Google Gemini | `https://generativelanguage.googleapis.com/v1beta` | `google-generative-ai` | Sí |
-    | Moonshot (Kimi K2.5) | `https://api.moonshot.ai/v1` | `openai-completions` | Sí |
-    | Kimi Code | `https://api.kimi.com/coding/` | `anthropic-messages` | Suscripción |
-    | OpenAI | `https://api.openai.com/v1` | `openai-completions` | No |
-    | Anthropic | `https://api.anthropic.com` | `anthropic-messages` | No |
+    | Proveedor | `baseUrl` | `api` | Tier gratuito | Notas |
+    |-----------|-----------|-------|---------------|-------|
+    | Google Gemini | `.../v1beta/openai` | `openai-completions` | Sí | Añadir `compat.supportsStore: false` |
+    | Moonshot (Kimi K2.5) | `https://api.moonshot.ai/v1` | `openai-completions` | Sí | |
+    | Kimi Code | `https://api.kimi.com/coding/` | `anthropic-messages` | Suscripción | Añadir `headers.User-Agent: "claude-code/0.1.0"` para auth por suscripción |
+    | OpenAI | `https://api.openai.com/v1` | `openai-completions` | No | |
+    | Anthropic | `https://api.anthropic.com` | `anthropic-messages` | No | |
 
     Configura `"fallbacks"` en `agents.defaults.model` para que el agente cambie automáticamente si el proveedor principal cae.
 
 !!! info "Configuración de tools"
-    Por defecto, `"tools": {}` da al agente acceso a todas las herramientas sin restricciones. Para más control:
+    La configuración recomendada usa `profile: "coding"` como base (fs, runtime, sessions, memory) con allows adicionales:
 
-    - `"profile": "coding"` — Habilita fs, runtime (bash, exec, process), sessions, memory
-    - `"allow": ["group:web"]` — Añade herramientas de acceso web
-    - `"deny": ["group:automation"]` — Bloquea cron y modificación del gateway
+    - `"group:web"` — Navegación web y peticiones HTTP
+    - `"group:ui"` — Herramientas de interacción UI
+    - `"pdf"` — Lectura y manipulación de PDFs
+    - `"cron"` — Tareas programadas
 
-    Ejemplo de config restringida: `"tools": { "profile": "coding", "allow": ["group:web"], "deny": ["group:automation"] }`
+    La herramienta `"gateway"` NO se permite intencionalmente — modifica la configuración del gateway, lo cual es un riesgo de seguridad en VPS.
+
+    Para un agente sin restricciones: `"tools": {}`
 
 !!! danger "Configuración de seguridad crítica"
     - `bind: "loopback"` — Solo escucha en localhost (nunca `0.0.0.0`)

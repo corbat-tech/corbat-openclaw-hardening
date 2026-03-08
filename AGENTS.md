@@ -86,16 +86,16 @@ nc -zv imap.gmail.com 993 -w 5
     "mode": "merge",
     "providers": {
       "google": {
-        "baseUrl": "https://generativelanguage.googleapis.com/v1beta",
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
         "apiKey": "${GOOGLE_API_KEY}",
-        "api": "google-generative-ai",
+        "api": "openai-completions",
         "models": [{
           "id": "gemini-2.5-flash",
           "name": "Gemini 2.5 Flash",
-          "reasoning": false,
           "input": ["text", "image"],
           "contextWindow": 1048576,
-          "maxTokens": 65535
+          "maxTokens": 65536,
+          "compat": { "supportsStore": false }
         }]
       }
     }
@@ -114,7 +114,10 @@ nc -zv imap.gmail.com 993 -w 5
       "compaction": { "mode": "safeguard" }
     }
   },
-  "tools": {}
+  "tools": {
+    "profile": "coding",
+    "allow": ["group:web", "group:ui", "pdf", "cron"]
+  }
 }
 ```
 
@@ -201,7 +204,7 @@ After editing systemd overrides: `sudo systemctl daemon-reload && sudo systemctl
 - **Never** store API keys in openclaw.json — use `${VAR_NAME}` references
 - **Never** add `SystemCallFilter` in override.conf — causes NAMESPACE errors
 - **Never** deny `process` in tools — skills need it to run scripts
-- **Always** deny `group:automation` — prevents cron and gateway modification
+- **Always** use `tools.profile: "coding"` with explicit allow list — exclude `gateway` for VPS security
 - **Always** use sandbox `"off"` on dedicated VPS with systemd hardening
 - **Always** restart after config changes: `sudo systemctl daemon-reload && sudo systemctl restart openclaw`
 
