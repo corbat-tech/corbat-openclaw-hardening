@@ -511,7 +511,7 @@ sudo tee /etc/audit/rules.d/openclaw.rules << 'EOF'
 
 # --- Monitorear OpenClaw ---
 -w /home/openclaw/openclaw -p wa -k openclaw_changes
--w /home/openclaw/openclaw/.env -p r -k env_access
+-w /home/openclaw/.openclaw/.env -p r -k env_access
 
 # --- Monitorear comandos sudo ---
 -w /var/log/sudo.log -p wa -k sudo_log
@@ -574,7 +574,7 @@ sudo apt install -y aide aide-common
 sudo tee /etc/aide/aide.conf.d/99-openclaw << 'EOF'
 # Archivos críticos de OpenClaw
 /home/openclaw/openclaw/config CONTENT_EX
-/home/openclaw/openclaw/.env PERMS
+/home/openclaw/.openclaw/.env PERMS
 /home/openclaw/.ssh CONTENT_EX
 
 # Archivos críticos del sistema

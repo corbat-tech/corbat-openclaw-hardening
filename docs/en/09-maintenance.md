@@ -147,7 +147,7 @@ sudo tailscale up --advertise-tags=tag:vps --reset
 ```bash
 # Backup configuration
 cp ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.backup.$(date +%Y%m%d)
-cp ~/openclaw/.env ~/openclaw/.env.backup.$(date +%Y%m%d)
+cp ~/.openclaw/.env ~/.openclaw/.env.backup.$(date +%Y%m%d)
 ```
 
 ### Update OpenClaw
@@ -215,10 +215,10 @@ systemd-analyze security openclaw.service
 
 ```bash
 # Backup current .env
-cp ~/openclaw/.env ~/openclaw/.env.backup.$(date +%Y%m%d)
+cp ~/.openclaw/.env ~/.openclaw/.env.backup.$(date +%Y%m%d)
 
 # Edit .env
-nano ~/openclaw/.env
+nano ~/.openclaw/.env
 
 # Replace the old key with the new one
 # Example: ANTHROPIC_API_KEY=sk-ant-NEW_KEY_HERE
@@ -360,7 +360,7 @@ nano ~/.ssh/config
 | File/Directory | Criticality | Frequency |
 |----------------|-------------|-----------|
 | `~/.openclaw/openclaw.json` | Critical | Weekly |
-| `~/openclaw/.env` | Critical | Weekly |
+| `~/.openclaw/.env` | Critical | Weekly |
 | `~/openclaw/workspace/` | Medium | Daily (if data exists) |
 | SSH keys (`.ssh/`) | High | After rotation |
 | systemd configuration | Medium | After changes |
@@ -618,8 +618,8 @@ cp /tmp/openclaw_backup_*/TOOLS.md ~/.openclaw/workspace/ 2>/dev/null || true
 cp -r /tmp/openclaw_backup_*/scripts/* ~/openclaw/scripts/ 2>/dev/null || true
 
 # Restore .env (decrypt)
-gpg -d /tmp/openclaw_backup_*/env.gpg > ~/openclaw/.env
-chmod 600 ~/openclaw/.env
+gpg -d /tmp/openclaw_backup_*/env.gpg > ~/.openclaw/.env
+chmod 600 ~/.openclaw/.env
 
 # Restore systemd service
 sudo cp /tmp/openclaw_backup_*/openclaw.service /etc/systemd/system/

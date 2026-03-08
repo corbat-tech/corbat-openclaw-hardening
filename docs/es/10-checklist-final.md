@@ -213,7 +213,7 @@ else
 fi
 
 # .env con permisos 600
-ENV_PERMS=$(stat -c "%a" /home/openclaw/openclaw/.env 2>/dev/null || stat -c "%a" ~/openclaw/.env 2>/dev/null)
+ENV_PERMS=$(stat -c "%a" /home/openclaw/.openclaw/.env 2>/dev/null || stat -c "%a" ~/.openclaw/.env 2>/dev/null)
 if [ "$ENV_PERMS" = "600" ]; then
     check ".env permisos 600" "pass"
 else
@@ -401,8 +401,8 @@ chmod +x ~/openclaw/scripts/verificar_seguridad.sh
 |---|---------|--------------|--------|
 | 4.1 | Directorio estructura correcta | `ls ~/.openclaw/` | ⬜ |
 | 4.2 | openclaw.json existe | `ls ~/.openclaw/openclaw.json` | ⬜ |
-| 4.3 | .env existe y permisos 600 | `stat -c %a ~/openclaw/.env` = 600 | ⬜ |
-| 4.4 | .env propietario correcto | `stat -c %U ~/openclaw/.env` = openclaw | ⬜ |
+| 4.3 | .env existe y permisos 600 | `stat -c %a ~/.openclaw/.env` = 600 | ⬜ |
+| 4.4 | .env propietario correcto | `stat -c %U ~/.openclaw/.env` = openclaw | ⬜ |
 | 4.5 | Gateway host = 127.0.0.1 | `grep host ~/.openclaw/openclaw.json` | ⬜ |
 | 4.6 | OpenClaw escucha localhost:18789 | `ss -tlnp \| grep 18789` = 127.0.0.1 | ⬜ |
 | 4.7 | No escucha en 0.0.0.0 | `ss -tlnp \| grep 18789` ≠ 0.0.0.0 | ⬜ |

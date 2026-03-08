@@ -698,7 +698,7 @@ El archivo de override se guarda en `/etc/systemd/system/openclaw.service.d/over
 Algunos tokens (como el token del bot de Telegram) pueden guardarse en un archivo `.env`:
 
 ```bash
-nano ~/openclaw/.env
+nano ~/.openclaw/.env
 ```
 
 ```bash
@@ -713,8 +713,8 @@ TELEGRAM_BOT_TOKEN=tu-token-del-bot
 **Proteger el archivo:**
 
 ```bash
-chmod 600 ~/openclaw/.env
-chown openclaw:openclaw ~/openclaw/.env
+chmod 600 ~/.openclaw/.env
+chown openclaw:openclaw ~/.openclaw/.env
 ```
 
 #### Método 3: SecretRef (nativo de OpenClaw)
@@ -1245,7 +1245,7 @@ nano ~/openclaw/workspace/AGENTS.md
 ```bash
 # Ejecutar el Gateway manualmente con variables de entorno cargadas en línea
 # Esto evita filtrar secrets al entorno del shell y a /proc/*/environ
-env $(grep -v '^#' ~/openclaw/.env | xargs) openclaw gateway --port 18789 --verbose
+env $(grep -v '^#' ~/.openclaw/.env | xargs) openclaw gateway --port 18789 --verbose
 ```
 
 !!! warning "No uses `export` para cargar secrets"
@@ -1306,7 +1306,7 @@ Group=openclaw
 WorkingDirectory=/home/openclaw
 
 # --- Cargar variables de entorno ---
-EnvironmentFile=/home/openclaw/openclaw/.env
+EnvironmentFile=/home/openclaw/.openclaw/.env
 Environment=NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache
 Environment=OPENCLAW_NO_RESPAWN=1
 
@@ -1556,7 +1556,7 @@ fi
 echo ""
 
 echo "--- Verificar permisos de .env ---"
-perms=$(stat -c "%a" ~/openclaw/.env 2>/dev/null)
+perms=$(stat -c "%a" ~/.openclaw/.env 2>/dev/null)
 if [ "$perms" = "600" ]; then
     echo "✅ .env tiene permisos 600"
 else
@@ -1988,7 +1988,7 @@ sudo systemctl daemon-reload
 !!! warning "Backup antes de eliminar"
     Antes de eliminar `~/.openclaw` o `~/openclaw`, asegúrate de tener un backup de:
 
-    - `~/openclaw/.env` (API keys)
+    - `~/.openclaw/.env` (API keys)
     - `~/.openclaw/openclaw.json` (configuración)
     - `~/openclaw/workspace/` (datos de trabajo)
 

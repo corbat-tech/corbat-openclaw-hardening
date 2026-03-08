@@ -487,10 +487,10 @@ memory:
 MEMORY_KEY=$(openssl rand -base64 32)
 
 # Añadir a .env
-echo "MEMORY_ENCRYPTION_KEY=$MEMORY_KEY" >> ~/openclaw/.env
+echo "MEMORY_ENCRYPTION_KEY=$MEMORY_KEY" >> ~/.openclaw/.env
 
 # Verificar permisos
-chmod 600 ~/openclaw/.env
+chmod 600 ~/.openclaw/.env
 ```
 
 ### Limpieza manual de memoria
@@ -674,7 +674,7 @@ profile openclaw /home/openclaw/.local/bin/openclaw flags=(complain) {
 
   # Configuración (solo lectura)
   /home/openclaw/.openclaw/openclaw.json r,
-  /home/openclaw/openclaw/.env r,
+  /home/openclaw/.openclaw/.env r,
 
   # Denegar acceso a paths sensibles
   deny /home/openclaw/.ssh/** rwx,
@@ -959,7 +959,7 @@ cp ~/backups/config_backup/* ~/openclaw/config/
 
 # 2. Rotar API keys (OBLIGATORIO después de incidente)
 # - Ve a cada proveedor y genera nuevas keys
-# - Actualiza ~/openclaw/.env
+# - Actualiza ~/.openclaw/.env
 # - Revoca las keys antiguas
 
 # 3. Verificar integridad antes de reiniciar

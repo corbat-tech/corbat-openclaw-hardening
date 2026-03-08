@@ -376,7 +376,7 @@ info "=== Setting file permissions ==="
 
 chmod 700 ~/.openclaw
 chmod 600 ~/.openclaw/*.json 2>/dev/null || true
-chmod 600 ~/openclaw/.env 2>/dev/null || true
+chmod 600 ~/.openclaw/.env 2>/dev/null || true
 
 # =============================================================================
 # 5.8 Configure SOUL.md
@@ -526,7 +526,7 @@ info "=== Adding OpenClaw audit rules ==="
 if systemctl is-active auditd &>/dev/null; then
     sudo tee /etc/audit/rules.d/openclaw-app.rules > /dev/null << 'AUDIT'
 -w /home/openclaw/openclaw -p wa -k openclaw_changes
--w /home/openclaw/openclaw/.env -p r -k env_access
+-w /home/openclaw/.openclaw/.env -p r -k env_access
 AUDIT
     sudo augenrules --load 2>/dev/null || true
 fi

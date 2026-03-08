@@ -81,7 +81,7 @@ Al terminar esta sección tendrás:
 
 ```bash
 # En el VPS, edita .env
-nano ~/openclaw/.env
+nano ~/.openclaw/.env
 ```
 
 ```bash
@@ -242,11 +242,11 @@ Si debes usar `.env`, aplica permisos restrictivos:
 
 ```bash
 # Verificar que .env tiene permisos restrictivos
-ls -la ~/openclaw/.env
+ls -la ~/.openclaw/.env
 # Debe mostrar: -rw------- (600)
 
 # Si no, corregir:
-chmod 600 ~/openclaw/.env
+chmod 600 ~/.openclaw/.env
 ```
 
 ### No exponer keys en logs
@@ -270,7 +270,7 @@ logging:
 1. **Generar nueva key** en el panel del proveedor
 2. **Actualizar .env** en el VPS:
    ```bash
-   nano ~/openclaw/.env
+   nano ~/.openclaw/.env
    # Reemplazar la key antigua por la nueva
    ```
 3. **Reiniciar servicio:**
@@ -388,10 +388,10 @@ routing:
 **Solución:**
 ```bash
 # Verificar que la key está bien copiada (sin espacios)
-grep API_KEY ~/openclaw/.env
+grep API_KEY ~/.openclaw/.env
 
 # Verificar que no hay caracteres ocultos
-cat -A ~/openclaw/.env | grep API_KEY
+cat -A ~/.openclaw/.env | grep API_KEY
 ```
 
 ### Error: "Rate limit exceeded"
