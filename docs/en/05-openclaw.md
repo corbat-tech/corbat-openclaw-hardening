@@ -425,7 +425,8 @@ nano ~/.openclaw/openclaw.json
       "enabled": true,
       "botToken": "${TELEGRAM_BOT_TOKEN}",
       "dmPolicy": "allowlist",
-      "allowFrom": ["YOUR_TELEGRAM_USER_ID"]
+      "allowFrom": ["YOUR_TELEGRAM_USER_ID"],
+      "streamMode": "partial"
     }
   },
   "models": {
@@ -452,11 +453,15 @@ nano ~/.openclaw/openclaw.json
     "allow": ["group:web", "group:ui", "cron"],
     "web": {
       "search": {
+        "enabled": true,
         "provider": "gemini",
         "gemini": {
           "apiKey": "${GEMINI_API_KEY}",
           "model": "gemini-2.5-flash"
         }
+      },
+      "fetch": {
+        "enabled": true
       }
     }
   },
@@ -541,7 +546,7 @@ nano ~/.openclaw/openclaw.json
     | Profile | Includes |
     |---------|----------|
     | `full` | Everything (default when unset) |
-    | `coding` | `group:fs`, `group:runtime`, `group:sessions`, `group:memory`, `image`, `cron` |
+    | `coding` | `group:fs`, `group:runtime`, `group:sessions`, `group:memory`, `image` |
     | `messaging` | `group:messaging`, `sessions_*`, `session_status` |
     | `minimal` | `session_status` only |
 
@@ -568,19 +573,27 @@ nano ~/.openclaw/openclaw.json
     GEMINI_API_KEY=AIza...
     ```
 
-    **Option B** — Explicit config in `tools.web.search` (shown in the JSON example above):
+    **Option B** — Explicit config in `tools.web` (shown in the JSON example above):
     ```json
     "tools": {
       "web": {
         "search": {
+          "enabled": true,
           "provider": "gemini",
           "gemini": { "apiKey": "${GEMINI_API_KEY}", "model": "gemini-2.5-flash" }
-        }
+        },
+        "fetch": { "enabled": true }
       }
     }
     ```
 
     **Option C** — Interactive setup: `openclaw configure --section web`
+
+    **Three fields that are easy to miss:**
+
+    - `tools.web.search.enabled = true` — web_search is NOT enabled by default even if you set a provider
+    - `tools.web.search.gemini.model` — Gemini search requires an explicit model name
+    - `tools.web.fetch.enabled = true` — enables the `web_fetch` tool for reading web pages
 
     Note: `GOOGLE_API_KEY` (for model inference) and `GEMINI_API_KEY` (for web search) can use the same key value, but they are different env var names.
 
@@ -1844,6 +1857,62 @@ ls -la ~/.openclaw/
     2. Restart the service (`sudo systemctl restart openclaw`)
     3. Check logs (`sudo journalctl -u openclaw -n 20 --no-pager`)
     4. Test via Telegram (`/new` → send a message)
+
+---
+
+## Field-tested fixes: what the docs don't tell you
+
+!!! success "Fixes applied to openclaw.json after real-world testing"
+    These issues were discovered during production deployment and are not obvious from the official documentation alone.
+
+    **1. `web_search` didn't work — 3 mandatory fields were missing:**
+
+    | Field | Why it's needed |
+    |-------|-----------------|
+    | `tools.web.search.enabled = true` | Not assumed — must be set explicitly |
+    | `tools.web.search.gemini.model = "gemini-2.5-flash"` | Gemini search requires an explicit model |
+    | `tools.web.fetch.enabled = true` | Enables `web_fetch` for reading web pages |
+
+    **2. Search `apiKey` was incorrectly nested:**
+
+    ```
+    WRONG:  tools.web.search.apiKey = "..."
+    RIGHT:  tools.web.search.gemini.apiKey = "..."   (nested under the provider name)
+    ```
+
+    **3. Telegram streaming for better UX:**
+
+    `telegram.streamMode = "partial"` — sends progressive responses instead of waiting for the full answer.
+
+!!! info "Our config vs popular community configs"
+    After comparing with production configs from the community (sources below), here are the key differences and our rationale:
+
+    | Setting | This guide | Common in production | Our rationale |
+    |---------|-----------|---------------------|---------------|
+    | `tools.profile` | `"coding"` | `"full"` | Security: excludes `gateway` and `group:messaging` by default |
+    | `maxConcurrent` | `1` | `4` typical | Conservative for 4GB VPS — increase for 8GB+ |
+    | `heartbeat.model` | Not configured | Cheap model every 30m | Optional — add if you want proactive agent check-ins |
+    | `subagents.model` | Inherits primary | Different (cheaper) model | Cost saving — set to DeepSeek V3 or Flash Lite for subagents |
+    | `telegram.dmPolicy` | `"allowlist"` | `"pairing"` | Security: `allowlist` is stricter — `pairing` allows anyone to request access |
+    | `telegram.streamMode` | `"partial"` | Varies | Better UX — progressive responses |
+
+    **To add heartbeats** (proactive agent check-ins every 30 minutes):
+    ```json
+    "heartbeat": {
+      "every": "30m",
+      "model": "google/gemini-2.5-flash-lite"
+    }
+    ```
+
+    **To use a cheaper model for subagents:**
+    ```json
+    "subagents": {
+      "maxConcurrent": 3,
+      "model": "deepseek/deepseek-chat"
+    }
+    ```
+
+    **Sources consulted:** [digitalknk production config](https://gist.github.com/digitalknk), [MoltFounders annotated reference](https://github.com/MoltFounders), [VelvetShark multi-model routing guide](https://velvetshark.com), [docs.openclaw.ai/tools/web](https://docs.openclaw.ai/tools/web), [docs.openclaw.ai/channels/telegram](https://docs.openclaw.ai/channels/telegram), [GitHub Issue #23058](https://github.com/openclaw/openclaw/issues/23058)
 
 ---
 

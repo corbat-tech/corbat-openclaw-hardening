@@ -151,11 +151,15 @@ nc -zv imap.gmail.com 993 -w 5
     "allow": ["group:web", "group:ui", "cron"],
     "web": {
       "search": {
+        "enabled": true,
         "provider": "gemini",
         "gemini": {
           "apiKey": "${GEMINI_API_KEY}",
           "model": "gemini-2.5-flash"
         }
+      },
+      "fetch": {
+        "enabled": true
       }
     }
   }
