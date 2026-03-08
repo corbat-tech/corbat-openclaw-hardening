@@ -210,8 +210,14 @@ cd ~/openclaw
     │   ├── AGENTS.md            # Agent prompts
     │   ├── SOUL.md              # Agent identity
     │   ├── TOOLS.md             # Tools configuration
-    │   └── skills/              # Installed skills
+    │   └── skills/              # Workspace-scoped skills
     └── credentials/             # OAuth credentials (if used)
+
+    ~/.agents/
+    └── skills/                  # Globally installed skills (npx playbooks add)
+        └── imap-smtp-email/     # Example: email skill
+            ├── SKILL.md
+            └── .env             # Skill credentials (chmod 600)
 
     ~/openclaw/                  # THIS GUIDE'S DIRECTORY (created manually)
     ├── workspace/               # RESTRICTED workspace (used in openclaw.json)
@@ -370,8 +376,11 @@ OpenClaw uses `~/.openclaw/openclaw.json` as the main configuration file:
 ├── workspace/
 │   ├── SOUL.md             # Agent identity and limits
 │   ├── TOOLS.md            # Tools configuration
-│   └── skills/             # Installed skills
+│   └── skills/             # Workspace-scoped skills
 └── credentials/            # Credentials (if using OAuth)
+
+~/.agents/
+└── skills/                 # Globally installed skills (npx playbooks add)
 
 ~/openclaw/                 # Working directory (this guide)
 ├── config/                 # Additional configurations
@@ -984,12 +993,19 @@ openclaw security audit
 !!! warning "Gmail requires app-specific passwords"
     If using Gmail, enable 2FA and generate an app-specific password. Do not use your account password.
 
-!!! tip "Alternative: .env file"
-    If `openclaw secrets set` is not available in your version, create a `.env` file in the skill folder:
+!!! tip "Alternative: .env file in the skill folder"
+    If `openclaw secrets configure` doesn't work for your setup, create a `.env` file directly in the skill's install folder. **Important:** verify the actual install path first — it may vary:
 
     ```bash
-    mkdir -p ~/.openclaw/skills/imap-smtp-email
-    nano ~/.openclaw/skills/imap-smtp-email/.env
+    # Find where the skill was actually installed
+    find /home/openclaw -name "SKILL.md" -path "*imap*" 2>/dev/null
+    ```
+
+    Then create the `.env` in that same folder:
+
+    ```bash
+    mkdir -p ~/.agents/skills/imap-smtp-email
+    nano ~/.agents/skills/imap-smtp-email/.env
     ```
 
     ```bash
@@ -1007,7 +1023,7 @@ openclaw security audit
     ```
 
     ```bash
-    chmod 600 ~/.openclaw/skills/imap-smtp-email/.env
+    chmod 600 ~/.agents/skills/imap-smtp-email/.env
     ```
 
 ### Configure AGENTS.md (specialized agents)

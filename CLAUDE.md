@@ -30,7 +30,9 @@ mkdocs.yml           # MkDocs configuration with i18n
 
 ### OpenClaw configuration facts (verified v2026.3.x)
 - **Sandbox**: Use `"off"` for dedicated single-user VPS with systemd hardening. Use `"all"` only for shared/multi-user servers (requires Docker, env vars don't pass through)
-- **Skills auto-discover** from `~/.openclaw/skills/` and `<workspace>/skills/` — no `skills` section needed in `openclaw.json` unless configuring env vars
+- **Skills install path**: `npx playbooks add skill` installs to `~/.agents/skills/<skill-name>/` (global scope), NOT `~/.openclaw/skills/`. Skill `.env` files must be placed in the actual skill folder (e.g., `~/.agents/skills/imap-smtp-email/.env`)
+- **Skills auto-discover** from `~/.agents/skills/`, `~/.openclaw/skills/`, and `<workspace>/skills/` — no `skills` section needed in `openclaw.json` unless configuring env vars
+- **Verify skill paths**: Always run `find /home/openclaw -name "SKILL.md" -path "*<skill-name>*"` to confirm the actual install location before placing config files
 - **Secrets CLI**: `openclaw secrets configure` (interactive wizard), `openclaw secrets audit`, `openclaw secrets reload` — there is NO `openclaw secrets set` command
 - **dmPolicy**: Use `"allowlist"` with `allowFrom` to restrict access. `"pairing"` ignores `allowFrom`
 - **SOUL.md path**: Must be in the workspace dir from `agents.defaults.workspace` (e.g., `~/openclaw/workspace/SOUL.md`), NOT in `~/.openclaw/workspace/`
