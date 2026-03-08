@@ -343,6 +343,15 @@ cat > ~/.openclaw/openclaw.json << OCEOF
     "restart": true,
     "ownerDisplay": "raw"
   },
+  "approvals": {
+    "exec": {
+      "enabled": true,
+      "mode": "session",
+      "targets": [$(if [ -n "${TELEGRAM_USER_ID:-}" ]; then echo "
+        { \"channel\": \"telegram\", \"to\": \"${TELEGRAM_USER_ID}\" }"; else echo ""; fi)
+      ]
+    }
+  },
   "session": {
     "dmScope": "per-channel-peer"
   },
@@ -367,6 +376,23 @@ cat > ~/.openclaw/openclaw.json << OCEOF
   }
 }
 OCEOF
+
+# =============================================================================
+# 5.6b Write exec-approvals.json (execution approval rules)
+# =============================================================================
+
+info "=== Writing exec-approvals.json (allowlist mode) ==="
+
+cat > ~/.openclaw/exec-approvals.json << 'EAEOF'
+{
+  "defaults": {
+    "security": "allowlist",
+    "ask": "on-miss",
+    "askFallback": "deny",
+    "autoAllowSkills": true
+  }
+}
+EAEOF
 
 # =============================================================================
 # 5.7 Set file permissions

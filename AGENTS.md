@@ -102,6 +102,15 @@ nc -zv imap.gmail.com 993 -w 5
       "streaming": "partial"
     }
   },
+  "approvals": {
+    "exec": {
+      "enabled": true,
+      "mode": "session",
+      "targets": [
+        { "channel": "telegram", "to": "YOUR_TELEGRAM_USER_ID" }
+      ]
+    }
+  },
   "commands": {
     "native": "auto",
     "nativeSkills": "auto",
@@ -245,6 +254,23 @@ Store all sensitive values securely — **never** as plaintext in `openclaw.json
 
 After editing systemd overrides: `sudo systemctl daemon-reload && sudo systemctl restart openclaw`
 
+### 8b. Execution approvals (exec-approvals.json)
+
+Create `~/.openclaw/exec-approvals.json`:
+
+```json
+{
+  "defaults": {
+    "security": "allowlist",
+    "ask": "on-miss",
+    "askFallback": "deny",
+    "autoAllowSkills": true
+  }
+}
+```
+
+This ensures commands not in the allowlist require your approval via Telegram (configured in `approvals.exec` in openclaw.json).
+
 ### 9. Security rules
 
 - **Never** store API keys in openclaw.json — use `${VAR_NAME}` references
@@ -253,6 +279,7 @@ After editing systemd overrides: `sudo systemctl daemon-reload && sudo systemctl
 - **Never** run `openclaw doctor --fix` after manual config — it overwrites provider settings
 - **Always** use `tools.profile: "full"` with `deny: ["gateway"]` — `coding` profile has a bug where `web_search` doesn't enable correctly
 - **Always** use sandbox `"off"` on dedicated VPS with systemd hardening
+- **Always** configure `exec-approvals.json` with `security: "allowlist"` — prevents uncontrolled command execution
 - **Always** restart after config changes: `sudo systemctl daemon-reload && sudo systemctl restart openclaw`
 
 ### 10. Troubleshooting

@@ -374,6 +374,7 @@ OpenClaw uses `~/.openclaw/openclaw.json` as the main configuration file:
 ```
 ~/.openclaw/
 ├── openclaw.json           # Main configuration
+├── exec-approvals.json     # Execution approval rules (allowlist)
 ├── workspace/
 │   ├── SOUL.md             # Agent identity and limits
 │   ├── TOOLS.md            # Tools configuration
@@ -494,6 +495,15 @@ nano ~/.openclaw/openclaw.json
   "session": {
     "dmScope": "per-channel-peer"
   },
+  "approvals": {
+    "exec": {
+      "enabled": true,
+      "mode": "session",
+      "targets": [
+        { "channel": "telegram", "to": "YOUR_TELEGRAM_USER_ID" }
+      ]
+    }
+  },
   "gateway": {
     "port": 18789,
     "mode": "local",
@@ -510,6 +520,37 @@ nano ~/.openclaw/openclaw.json
   }
 }
 ```
+
+### Configure exec-approvals.json
+
+The execution approval system controls which commands the agent can run autonomously vs. which require your explicit approval (forwarded to Telegram).
+
+```bash
+nano ~/.openclaw/exec-approvals.json
+```
+
+```json
+{
+  "defaults": {
+    "security": "allowlist",
+    "ask": "on-miss",
+    "askFallback": "deny",
+    "autoAllowSkills": true
+  }
+}
+```
+
+| Field | Value | Description |
+|-------|-------|-------------|
+| `security` | `"allowlist"` | Only pre-approved commands run without asking |
+| `ask` | `"on-miss"` | Commands not in the allowlist trigger an approval request |
+| `askFallback` | `"deny"` | If the approval request can't be delivered, deny by default |
+| `autoAllowSkills` | `true` | Installed skills can execute their own commands without asking |
+
+The `approvals.exec` section in `openclaw.json` forwards approval requests to your Telegram. When the agent wants to run a command not in the allowlist, you receive a Telegram message asking for approval.
+
+!!! warning "Replace `YOUR_TELEGRAM_USER_ID` in both files"
+    In `openclaw.json`, set `approvals.exec.targets[0].to` to your Telegram user ID (same value as `channels.telegram.allowFrom`).
 
 !!! tip "Model providers"
     Add your chosen model provider(s) to `models.providers`. Common options:

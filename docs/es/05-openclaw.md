@@ -374,6 +374,7 @@ OpenClaw usa `~/.openclaw/openclaw.json` como archivo de configuración principa
 ```
 ~/.openclaw/
 ├── openclaw.json           # Configuración principal
+├── exec-approvals.json     # Reglas de aprobación de ejecución (allowlist)
 ├── workspace/
 │   ├── SOUL.md             # Identidad y límites del agente
 │   ├── TOOLS.md            # Configuración de herramientas
@@ -494,6 +495,15 @@ nano ~/.openclaw/openclaw.json
   "session": {
     "dmScope": "per-channel-peer"
   },
+  "approvals": {
+    "exec": {
+      "enabled": true,
+      "mode": "session",
+      "targets": [
+        { "channel": "telegram", "to": "YOUR_TELEGRAM_USER_ID" }
+      ]
+    }
+  },
   "gateway": {
     "port": 18789,
     "mode": "local",
@@ -510,6 +520,37 @@ nano ~/.openclaw/openclaw.json
   }
 }
 ```
+
+### Configurar exec-approvals.json
+
+El sistema de aprobación de ejecución controla qué comandos puede ejecutar el agente de forma autónoma y cuáles requieren tu aprobación explícita (reenviada a Telegram).
+
+```bash
+nano ~/.openclaw/exec-approvals.json
+```
+
+```json
+{
+  "defaults": {
+    "security": "allowlist",
+    "ask": "on-miss",
+    "askFallback": "deny",
+    "autoAllowSkills": true
+  }
+}
+```
+
+| Campo | Valor | Descripción |
+|-------|-------|-------------|
+| `security` | `"allowlist"` | Solo los comandos pre-aprobados se ejecutan sin preguntar |
+| `ask` | `"on-miss"` | Los comandos que no están en la allowlist disparan una solicitud de aprobación |
+| `askFallback` | `"deny"` | Si la solicitud de aprobación no se puede entregar, deniega por defecto |
+| `autoAllowSkills` | `true` | Los skills instalados pueden ejecutar sus propios comandos sin preguntar |
+
+La sección `approvals.exec` en `openclaw.json` reenvía las solicitudes de aprobación a tu Telegram. Cuando el agente quiere ejecutar un comando que no está en la allowlist, recibes un mensaje de Telegram pidiendo aprobación.
+
+!!! warning "Reemplaza `YOUR_TELEGRAM_USER_ID` en ambos archivos"
+    En `openclaw.json`, establece `approvals.exec.targets[0].to` con tu ID de usuario de Telegram (el mismo valor que `channels.telegram.allowFrom`).
 
 !!! tip "Proveedores de modelos"
     Añade los proveedores de modelos elegidos en `models.providers`. Opciones comunes:
