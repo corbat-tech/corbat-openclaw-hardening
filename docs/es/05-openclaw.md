@@ -834,20 +834,41 @@ El método más seguro para despliegues en VPS dedicada. Los secrets se guardan 
 sudo systemctl edit openclaw
 ```
 
-Añade tus API keys y tokens:
+Añade tus API keys y overrides de hardening:
 
 ```ini
 [Service]
+# === API Keys ===
 Environment="KIMI_API_KEY=sk-kimi-tu-key"
 Environment="GOOGLE_API_KEY=tu-api-key-de-google"
 Environment="GEMINI_API_KEY=tu-api-key-de-google"
 Environment="GATEWAY_TOKEN=tu-token-del-gateway"
+
+# === Relajar hardening para apt-get (VPS dedicado) ===
+# Permite escritura en /var (apt necesita /var/cache/apt, /var/lib/dpkg)
+ProtectSystem=full
+
+# Desactivar filtros que activan NoNewPrivs implícitamente
+SystemCallFilter=
+PrivateDevices=false
+LockPersonality=false
+RestrictRealtime=false
+
+# Añadir paths de escritura para apt
+ReadWritePaths=/home/openclaw/openclaw/workspace
+ReadWritePaths=/home/openclaw/openclaw/logs
+ReadWritePaths=/home/openclaw/.openclaw
+ReadWritePaths=/var/cache/apt
+ReadWritePaths=/var/lib/apt
+ReadWritePaths=/var/lib/dpkg
+ReadWritePaths=/var/log/apt
+ReadWritePaths=/tmp
 ```
 
 !!! important "Variables de entorno necesarias"
     | Variable | Uso |
     |----------|-----|
-    | `KIMI_API_KEY` | Modelo principal (Kimi Coding — razonamiento) |
+    | `KIMI_API_KEY` | Modelo principal (Kimi Coding) |
     | `GOOGLE_API_KEY` | Modelo fallback (Gemini 2.5 Flash) |
     | `GEMINI_API_KEY` | Web search — mismo valor que `GOOGLE_API_KEY` pero necesario como variable separada |
     | `GATEWAY_TOKEN` | Autenticación del gateway |
@@ -863,8 +884,8 @@ sudo systemctl restart openclaw
 
 El archivo de override se guarda en `/etc/systemd/system/openclaw.service.d/override.conf` con permisos solo de root.
 
-!!! warning "NO añadir SystemCallFilter en el override"
-    Añadir líneas de `SystemCallFilter` en `override.conf` causa errores `NAMESPACE` e impide que el servicio arranque. Solo añade líneas `Environment` aquí.
+!!! note "Por qué el override incluye relajación de hardening"
+    `SystemCallFilter=` (vacío) en el override **resetea** todos los filtros de syscalls del servicio base. Junto con `PrivateDevices=false`, `LockPersonality=false` y `RestrictRealtime=false`, permite que `sudo` funcione para instalar paquetes. La seguridad se aplica mediante `exec-approvals` allowlist + sudoers del SO.
 
 #### Método 2: Archivo .env (para tokens de canales)
 
@@ -1512,10 +1533,11 @@ ReadWritePaths=/var/tmp/openclaw-compile-cache
 ReadWritePaths=/var/cache/apt
 ReadWritePaths=/var/lib/apt
 ReadWritePaths=/var/lib/dpkg
+ReadWritePaths=/var/log/apt
+ReadWritePaths=/tmp
 PrivateTmp=true
 
 # --- Control de privilegios ---
-# Relajado para sudo restringido (ver /etc/sudoers.d/openclaw)
 # NOTA: PrivateDevices, LockPersonality, RestrictRealtime fuerzan implícitamente
 # NoNewPrivileges=true, así que también deben ser false para que sudo funcione
 NoNewPrivileges=false
@@ -1529,10 +1551,9 @@ RestrictRealtime=false
 # --- Aislar red ---
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 
-# --- Restringir syscalls ---
-# @privileged eliminado para permitir setuid()/setgid() para sudo
-SystemCallFilter=@system-service
-SystemCallFilter=~@resources @mount @clock @reboot @swap @raw-io @cpu-emulation
+# --- Filtrado de syscalls ---
+# Desactivado para compatibilidad con sudo/apt en VPS dedicado
+# Seguridad aplicada por exec-approvals + sudoers
 SystemCallArchitectures=native
 
 # --- Proteger kernel (mantenido) ---

@@ -571,10 +571,11 @@ ReadWritePaths=/var/tmp/openclaw-compile-cache
 ReadWritePaths=/var/cache/apt
 ReadWritePaths=/var/lib/apt
 ReadWritePaths=/var/lib/dpkg
+ReadWritePaths=/var/log/apt
+ReadWritePaths=/tmp
 PrivateTmp=true
 
 # Privilege control — relaxed for restricted sudo (see /etc/sudoers.d/openclaw)
-# sudo requires: SUID execution, privilege escalation, CAP_SETUID/SETGID
 # NOTE: PrivateDevices, LockPersonality, RestrictRealtime implicitly force
 # NoNewPrivileges=true, so they must also be false for sudo to work
 NoNewPrivileges=false
@@ -588,12 +589,11 @@ RestrictRealtime=false
 # Network restrictions
 RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 
-# Syscall filtering — @privileged removed to allow setuid()/setgid() for sudo
-SystemCallFilter=@system-service
-SystemCallFilter=~@resources @mount @clock @reboot @swap @raw-io @cpu-emulation
+# Syscall filtering — disabled for sudo/apt compatibility on dedicated VPS
+# Security enforced by exec-approvals + sudoers instead
 SystemCallArchitectures=native
 
-# Kernel protection (maintained — no reason to relax these)
+# Kernel protection (maintained)
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectKernelLogs=true
