@@ -1,6 +1,6 @@
 # 5. Install OpenClaw
 
-> **TL;DR**: Install Node.js 22+, configure OpenClaw with the Gateway daemon, apply minimal permissions, and run as a systemd service with complete sandboxing.
+> **TL;DR**: Install Node.js 22+, configure OpenClaw with the Gateway daemon, apply minimal permissions, and run as a systemd service with hardened isolation.
 
 > **Estimated time**: 25-35 minutes
 
@@ -282,11 +282,12 @@ bash /tmp/openclaw-install.sh
 rm /tmp/openclaw-install.sh
 ```
 
-### Install Docker (required for sandbox)
+### Install Docker (optional — only for sandbox mode "all")
 
-Docker is required for sandbox mode `all` — the recommended security setting:
+Docker is only needed if you want sandbox mode `all` (containerized tool execution). For dedicated single-user VPS with systemd hardening (this guide's recommended setup), Docker is **not required** — sandbox mode `"off"` with systemd isolation provides equivalent security.
 
 ```bash
+# Only install if you want sandbox mode "all" (multi-user servers)
 sudo apt install -y docker.io
 sudo usermod -aG docker openclaw
 
@@ -414,7 +415,7 @@ nano ~/.openclaw/openclaw.json
       "compaction": {
         "mode": "safeguard"
       },
-      "maxConcurrent": 1,
+      "maxConcurrent": 2,
       "subagents": {
         "maxConcurrent": 3
       }
@@ -796,103 +797,75 @@ Professional, concise, direct.
 
 ### Configure TOOLS.md (tools)
 
+TOOLS.md provides context to the agent about how it should use its tools. It does NOT enforce restrictions — tool access is controlled by `tools.profile` and `tools.allow` in `openclaw.json`. Think of TOOLS.md as guidelines, not guardrails.
+
 ```bash
-nano ~/.openclaw/workspace/TOOLS.md
+nano ~/openclaw/workspace/TOOLS.md
 ```
 
 ```markdown
-# Tools Configuration
+# Tools
 
-## Enabled tools
+## Available tools (via profile "coding" + allows)
 
-### Filesystem
-- **Allowed paths**: `/home/openclaw/openclaw/workspace`
-- **Allowed operations**: read, write, list, create_directory
-- **Blocked operations**: delete_recursive, change_permissions, symlinks
+### Filesystem (group:fs)
+- read, write, edit, apply_patch
+- Workspace: /home/openclaw/openclaw/workspace
 
-### Git
-- **Allowed operations**: clone, status, diff, log, branch, checkout
-- **Blocked operations**: push, force-push, reset --hard, clean
+### Shell & Runtime (group:runtime)
+- exec, bash, process
+- Use for: git, npm, system commands, scripts
 
-### HTTP Client
-- **Allowed domains**:
-  - api.anthropic.com
-  - api.openai.com
-  - integrate.api.nvidia.com
-  - api.github.com
-  - api.telegram.org
-- **Blocked domains**: *.onion, localhost, private ranges (10.*, 192.168.*, 169.254.*)
+### Web (group:web)
+- web_search (Gemini-powered), web_fetch
+- Use for: research, documentation lookups, API calls
 
-## Disabled tools
+### Browser & UI (group:ui)
+- browser, canvas
+- Use for: web scraping, visual content
 
-### Shell (bash/exec)
-DISABLED - Risk of arbitrary command execution.
+### Sessions (group:sessions)
+- Spawn and manage sub-agent sessions
 
-### Browser
-DISABLED - Use http_client for HTTP requests.
+### Memory (group:memory)
+- Persistent memory across sessions
 
-### Canvas/Nodes
-DISABLED - Not required for this deployment.
+### Cron
+- Schedule recurring tasks
+
+## NOT available (intentionally excluded)
+
+### Gateway
+NOT available — modifying gateway config at runtime is a security risk.
+
+## Guidelines
+
+- Always ask before: sending emails, pushing to remote repos, deleting files
+- Prefer workspace paths for all file operations
+- Never access: ~/.ssh, ~/.openclaw/.env, /etc/systemd
+- Never expose secrets, tokens, or credentials in outputs
 ```
 
-### Configure sandbox in openclaw.json
+### Sandbox and tool restrictions
 
-Edit the configuration to force sandbox and limit tools:
+For a **dedicated single-user VPS** with the systemd hardening from this guide, sandbox mode `"off"` is the recommended setting. Security is enforced by systemd isolation (ProtectSystem, ReadWritePaths, CapabilityBoundingSet, etc.) and tool restrictions (`tools.profile` + `tools.allow`).
 
-```bash
-nano ~/.openclaw/openclaw.json
-```
-
-Add or modify the sandbox section:
+Tool access is controlled in `openclaw.json` (already configured in the main JSON example above):
 
 ```json
-{
-  "agents": {
-    "defaults": {
-      "workspace": "/home/openclaw/openclaw/workspace",
-      "sandbox": {
-        "mode": "all",
-        "allowedTools": [
-          "bash",
-          "read",
-          "write",
-          "edit"
-        ],
-        "blockedTools": [
-          "browser",
-          "canvas",
-          "nodes",
-          "cron",
-          "gateway"
-        ]
-      }
-    }
-  }
+"sandbox": { "mode": "off" },
+"tools": {
+  "profile": "coding",
+  "allow": ["group:web", "group:ui", "cron"]
 }
 ```
 
-!!! warning "Sandbox mode 'all' requires Docker"
-    Mode `all` containerizes all tool execution in Docker — it is the most secure for servers. **Docker must be installed** or the agent will fail with: `Sandbox mode requires Docker, but the "docker" command was not found`.
+This gives the agent: filesystem, shell, git, sessions, memory, web search, web fetch, browser, canvas, and cron. The `gateway` tool is intentionally excluded — it would let the agent modify its own gateway configuration at runtime.
 
-    Install Docker:
+!!! info "When to use sandbox mode 'all' instead"
+    Use `"all"` only on **shared or multi-user servers** where you cannot trust other users. It containerizes all tool execution in Docker, which provides stronger isolation but requires Docker installed and makes `.env` files and host environment variables unavailable inside the container.
 
-    ```bash
-    sudo apt install -y docker.io
-    sudo usermod -aG docker openclaw
-    # Reconnect SSH for group to take effect
-    ```
-
-    If you cannot use Docker, set `"mode": "off"` and add compensating tool restrictions:
-
-    ```json
-    "sandbox": { "mode": "off" },
-    "tools": {
-      "profile": "coding",
-      "allow": ["group:web", "group:ui", "cron"]
-    }
-    ```
-
-    Omit `gateway` from the allow list to prevent the agent from modifying its own config.
+    For dedicated VPS with systemd hardening + Tailscale + allowlist, `"off"` is equivalent security with less complexity.
 
 ### Configure DM Policy (message security)
 
@@ -1890,7 +1863,7 @@ ls -la ~/.openclaw/
     | Setting | This guide | Common in production | Our rationale |
     |---------|-----------|---------------------|---------------|
     | `tools.profile` | `"coding"` | `"full"` | Security: excludes `gateway` and `group:messaging` by default |
-    | `maxConcurrent` | `1` | `4` typical | Conservative for 4GB VPS — increase for 8GB+ |
+    | `maxConcurrent` | `2` | `4` typical | Balanced for 4GB VPS — increase to 4 for 8GB+ |
     | `heartbeat.model` | Not configured | Cheap model every 30m | Optional — add if you want proactive agent check-ins |
     | `subagents.model` | Inherits primary | Different (cheaper) model | Cost saving — set to DeepSeek V3 or Flash Lite for subagents |
     | `telegram.dmPolicy` | `"allowlist"` | `"pairing"` | Security: `allowlist` is stricter — `pairing` allows anyone to request access |
@@ -1926,7 +1899,7 @@ ls -la ~/.openclaw/
 | HOST=127.0.0.1 | ✅ |
 | Skills with allowlist | ✅ |
 | http_client with allowlist | ✅ |
-| shell disabled | ✅ |
+| Tools restricted via profile | ✅ |
 | systemd service configured | ✅ |
 | systemd hardening applied | ✅ |
 | Security score < 5.0 | ✅ |
