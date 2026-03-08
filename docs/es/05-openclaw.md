@@ -490,7 +490,11 @@ nano ~/.openclaw/openclaw.json
   "commands": {
     "native": "auto",
     "nativeSkills": "auto",
-    "restart": true
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
   },
   "session": {
     "dmScope": "per-channel-peer"
@@ -531,43 +535,99 @@ nano ~/.openclaw/exec-approvals.json
 
 ```json
 {
+  "version": 1,
+  "socket": {
+    "path": "/home/openclaw/.openclaw/exec-approvals.sock",
+    "token": "GENERATED_BY_SCRIPT"
+  },
   "defaults": {
     "security": "allowlist",
     "ask": "on-miss",
     "askFallback": "deny",
     "autoAllowSkills": true
   },
-  "allowlist": [
-    "cat", "ls", "head", "tail", "grep", "find", "diff", "sort", "uniq", "wc", "stat", "du", "df",
-    "sed", "awk", "touch", "mkdir", "cp", "mv", "tar",
-    "date", "env", "whoami", "uname", "hostname", "uptime", "free", "top", "ps", "ss", "netstat", "lsof", "htop", "journalctl", "ping",
-    "git", "docker", "python3", "node", "npm", "npx", "corepack",
-    "curl", "wget",
-    "~/.local/bin/*", "/usr/local/bin/*",
-    "~/.nvm/versions/node/*/bin/openclaw",
-    "~/.nvm/versions/node/*/bin/coco"
-  ]
+  "agents": {
+    "main": {
+      "security": "allowlist",
+      "ask": "on-miss",
+      "askFallback": "deny",
+      "autoAllowSkills": true,
+      "allowlist": [
+        { "pattern": "/usr/bin/cat" },
+        { "pattern": "/usr/bin/ls" },
+        { "pattern": "/usr/bin/grep" },
+        { "pattern": "/usr/bin/find" },
+        { "pattern": "/usr/bin/diff" },
+        { "pattern": "/usr/bin/stat" },
+        { "pattern": "/usr/bin/du" },
+        { "pattern": "/usr/bin/df" },
+        { "pattern": "/usr/bin/sed" },
+        { "pattern": "/usr/bin/awk" },
+        { "pattern": "/usr/bin/touch" },
+        { "pattern": "/usr/bin/mkdir" },
+        { "pattern": "/usr/bin/cp" },
+        { "pattern": "/usr/bin/mv" },
+        { "pattern": "/usr/bin/tar" },
+        { "pattern": "/usr/bin/date" },
+        { "pattern": "/usr/bin/env" },
+        { "pattern": "/usr/bin/whoami" },
+        { "pattern": "/usr/bin/uname" },
+        { "pattern": "/usr/bin/hostname" },
+        { "pattern": "/usr/bin/uptime" },
+        { "pattern": "/usr/bin/free" },
+        { "pattern": "/usr/bin/top" },
+        { "pattern": "/usr/bin/ps" },
+        { "pattern": "/usr/bin/ss" },
+        { "pattern": "/usr/bin/netstat" },
+        { "pattern": "/usr/bin/lsof" },
+        { "pattern": "/usr/bin/htop" },
+        { "pattern": "/usr/bin/journalctl" },
+        { "pattern": "/usr/bin/ping" },
+        { "pattern": "/usr/bin/git" },
+        { "pattern": "/usr/bin/docker" },
+        { "pattern": "/usr/bin/curl" },
+        { "pattern": "/usr/bin/wget" },
+        { "pattern": "/usr/bin/python3" },
+        { "pattern": "/home/openclaw/.nvm/**/node" },
+        { "pattern": "/home/openclaw/.nvm/**/npm" },
+        { "pattern": "/home/openclaw/.nvm/**/npx" },
+        { "pattern": "/home/openclaw/.nvm/**/openclaw" },
+        { "pattern": "/home/openclaw/.nvm/**/coco" },
+        { "pattern": "/home/openclaw/.nvm/**/corepack" },
+        { "pattern": "/home/openclaw/.local/bin/*" },
+        { "pattern": "/usr/local/bin/*" }
+      ]
+    }
+  }
 }
 ```
 
+!!! note "El `socket.token` se genera automáticamente"
+    El script de instalación genera un token único para el socket Unix. Este token es interno de OpenClaw y no necesita configuración manual.
+
 | Campo | Valor | Descripción |
 |-------|-------|-------------|
-| `security` | `"allowlist"` | Solo los comandos en la lista se ejecutan sin preguntar |
-| `ask` | `"on-miss"` | Los comandos fuera de la allowlist disparan una solicitud de aprobación vía Telegram |
-| `askFallback` | `"deny"` | Si la solicitud no se puede entregar, deniega por defecto |
-| `autoAllowSkills` | `true` | Los skills instalados pueden ejecutar sus propios comandos sin preguntar |
-| `allowlist` | `[...]` | 48 comandos pre-aprobados (lectura, edición, sistema, dev, red) |
+| `version` | `1` | Versión del esquema |
+| `socket.path` | `...exec-approvals.sock` | Socket Unix para IPC de aprobaciones |
+| `socket.token` | Auto-generado | Token de autenticación interno |
+| `defaults.security` | `"allowlist"` | Por defecto global: solo los comandos listados se ejecutan sin preguntar |
+| `defaults.ask` | `"on-miss"` | Los comandos fuera de la allowlist disparan solicitud de aprobación vía Telegram |
+| `defaults.askFallback` | `"deny"` | Si la solicitud no se puede entregar, deniega por defecto |
+| `defaults.autoAllowSkills` | `true` | Los skills instalados pueden ejecutar sus propios comandos sin preguntar |
+| `agents.main` | `{...}` | Configuración por agente (hereda defaults, añade allowlist) |
 
-**Comandos auto-aprobados (48 entradas):**
+**Estructura del allowlist**: Cada entrada usa `{ "pattern": "/ruta/absoluta/al/binario" }` con rutas absolutas. Se soportan patrones glob (`*`, `**`) para rutas variables (ej. binarios nvm).
 
-| Categoría | Comandos |
+**Comandos auto-aprobados (43 entradas):**
+
+| Categoría | Patrones |
 |-----------|----------|
-| Lectura/búsqueda | `cat`, `ls`, `head`, `tail`, `grep`, `find`, `diff`, `sort`, `uniq`, `wc`, `stat`, `du`, `df` |
-| Edición de archivos | `sed`, `awk`, `touch`, `mkdir`, `cp`, `mv`, `tar` |
-| Sistema/monitoreo | `date`, `env`, `whoami`, `uname`, `hostname`, `uptime`, `free`, `top`, `ps`, `ss`, `netstat`, `lsof`, `htop`, `journalctl`, `ping` |
-| Desarrollo | `git`, `docker`, `python3`, `node`, `npm`, `npx`, `corepack` |
-| Red (dev) | `curl`, `wget` |
-| Binarios locales | `~/.local/bin/*`, `/usr/local/bin/*`, binarios nvm (`openclaw`, `coco`) |
+| Lectura/búsqueda | `/usr/bin/cat`, `ls`, `grep`, `find`, `diff`, `stat`, `du`, `df` |
+| Edición de archivos | `/usr/bin/sed`, `awk`, `touch`, `mkdir`, `cp`, `mv`, `tar` |
+| Sistema/monitoreo | `/usr/bin/date`, `env`, `whoami`, `uname`, `hostname`, `uptime`, `free`, `top`, `ps`, `ss`, `netstat`, `lsof`, `htop`, `journalctl`, `ping` |
+| Desarrollo | `/usr/bin/git`, `docker`, `python3`, `~/.nvm/**/node`, `npm`, `npx`, `corepack` |
+| Red (dev) | `/usr/bin/curl`, `wget` |
+| Binarios locales | `~/.nvm/**/openclaw`, `~/.nvm/**/coco`, `~/.local/bin/*`, `/usr/local/bin/*` |
 
 **Comandos que REQUIEREN aprobación vía Telegram:**
 

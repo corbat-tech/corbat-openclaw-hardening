@@ -490,7 +490,11 @@ nano ~/.openclaw/openclaw.json
   "commands": {
     "native": "auto",
     "nativeSkills": "auto",
-    "restart": true
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
   },
   "session": {
     "dmScope": "per-channel-peer"
@@ -531,43 +535,99 @@ nano ~/.openclaw/exec-approvals.json
 
 ```json
 {
+  "version": 1,
+  "socket": {
+    "path": "/home/openclaw/.openclaw/exec-approvals.sock",
+    "token": "GENERATED_BY_SCRIPT"
+  },
   "defaults": {
     "security": "allowlist",
     "ask": "on-miss",
     "askFallback": "deny",
     "autoAllowSkills": true
   },
-  "allowlist": [
-    "cat", "ls", "head", "tail", "grep", "find", "diff", "sort", "uniq", "wc", "stat", "du", "df",
-    "sed", "awk", "touch", "mkdir", "cp", "mv", "tar",
-    "date", "env", "whoami", "uname", "hostname", "uptime", "free", "top", "ps", "ss", "netstat", "lsof", "htop", "journalctl", "ping",
-    "git", "docker", "python3", "node", "npm", "npx", "corepack",
-    "curl", "wget",
-    "~/.local/bin/*", "/usr/local/bin/*",
-    "~/.nvm/versions/node/*/bin/openclaw",
-    "~/.nvm/versions/node/*/bin/coco"
-  ]
+  "agents": {
+    "main": {
+      "security": "allowlist",
+      "ask": "on-miss",
+      "askFallback": "deny",
+      "autoAllowSkills": true,
+      "allowlist": [
+        { "pattern": "/usr/bin/cat" },
+        { "pattern": "/usr/bin/ls" },
+        { "pattern": "/usr/bin/grep" },
+        { "pattern": "/usr/bin/find" },
+        { "pattern": "/usr/bin/diff" },
+        { "pattern": "/usr/bin/stat" },
+        { "pattern": "/usr/bin/du" },
+        { "pattern": "/usr/bin/df" },
+        { "pattern": "/usr/bin/sed" },
+        { "pattern": "/usr/bin/awk" },
+        { "pattern": "/usr/bin/touch" },
+        { "pattern": "/usr/bin/mkdir" },
+        { "pattern": "/usr/bin/cp" },
+        { "pattern": "/usr/bin/mv" },
+        { "pattern": "/usr/bin/tar" },
+        { "pattern": "/usr/bin/date" },
+        { "pattern": "/usr/bin/env" },
+        { "pattern": "/usr/bin/whoami" },
+        { "pattern": "/usr/bin/uname" },
+        { "pattern": "/usr/bin/hostname" },
+        { "pattern": "/usr/bin/uptime" },
+        { "pattern": "/usr/bin/free" },
+        { "pattern": "/usr/bin/top" },
+        { "pattern": "/usr/bin/ps" },
+        { "pattern": "/usr/bin/ss" },
+        { "pattern": "/usr/bin/netstat" },
+        { "pattern": "/usr/bin/lsof" },
+        { "pattern": "/usr/bin/htop" },
+        { "pattern": "/usr/bin/journalctl" },
+        { "pattern": "/usr/bin/ping" },
+        { "pattern": "/usr/bin/git" },
+        { "pattern": "/usr/bin/docker" },
+        { "pattern": "/usr/bin/curl" },
+        { "pattern": "/usr/bin/wget" },
+        { "pattern": "/usr/bin/python3" },
+        { "pattern": "/home/openclaw/.nvm/**/node" },
+        { "pattern": "/home/openclaw/.nvm/**/npm" },
+        { "pattern": "/home/openclaw/.nvm/**/npx" },
+        { "pattern": "/home/openclaw/.nvm/**/openclaw" },
+        { "pattern": "/home/openclaw/.nvm/**/coco" },
+        { "pattern": "/home/openclaw/.nvm/**/corepack" },
+        { "pattern": "/home/openclaw/.local/bin/*" },
+        { "pattern": "/usr/local/bin/*" }
+      ]
+    }
+  }
 }
 ```
 
+!!! note "The `socket.token` is auto-generated"
+    The install script generates a unique token for the Unix socket. This token is internal to OpenClaw and does not need manual configuration.
+
 | Field | Value | Description |
 |-------|-------|-------------|
-| `security` | `"allowlist"` | Only commands in the list run without asking |
-| `ask` | `"on-miss"` | Commands not in the allowlist trigger an approval request via Telegram |
-| `askFallback` | `"deny"` | If the approval request can't be delivered, deny by default |
-| `autoAllowSkills` | `true` | Installed skills can execute their own commands without asking |
-| `allowlist` | `[...]` | 48 pre-approved commands (read, edit, system, dev, network) |
+| `version` | `1` | Schema version |
+| `socket.path` | `...exec-approvals.sock` | Unix socket for approval IPC |
+| `socket.token` | Auto-generated | Internal authentication token |
+| `defaults.security` | `"allowlist"` | Global default: only listed commands run without asking |
+| `defaults.ask` | `"on-miss"` | Commands not in the allowlist trigger an approval request via Telegram |
+| `defaults.askFallback` | `"deny"` | If the approval request can't be delivered, deny by default |
+| `defaults.autoAllowSkills` | `true` | Installed skills can execute their own commands without asking |
+| `agents.main` | `{...}` | Per-agent overrides (inherits defaults, adds allowlist) |
 
-**Auto-approved commands (48 entries):**
+**Allowlist structure**: Each entry uses `{ "pattern": "/full/path/to/binary" }` with absolute paths. Glob patterns (`*`, `**`) supported for variable paths (e.g., nvm binaries).
 
-| Category | Commands |
+**Auto-approved commands (43 entries):**
+
+| Category | Patterns |
 |----------|----------|
-| Read/search | `cat`, `ls`, `head`, `tail`, `grep`, `find`, `diff`, `sort`, `uniq`, `wc`, `stat`, `du`, `df` |
-| File editing | `sed`, `awk`, `touch`, `mkdir`, `cp`, `mv`, `tar` |
-| System/monitoring | `date`, `env`, `whoami`, `uname`, `hostname`, `uptime`, `free`, `top`, `ps`, `ss`, `netstat`, `lsof`, `htop`, `journalctl`, `ping` |
-| Development | `git`, `docker`, `python3`, `node`, `npm`, `npx`, `corepack` |
-| Network (dev) | `curl`, `wget` |
-| Local binaries | `~/.local/bin/*`, `/usr/local/bin/*`, nvm binaries (`openclaw`, `coco`) |
+| Read/search | `/usr/bin/cat`, `ls`, `grep`, `find`, `diff`, `stat`, `du`, `df` |
+| File editing | `/usr/bin/sed`, `awk`, `touch`, `mkdir`, `cp`, `mv`, `tar` |
+| System/monitoring | `/usr/bin/date`, `env`, `whoami`, `uname`, `hostname`, `uptime`, `free`, `top`, `ps`, `ss`, `netstat`, `lsof`, `htop`, `journalctl`, `ping` |
+| Development | `/usr/bin/git`, `docker`, `python3`, `~/.nvm/**/node`, `npm`, `npx`, `corepack` |
+| Network (dev) | `/usr/bin/curl`, `wget` |
+| Local binaries | `~/.nvm/**/openclaw`, `~/.nvm/**/coco`, `~/.local/bin/*`, `/usr/local/bin/*` |
 
 **Commands that REQUIRE approval via Telegram:**
 

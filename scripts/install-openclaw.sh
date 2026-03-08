@@ -383,24 +383,74 @@ OCEOF
 
 info "=== Writing exec-approvals.json (allowlist mode) ==="
 
-cat > ~/.openclaw/exec-approvals.json << 'EAEOF'
+EXEC_APPROVALS_TOKEN=$(openssl rand -hex 24)
+
+cat > ~/.openclaw/exec-approvals.json << EAEOF
 {
+  "version": 1,
+  "socket": {
+    "path": "/home/openclaw/.openclaw/exec-approvals.sock",
+    "token": "${EXEC_APPROVALS_TOKEN}"
+  },
   "defaults": {
     "security": "allowlist",
     "ask": "on-miss",
     "askFallback": "deny",
     "autoAllowSkills": true
   },
-  "allowlist": [
-    "cat", "ls", "head", "tail", "grep", "find", "diff", "sort", "uniq", "wc", "stat", "du", "df",
-    "sed", "awk", "touch", "mkdir", "cp", "mv", "tar",
-    "date", "env", "whoami", "uname", "hostname", "uptime", "free", "top", "ps", "ss", "netstat", "lsof", "htop", "journalctl", "ping",
-    "git", "docker", "python3", "node", "npm", "npx", "corepack",
-    "curl", "wget",
-    "~/.local/bin/*", "/usr/local/bin/*",
-    "~/.nvm/versions/node/*/bin/openclaw",
-    "~/.nvm/versions/node/*/bin/coco"
-  ]
+  "agents": {
+    "main": {
+      "security": "allowlist",
+      "ask": "on-miss",
+      "askFallback": "deny",
+      "autoAllowSkills": true,
+      "allowlist": [
+        { "pattern": "/usr/bin/cat" },
+        { "pattern": "/usr/bin/ls" },
+        { "pattern": "/usr/bin/grep" },
+        { "pattern": "/usr/bin/find" },
+        { "pattern": "/usr/bin/diff" },
+        { "pattern": "/usr/bin/stat" },
+        { "pattern": "/usr/bin/du" },
+        { "pattern": "/usr/bin/df" },
+        { "pattern": "/usr/bin/sed" },
+        { "pattern": "/usr/bin/awk" },
+        { "pattern": "/usr/bin/touch" },
+        { "pattern": "/usr/bin/mkdir" },
+        { "pattern": "/usr/bin/cp" },
+        { "pattern": "/usr/bin/mv" },
+        { "pattern": "/usr/bin/tar" },
+        { "pattern": "/usr/bin/date" },
+        { "pattern": "/usr/bin/env" },
+        { "pattern": "/usr/bin/whoami" },
+        { "pattern": "/usr/bin/uname" },
+        { "pattern": "/usr/bin/hostname" },
+        { "pattern": "/usr/bin/uptime" },
+        { "pattern": "/usr/bin/free" },
+        { "pattern": "/usr/bin/top" },
+        { "pattern": "/usr/bin/ps" },
+        { "pattern": "/usr/bin/ss" },
+        { "pattern": "/usr/bin/netstat" },
+        { "pattern": "/usr/bin/lsof" },
+        { "pattern": "/usr/bin/htop" },
+        { "pattern": "/usr/bin/journalctl" },
+        { "pattern": "/usr/bin/ping" },
+        { "pattern": "/usr/bin/git" },
+        { "pattern": "/usr/bin/docker" },
+        { "pattern": "/usr/bin/curl" },
+        { "pattern": "/usr/bin/wget" },
+        { "pattern": "/usr/bin/python3" },
+        { "pattern": "/home/openclaw/.nvm/**/node" },
+        { "pattern": "/home/openclaw/.nvm/**/npm" },
+        { "pattern": "/home/openclaw/.nvm/**/npx" },
+        { "pattern": "/home/openclaw/.nvm/**/openclaw" },
+        { "pattern": "/home/openclaw/.nvm/**/coco" },
+        { "pattern": "/home/openclaw/.nvm/**/corepack" },
+        { "pattern": "/home/openclaw/.local/bin/*" },
+        { "pattern": "/usr/local/bin/*" }
+      ]
+    }
+  }
 }
 EAEOF
 
