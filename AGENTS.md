@@ -43,6 +43,7 @@ sudo systemctl edit openclaw
 #   [Service]
 #   Environment="MOONSHOT_API_KEY=sk-..."
 #   Environment="GOOGLE_API_KEY=..."
+#   Environment="GEMINI_API_KEY=..."  # same value as GOOGLE_API_KEY, needed for web search
 ```
 
 ### 3. Verify network connectivity

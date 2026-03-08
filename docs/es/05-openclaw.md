@@ -530,9 +530,14 @@ Añade tus API keys y tokens:
 ```ini
 [Service]
 Environment="GOOGLE_API_KEY=tu-api-key-de-google"
+Environment="GEMINI_API_KEY=tu-api-key-de-google"
 Environment="MOONSHOT_API_KEY=sk-tu-key-de-moonshot"
 Environment="GATEWAY_TOKEN=tu-token-del-gateway"
 ```
+
+!!! important "Se requieren tanto GOOGLE_API_KEY como GEMINI_API_KEY"
+    Google Gemini requiere **ambas** variables de entorno configuradas (pueden tener el mismo valor).
+    `GOOGLE_API_KEY` es usada por el proveedor LLM para completions de chat, mientras que `GEMINI_API_KEY` es usada internamente por OpenClaw para búsqueda web (grounding) y otras funciones específicas de Google. Si solo configuras una, la búsqueda web no funcionará.
 
 Guarda y aplica:
 
@@ -560,6 +565,7 @@ TELEGRAM_BOT_TOKEN=tu-token-del-bot
 
 # API keys adicionales (si no usas el método systemd)
 # GOOGLE_API_KEY=tu-key
+# GEMINI_API_KEY=tu-key  # Mismo valor que GOOGLE_API_KEY, necesario para búsqueda web
 ```
 
 **Proteger el archivo:**
@@ -1589,6 +1595,7 @@ sudo systemctl edit openclaw
 #   [Service]
 #   Environment="MOONSHOT_API_KEY=sk-tu-key"
 #   Environment="GOOGLE_API_KEY=tu-key"
+#   Environment="GEMINI_API_KEY=tu-key"  # mismo valor, necesario para búsqueda web
 
 # Referenciar en openclaw.json con: ${MOONSHOT_API_KEY}
 

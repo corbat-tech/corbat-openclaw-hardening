@@ -36,6 +36,7 @@ AGENTS.md            # Agentic self-configuration guide for OpenClaw agents
 - **Verify skill paths**: Always run `find /home/openclaw -name "SKILL.md" -path "*<skill-name>*"` to confirm
 - **Secrets CLI**: `openclaw secrets configure` (interactive wizard), `openclaw secrets audit`, `openclaw secrets reload` — there is NO `openclaw secrets set` command
 - **Secrets storage**: Store API keys in systemd overrides (`sudo systemctl edit openclaw`), NOT in `.bashrc` or plaintext in `openclaw.json`. Reference with `${VAR_NAME}`
+- **Google Gemini requires two env vars**: Both `GOOGLE_API_KEY` and `GEMINI_API_KEY` must be set (same value). `GOOGLE_API_KEY` for LLM completions, `GEMINI_API_KEY` for web search/grounding
 - **dmPolicy**: Use `"allowlist"` with `allowFrom` to restrict access. `"pairing"` ignores `allowFrom`
 - **SOUL.md path**: Must be in the workspace dir from `agents.defaults.workspace` (e.g., `~/openclaw/workspace/SOUL.md`), NOT in `~/.openclaw/workspace/`
 - **SystemCallFilter**: Do NOT deny `@debug` — it causes core dumps with Telegram channel. Do NOT add `SystemCallFilter` in override.conf — causes NAMESPACE errors
