@@ -563,10 +563,7 @@ RestartSec=10
 
 # Filesystem isolation
 ProtectSystem=false
-ProtectHome=read-only
-ReadWritePaths=/home/openclaw/openclaw/workspace
-ReadWritePaths=/home/openclaw/openclaw/logs
-ReadWritePaths=/home/openclaw/.openclaw
+ProtectHome=false
 PrivateTmp=true
 
 # Privilege control — relaxed for restricted sudo (see /etc/sudoers.d/openclaw)

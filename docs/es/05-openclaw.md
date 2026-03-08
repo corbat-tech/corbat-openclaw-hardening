@@ -1540,10 +1540,7 @@ RestartSec=10
 # Enfoque bare-metal: VPS dedicado + Tailscale VPN, sin Docker.
 # Seguridad aplicada por exec-approvals allowlist + sudoers del SO.
 ProtectSystem=false
-ProtectHome=read-only
-ReadWritePaths=/home/openclaw/openclaw/workspace
-ReadWritePaths=/home/openclaw/openclaw/logs
-ReadWritePaths=/home/openclaw/.openclaw
+ProtectHome=false
 PrivateTmp=true
 
 # --- Control de privilegios ---
