@@ -416,7 +416,7 @@ nano ~/.openclaw/openclaw.json
       },
       "maxConcurrent": 1,
       "subagents": {
-        "maxConcurrent": 1
+        "maxConcurrent": 3
       }
     }
   },
@@ -449,7 +449,18 @@ nano ~/.openclaw/openclaw.json
   },
   "tools": {
     "profile": "coding",
-    "allow": ["group:web", "group:ui", "pdf", "cron"]
+    "allow": ["group:web", "group:ui", "cron"],
+    "web": {
+      "search": {
+        "provider": "gemini",
+        "apiKey": "${GEMINI_API_KEY}"
+      }
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true
   },
   "session": {
     "dmScope": "per-channel-peer"
@@ -472,29 +483,97 @@ nano ~/.openclaw/openclaw.json
 ```
 
 !!! tip "Model providers"
-    Add your chosen model provider to `models.providers`. Common options:
+    Add your chosen model provider(s) to `models.providers`. Common options:
 
     | Provider | `baseUrl` | `api` | Free tier | Notes |
     |----------|-----------|-------|-----------|-------|
-    | Google Gemini | `.../v1beta/openai` | `openai-completions` | Yes | Add `compat.supportsStore: false` |
-    | Moonshot (Kimi K2.5) | `https://api.moonshot.ai/v1` | `openai-completions` | Yes | |
-    | Kimi Code | `https://api.kimi.com/coding/` | `anthropic-messages` | Subscription | Add `headers.User-Agent: "claude-code/0.1.0"` for subscription auth |
+    | Google Gemini | `.../v1beta/openai` | `openai-completions` | Yes | Add `compat.supportsStore: false` (required) |
+    | Moonshot (Kimi K2.5) | `https://api.moonshot.ai/v1` | `openai-completions` | Yes | Separate from Kimi Coding (different key and endpoint) |
+    | Kimi Coding | `https://api.kimi.com/coding/` | `anthropic-messages` | Subscription | Add `headers.User-Agent: "claude-code/0.1.0"` (required for auth) |
+    | DeepSeek | `https://api.deepseek.com/v1` | `openai-completions` | Pay per use | Very low cost ($0.53/Mtok input for V3) |
     | OpenAI | `https://api.openai.com/v1` | `openai-completions` | No | |
     | Anthropic | `https://api.anthropic.com` | `anthropic-messages` | No | |
 
+    **API type reference:**
+
+    | `api` value | Use for |
+    |-------------|---------|
+    | `openai-completions` | OpenAI-compatible endpoints (Gemini, Moonshot, DeepSeek, vLLM, LM Studio) |
+    | `anthropic-messages` | Anthropic Messages API (Claude, Kimi Coding) |
+    | `google-generative-ai` | Google Gemini native API (use `.../v1beta` without `/openai`) |
+    | `openai-responses` | OpenAI responses API |
+    | `ollama` | Local Ollama models |
+
     Set `"fallbacks"` in `agents.defaults.model` so the agent auto-switches if the primary provider is down.
 
-!!! info "Tools configuration"
-    The recommended tools config uses `profile: "coding"` as base (fs, runtime, sessions, memory) with additional allows:
+!!! warning "Kimi Coding known issues"
+    - **User-Agent header required**: Kimi Coding API rejects requests without `User-Agent: claude-code/0.1.0`. OpenClaw sends `OpenClaw-Gateway/1.0` by default, causing 401 errors. Fix: add `"headers": { "User-Agent": "claude-code/0.1.0" }` at provider level.
+    - **Model ID must be `kimi-for-coding`**: Do not use `k2p5` or other aliases.
+    - **`reasoning: true` may break**: Extended-thinking parameters can cause Kimi to reject requests. Start with `false`.
+    - **`openclaw doctor --fix` overwrites manual config**: It reverts Kimi provider settings to broken built-in templates. Do NOT run `--fix` after manual configuration.
+    - **Moonshot ≠ Kimi Coding**: They are separate providers with different API keys (`MOONSHOT_API_KEY` vs `KIMI_API_KEY`) and endpoints.
 
-    - `"group:web"` — Web browsing and HTTP requests
-    - `"group:ui"` — UI interaction tools
-    - `"pdf"` — PDF reading and manipulation
+!!! tip "Gemini `compat.supportsStore` explained"
+    Without `"compat": { "supportsStore": false }`, OpenClaw sends a `store` parameter that Google rejects with HTTP 400 (the error body is gzip-compressed, so logs show "400 no body"). This is **required** for all Gemini models via the OpenAI compatibility endpoint.
+
+    Do NOT use `"api": "google-generative-ai"` with a baseUrl ending in `/openai` — it causes 404 errors. Use either:
+
+    - `openai-completions` + `.../v1beta/openai` (recommended, more reliable)
+    - `google-generative-ai` + `.../v1beta` (native, without `/openai`)
+
+!!! info "Tools configuration"
+    The recommended tools config uses `profile: "coding"` as base with additional allows:
+
+    - `"group:web"` — Web search and HTTP fetch
+    - `"group:ui"` — Browser and canvas tools
     - `"cron"` — Scheduled tasks
 
-    The `"gateway"` tool is intentionally NOT allowed — it modifies the gateway configuration which is a security risk on a VPS.
+    The `"gateway"` tool is intentionally NOT allowed — it lets the agent modify its own gateway config at runtime, which is a security risk on a VPS.
 
     For a fully unrestricted agent: `"tools": {}`
+
+    **Tool profiles:**
+
+    | Profile | Includes |
+    |---------|----------|
+    | `full` | Everything (default when unset) |
+    | `coding` | `group:fs`, `group:runtime`, `group:sessions`, `group:memory`, `image`, `cron` |
+    | `messaging` | `group:messaging`, `sessions_*`, `session_status` |
+    | `minimal` | `session_status` only |
+
+    **Tool groups:**
+
+    | Group | Expands to |
+    |-------|------------|
+    | `group:runtime` | `exec`, `bash`, `process` |
+    | `group:fs` | `read`, `write`, `edit`, `apply_patch` |
+    | `group:sessions` | `sessions_list`, `sessions_history`, `sessions_send`, `sessions_spawn`, `session_status` |
+    | `group:memory` | `memory_search`, `memory_get` |
+    | `group:web` | `web_search`, `web_fetch` |
+    | `group:ui` | `browser`, `canvas` |
+    | `group:automation` | `cron`, `gateway` |
+    | `group:messaging` | `message` |
+
+    The `coding` profile may warn about unknown tools (`apply_patch`, `image`) — this is harmless, those tools simply won't load without their plugins.
+
+!!! info "`web_search` setup"
+    The `web_search` tool requires a search provider API key. OpenClaw auto-detects in this order: Brave → Gemini → Kimi → Perplexity → Grok.
+
+    **Option A** — Auto-detect via env var (set `GEMINI_API_KEY` in `.env` or systemd):
+    ```env
+    GEMINI_API_KEY=AIza...
+    ```
+
+    **Option B** — Explicit config in `tools.web.search` (shown in the JSON example above):
+    ```json
+    "tools": {
+      "web": { "search": { "provider": "gemini", "apiKey": "${GEMINI_API_KEY}" } }
+    }
+    ```
+
+    **Option C** — Interactive setup: `openclaw configure --section web`
+
+    Note: `GOOGLE_API_KEY` (for model inference) and `GEMINI_API_KEY` (for web search) can use the same key value, but they are different env var names.
 
 !!! danger "Critical security configuration"
     - `bind: "loopback"` — Only listens on localhost (never `0.0.0.0`)
@@ -777,10 +856,11 @@ Add or modify the sandbox section:
     "sandbox": { "mode": "off" },
     "tools": {
       "profile": "coding",
-      "allow": ["group:web"],
-      "deny": ["group:automation"]
+      "allow": ["group:web", "group:ui", "cron"]
     }
     ```
+
+    Omit `gateway` from the allow list to prevent the agent from modifying its own config.
 
 ### Configure DM Policy (message security)
 
@@ -1491,7 +1571,65 @@ sudo ss -tp | grep -E "(node|python)" | awk '{print $5}' | cut -d: -f1 | sort -u
 
 ## Troubleshooting
 
-### Error: "EADDRINUSE: address already in use"
+### Common errors (quick reference)
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `400 status code (no body)` | Provider rejects unknown parameters | Add `"compat": { "supportsStore": false }` for Gemini. Check `reasoning` setting for Kimi. |
+| `401 authentication_error` | Invalid API key or wrong User-Agent | Verify key with curl (see below). Add `"headers": { "User-Agent": "claude-code/0.1.0" }` for Kimi Coding. |
+| `404 Not Found` | Wrong model ID or baseUrl | Verify model ID via provider's `/v1/models` endpoint. |
+| `MissingEnvVarError` | `${VAR}` in config but var not set | Add var to systemd override or `~/.openclaw/.env`. |
+| `Config invalid: Unrecognized key` | Unknown field in openclaw.json | Remove the field. Only use documented schema fields. |
+| `tools.profile allowlist contains unknown entries` | Profile references uninstalled tools | Harmless warning. Those tools simply won't load. |
+| `web_search not available` | Missing search API key | Set `GEMINI_API_KEY` or `BRAVE_API_KEY` in `.env` or systemd override. |
+| `EADDRINUSE: address already in use` | Port 18789 already in use | `sudo kill $(sudo lsof -t -i:18789) && sudo systemctl restart openclaw` |
+| `Permission denied` accessing files | systemd hardening blocks path | Add `ReadWritePaths=/needed/path` to the service file |
+| `MemoryDenyWriteExecute` | V8 JIT needs executable memory | Remove `MemoryDenyWriteExecute=true` from the service file |
+| `NAMESPACE` errors on start | `SystemCallFilter` in override.conf | Remove `SystemCallFilter` lines from override.conf — only use `Environment` lines there |
+
+### Testing API keys directly
+
+If the agent won't respond or you see authentication errors, verify your API keys with curl:
+
+```bash
+# Test Gemini API key
+curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash?key=YOUR_GOOGLE_API_KEY"
+
+# Test Kimi Coding API key
+curl -s https://api.kimi.com/coding/v1/models \
+  -H "x-api-key: YOUR_KIMI_API_KEY" \
+  -H "anthropic-version: 2023-06-01"
+
+# Test Kimi Coding message (end-to-end)
+curl -s https://api.kimi.com/coding/v1/messages \
+  -H "x-api-key: YOUR_KIMI_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{"model":"kimi-for-coding","max_tokens":256,"messages":[{"role":"user","content":"Hello"}]}'
+```
+
+### Diagnostic commands
+
+```bash
+# View recent logs (clean output)
+sudo journalctl -u openclaw -n 30 --no-pager -o cat
+
+# Follow logs in real time
+sudo journalctl -u openclaw -f --no-pager -o cat
+
+# Service and config status
+openclaw status --all
+
+# Validate config (WARNING: --fix overwrites manual configs!)
+openclaw doctor
+```
+
+!!! danger "Do NOT run `openclaw doctor --fix` after manual configuration"
+    `openclaw doctor --fix` overwrites manual provider configs (especially Kimi Coding) with broken built-in templates. Use `openclaw doctor` (without `--fix`) to diagnose issues, then fix them manually.
+
+### Detailed troubleshooting
+
+#### Error: "EADDRINUSE: address already in use"
 
 **Cause**: Port 18789 is already in use.
 
@@ -1507,7 +1645,7 @@ sudo kill $(sudo lsof -t -i:18789)
 sudo systemctl restart openclaw
 ```
 
-### Error: "Permission denied" when accessing files
+#### Error: "Permission denied" when accessing files
 
 **Cause**: systemd hardening blocks access to non-allowed paths.
 
@@ -1521,7 +1659,7 @@ sudo systemctl daemon-reload
 sudo systemctl restart openclaw
 ```
 
-### Error: "MemoryDenyWriteExecute" with Node.js
+#### Error: "MemoryDenyWriteExecute" with Node.js
 
 **Cause**: V8 (JavaScript engine) needs JIT which requires executable memory.
 
@@ -1550,17 +1688,23 @@ sudo systemctl start openclaw
 ### Logs and debugging
 
 ```bash
-# View recent logs (last 50 lines)
-sudo journalctl -u openclaw -n 50 --no-pager
+# View recent logs (last 50 lines, clean output)
+sudo journalctl -u openclaw -n 50 --no-pager -o cat
 
 # Follow logs in real time (Ctrl+C to stop)
-sudo journalctl -u openclaw -f
+sudo journalctl -u openclaw -f --no-pager -o cat
 
 # View detailed gateway log (current day)
 cat /tmp/openclaw/openclaw-$(date +%Y-%m-%d).log | tail -100
 
 # Filter logs for errors only
 sudo journalctl -u openclaw --no-pager | grep -i error
+
+# Validate config (do NOT use --fix, it overwrites manual settings)
+openclaw doctor
+
+# Full status
+openclaw status --all
 ```
 
 ### Configuration files
@@ -1570,7 +1714,7 @@ sudo journalctl -u openclaw --no-pager | grep -i error
 nano ~/.openclaw/openclaw.json
 
 # Edit agent personality and instructions
-nano ~/.openclaw/AGENTS.md
+nano ~/openclaw/workspace/SOUL.md
 
 # Edit systemd overrides (secrets, env vars)
 sudo systemctl edit openclaw
@@ -1589,8 +1733,9 @@ sudo systemctl edit openclaw
 # Add lines like:
 #   [Service]
 #   Environment="MOONSHOT_API_KEY=sk-your-key"
+#   Environment="KIMI_API_KEY=sk-kimi-your-key"
 #   Environment="GOOGLE_API_KEY=your-key"
-#   Environment="GEMINI_API_KEY=your-key"  # same value, needed for web search
+#   Environment="GEMINI_API_KEY=your-key"  # same value as GOOGLE_API_KEY, for web search
 
 # Reference in openclaw.json with: ${MOONSHOT_API_KEY}
 
@@ -1599,6 +1744,9 @@ openclaw secrets configure
 
 # Audit configured secrets
 openclaw secrets audit
+
+# Test API keys directly (see Troubleshooting for more)
+curl -s "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash?key=YOUR_KEY"
 ```
 
 ### Model management
@@ -1655,11 +1803,14 @@ sudo kill $(sudo lsof -t -i:18789)
 ### Health and security
 
 ```bash
-# Run OpenClaw doctor
+# Run OpenClaw doctor (diagnose only — do NOT use --fix)
 openclaw doctor
 
 # Security audit
 openclaw security audit
+
+# Full status report
+openclaw status --all
 
 # Check file permissions
 ls -la ~/.openclaw/

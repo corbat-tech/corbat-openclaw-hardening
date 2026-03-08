@@ -70,9 +70,27 @@ nc -zv imap.gmail.com 993 -w 5
 
 ```json
 {
+  "agents": {
+    "defaults": {
+      "compaction": { "mode": "safeguard" },
+      "maxConcurrent": 1,
+      "model": {
+        "primary": "google/gemini-2.5-flash",
+        "fallbacks": ["kimi-coding/kimi-for-coding"]
+      },
+      "models": {
+        "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" },
+        "kimi-coding/kimi-for-coding": { "alias": "Kimi Coding" }
+      },
+      "sandbox": { "mode": "off" },
+      "subagents": { "maxConcurrent": 3 },
+      "workspace": "/home/openclaw/openclaw/workspace"
+    }
+  },
   "auth": {
     "profiles": {
-      "google:default": { "provider": "google", "mode": "api_key" }
+      "google:default": { "provider": "google", "mode": "api_key" },
+      "kimi-coding:default": { "provider": "kimi-coding", "mode": "api_key" }
     }
   },
   "channels": {
@@ -83,41 +101,60 @@ nc -zv imap.gmail.com 993 -w 5
       "allowFrom": ["YOUR_TELEGRAM_USER_ID"]
     }
   },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true
+  },
+  "gateway": {
+    "auth": { "mode": "token", "token": "${GATEWAY_TOKEN}" },
+    "bind": "loopback",
+    "mode": "local",
+    "port": 18789
+  },
   "models": {
     "mode": "merge",
     "providers": {
       "google": {
-        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
-        "apiKey": "${GOOGLE_API_KEY}",
         "api": "openai-completions",
+        "apiKey": "${GOOGLE_API_KEY}",
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
         "models": [{
           "id": "gemini-2.5-flash",
           "name": "Gemini 2.5 Flash",
           "input": ["text", "image"],
           "contextWindow": 1048576,
           "maxTokens": 65536,
+          "reasoning": false,
           "compat": { "supportsStore": false }
+        }]
+      },
+      "kimi-coding": {
+        "api": "anthropic-messages",
+        "apiKey": "${KIMI_API_KEY}",
+        "baseUrl": "https://api.kimi.com/coding/",
+        "headers": { "User-Agent": "claude-code/0.1.0" },
+        "models": [{
+          "id": "kimi-for-coding",
+          "name": "Kimi Coding",
+          "input": ["text"],
+          "contextWindow": 262144,
+          "maxTokens": 32768,
+          "reasoning": false
         }]
       }
     }
   },
-  "agents": {
-    "defaults": {
-      "model": {
-        "primary": "google/gemini-2.5-flash",
-        "fallbacks": ["your-fallback-provider/model"]
-      },
-      "models": {
-        "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" },
-        "your-fallback-provider/model": { "alias": "Fallback Model" }
-      },
-      "sandbox": { "mode": "off" },
-      "compaction": { "mode": "safeguard" }
-    }
-  },
+  "session": { "dmScope": "per-channel-peer" },
   "tools": {
     "profile": "coding",
-    "allow": ["group:web", "group:ui", "pdf", "cron"]
+    "allow": ["group:web", "group:ui", "cron"],
+    "web": {
+      "search": {
+        "provider": "gemini",
+        "apiKey": "${GEMINI_API_KEY}"
+      }
+    }
   }
 }
 ```
@@ -205,6 +242,7 @@ After editing systemd overrides: `sudo systemctl daemon-reload && sudo systemctl
 - **Never** store API keys in openclaw.json — use `${VAR_NAME}` references
 - **Never** add `SystemCallFilter` in override.conf — causes NAMESPACE errors
 - **Never** deny `process` in tools — skills need it to run scripts
+- **Never** run `openclaw doctor --fix` after manual config — it overwrites provider settings
 - **Always** use `tools.profile: "coding"` with explicit allow list — exclude `gateway` for VPS security
 - **Always** use sandbox `"off"` on dedicated VPS with systemd hardening
 - **Always** restart after config changes: `sudo systemctl daemon-reload && sudo systemctl restart openclaw`

@@ -40,10 +40,13 @@ AGENTS.md            # Agentic self-configuration guide for OpenClaw agents
 - **dmPolicy**: Use `"allowlist"` with `allowFrom` to restrict access. `"pairing"` ignores `allowFrom`
 - **SOUL.md path**: Must be in the workspace dir from `agents.defaults.workspace` (e.g., `~/openclaw/workspace/SOUL.md`), NOT in `~/.openclaw/workspace/`
 - **SystemCallFilter**: Do NOT deny `@debug` — it causes core dumps with Telegram channel. Do NOT add `SystemCallFilter` in override.conf — causes NAMESPACE errors
-- **Tools deny list**: Only deny `["group:automation"]` (cron + gateway). Do NOT deny `process` — skills need it to execute scripts
+- **Tools config**: Use `profile: "coding"` with `allow: ["group:web", "group:ui", "cron"]`. Exclude `gateway` from allow to prevent agent self-modification. Do NOT deny `process` — skills need it
 - **Skills require `npm install`**: OpenClaw marks skills "ready" based on SKILL.md presence, but does NOT auto-install npm dependencies
 - **Root-level keys**: `sandbox`, `dmPolicy`, `security`, `tools.blocked` at root level are NOT recognized — they go inside `agents.defaults` or per-channel config
-- **Model compatibility**: `kimi-coding/k2p5` does NOT execute tool calls (known bug). `moonshot/kimi-k2.5` works correctly with tools (exec, browser, etc.). `google/gemini-2.5-flash` also works
+- **Model compatibility**: `kimi-coding/kimi-for-coding` requires `User-Agent: claude-code/0.1.0` header and `reasoning: false`. `moonshot/kimi-k2.5` works with tools. `google/gemini-2.5-flash` works with `compat.supportsStore: false`
+- **`openclaw doctor --fix`**: Do NOT run after manual config — it overwrites provider settings (especially Kimi) with broken defaults
+- **web_search**: Requires `GEMINI_API_KEY` env var (auto-detect) or explicit `tools.web.search.provider` config. Detection order: Brave → Gemini → Kimi → Perplexity → Grok
+- **Moonshot ≠ Kimi Coding**: Separate providers with different API keys (`MOONSHOT_API_KEY` vs `KIMI_API_KEY`) and endpoints
 - **Hetzner Cloud Firewall**: Must include outbound TCP 587 (SMTP), TCP 993 (IMAP), UDP 3478 (STUN), TCP 53 (DNS fallback) in addition to 443, 80, 41641, UDP 53
 - **Service name**: The systemd service is `openclaw.service`, NOT `openclaw-gateway.service`
 
