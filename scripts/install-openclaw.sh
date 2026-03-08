@@ -34,7 +34,13 @@ if [ "$(id -u)" -eq 0 ]; then
 fi
 
 if [ "$(whoami)" != "openclaw" ]; then
-    warn "Expected user 'openclaw', running as '$(whoami)'. Continuing..."
+    warn "Expected user 'openclaw', running as '$(whoami)'."
+    warn "Paths will be relative to $(whoami)'s home. Adjust if needed."
+fi
+
+if [ ! -d "$HOME" ]; then
+    error "Home directory $HOME does not exist."
+    exit 1
 fi
 
 echo ""
@@ -235,10 +241,25 @@ echo ""
 ask "Enter Telegram bot token (or press Enter to skip): "
 read -r TELEGRAM_TOKEN
 
+# Validate token format (digits:alphanumeric)
+if [ -n "$TELEGRAM_TOKEN" ]; then
+    if ! echo "$TELEGRAM_TOKEN" | grep -qE '^[0-9]+:[A-Za-z0-9_-]+$'; then
+        error "Invalid Telegram token format. Expected: 123456789:ABCdef..."
+        error "Skipping Telegram configuration."
+        TELEGRAM_TOKEN=""
+    fi
+fi
+
 if [ -n "$TELEGRAM_TOKEN" ]; then
     echo ""
     ask "Enter your Telegram user ID (send a message to @raw_data_bot to find it, or press Enter to skip): "
     read -r TELEGRAM_USER_ID
+
+    # Validate user ID is numeric
+    if [ -n "$TELEGRAM_USER_ID" ] && ! echo "$TELEGRAM_USER_ID" | grep -qE '^[0-9]+$'; then
+        warn "Invalid Telegram user ID (must be numeric). Skipping allowlist."
+        TELEGRAM_USER_ID=""
+    fi
 
     if [ -n "$TELEGRAM_USER_ID" ]; then
         TELEGRAM_DM_POLICY="allowlist"
@@ -252,6 +273,7 @@ if [ -n "$TELEGRAM_TOKEN" ]; then
         warn "Then switch to dmPolicy: allowlist in ~/.openclaw/openclaw.json"
     fi
 
+    # TELEGRAM_TOKEN and TELEGRAM_USER_ID are validated above (regex-safe for JSON)
     CHANNELS_CONFIG=$(cat <<CHCONF
   "channels": {
     "telegram": {
@@ -498,8 +520,8 @@ You work for the owner of this instance — follow their instructions and act in
 - Do not access `/home/openclaw/.ssh`, `/home/openclaw/.env`, `/etc`, `/var`
 
 ### Execution
-- Do not execute commands as root/sudo
-- Do not install software without explicit approval
+- Do not execute commands as root/sudo unless using the restricted sudoers allowlist (apt, pip3, systemctl)
+- Only install well-known packages (high download count, established maintainers, official repositories). If a package is relatively unknown or you are unsure, ask for explicit approval via the configured channel before installing
 - Do not modify system configuration
 
 ### Communication

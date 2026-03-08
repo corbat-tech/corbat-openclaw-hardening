@@ -179,30 +179,30 @@ if [ ! -f "$CONFIG_FILE" ]; then
 fi
 
 if [ -f "$CONFIG_FILE" ]; then
-    if grep -A1 '"mode"' "$CONFIG_FILE" | grep -q '"off"'; then
+    if grep -qE '"sandbox"\s*:\s*\{' "$CONFIG_FILE" && grep -A2 '"sandbox"' "$CONFIG_FILE" | grep -qE '"mode"\s*:\s*"off"'; then
         check "Sandbox mode = off (dedicated VPS)" "pass"
     else
         check "Sandbox mode = off (dedicated VPS)" "warn"
     fi
 
-    if grep -q '"dmPolicy"' "$CONFIG_FILE" && grep -A1 '"dmPolicy"' "$CONFIG_FILE" | grep -q '"pairing"\|"closed"'; then
-        check "dmPolicy = pairing or closed" "pass"
-    elif grep -q '"dmPolicy"' "$CONFIG_FILE" && grep -A1 '"dmPolicy"' "$CONFIG_FILE" | grep -q '"open"'; then
-        check "dmPolicy = pairing or closed" "fail" "critical"
+    if grep -qE '"dmPolicy"\s*:\s*"(pairing|closed|allowlist)"' "$CONFIG_FILE"; then
+        check "dmPolicy = pairing, closed, or allowlist" "pass"
+    elif grep -qE '"dmPolicy"\s*:\s*"open"' "$CONFIG_FILE"; then
+        check "dmPolicy = pairing, closed, or allowlist" "fail" "critical"
     else
-        check "dmPolicy = pairing or closed" "warn"
+        check "dmPolicy = pairing, closed, or allowlist" "warn"
     fi
 
-    if grep -q '"127.0.0.1"' "$CONFIG_FILE"; then
-        check "Gateway host = 127.0.0.1" "pass"
+    if grep -qE '"bind"\s*:\s*"loopback"' "$CONFIG_FILE" || grep -q '"127.0.0.1"' "$CONFIG_FILE"; then
+        check "Gateway bound to loopback" "pass"
     else
-        check "Gateway host = 127.0.0.1" "fail" "critical"
+        check "Gateway bound to loopback" "fail" "critical"
     fi
 
-    if grep -q '"pairing"' "$CONFIG_FILE" && grep -A1 '"pairing"' "$CONFIG_FILE" | grep -q 'true'; then
-        check "Gateway TLS pairing enabled" "pass"
+    if grep -qE '"gateway"\s*:' "$CONFIG_FILE" && grep -qE '"token"' "$CONFIG_FILE"; then
+        check "Gateway token auth configured" "pass"
     else
-        check "Gateway TLS pairing enabled" "fail" "critical"
+        check "Gateway token auth configured" "fail" "critical"
     fi
 else
     check "openclaw.json exists" "fail"

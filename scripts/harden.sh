@@ -224,12 +224,17 @@ echo ""
 
 tailscale up --advertise-tags=tag:vps
 
-# Wait for Tailscale to get an IP
-sleep 3
-TAILSCALE_IP=$(tailscale ip -4 2>/dev/null || true)
+# Wait for Tailscale to get an IP (retry with backoff, up to 30s)
+TAILSCALE_IP=""
+for i in $(seq 1 15); do
+    TAILSCALE_IP=$(tailscale ip -4 2>/dev/null || true)
+    [ -n "$TAILSCALE_IP" ] && break
+    info "Waiting for Tailscale IP... (attempt $i/15)"
+    sleep 2
+done
 
 if [ -z "$TAILSCALE_IP" ]; then
-    error "Could not get Tailscale IP. Authenticate and run the script again."
+    error "Could not get Tailscale IP after 30s. Authenticate and run the script again."
     exit 1
 fi
 
@@ -243,7 +248,8 @@ systemctl disable --now ssh.socket 2>/dev/null || true
 systemctl enable ssh.service
 mkdir -p /run/sshd
 
-# Add ListenAddress
+# Add ListenAddress (idempotent — remove old entry first)
+sed -i '/^# === Listen ONLY on Tailscale/d; /^ListenAddress /d' /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
 echo "" >> /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
 echo "# === Listen ONLY on Tailscale ===" >> /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
 echo "ListenAddress $TAILSCALE_IP" >> /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
