@@ -871,7 +871,7 @@ EnvironmentFile=/etc/openclaw/env
 # Dedicated VPS + Tailscale. Date: 2026-03-08
 ProtectSystem=false
 SystemCallFilter=
-CapabilityBoundingSet=
+CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_AUDIT_WRITE CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER
 PrivateDevices=false
 LockPersonality=false
 RestrictRealtime=false
@@ -912,7 +912,7 @@ sudo systemctl show openclaw | grep -i api_key
 The override file is stored at `/etc/systemd/system/openclaw.service.d/override.conf` with root-only permissions.
 
 !!! note "Why the override includes hardening relaxation"
-    All 8 directives (`ProtectSystem`, `SystemCallFilter`, `CapabilityBoundingSet`, `PrivateDevices`, `LockPersonality`, `RestrictRealtime`, `ProtectKernelTunables`, `ProtectKernelModules`) implicitly force `NoNewPrivileges=true` or block `sudo` in other ways. Setting them to `false` (or empty for `SystemCallFilter`/`CapabilityBoundingSet`) prevents this. Security is enforced by `exec-approvals` allowlist + OS sudoers instead.
+    All 8 directives (`ProtectSystem`, `SystemCallFilter`, `CapabilityBoundingSet`, `PrivateDevices`, `LockPersonality`, `RestrictRealtime`, `ProtectKernelTunables`, `ProtectKernelModules`) implicitly force `NoNewPrivileges=true` or block `sudo` in other ways. Setting them to `false` (or empty for `SystemCallFilter`, or specific caps for `CapabilityBoundingSet`) prevents this. The 6 capabilities (`CAP_SETUID`, `CAP_SETGID`, `CAP_AUDIT_WRITE`, `CAP_CHOWN`, `CAP_DAC_OVERRIDE`, `CAP_FOWNER`) are the minimum set required for `sudo apt-get install` to work. Security is enforced by `exec-approvals` allowlist + OS sudoers instead.
 
 #### Method 2: .env file (for channel tokens)
 
@@ -1555,7 +1555,7 @@ PrivateTmp=true
 # NOTE: PrivateDevices, LockPersonality, RestrictRealtime implicitly force
 # NoNewPrivileges=true, so they must also be false for sudo to work
 NoNewPrivileges=false
-CapabilityBoundingSet=
+CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_AUDIT_WRITE CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER
 AmbientCapabilities=
 RestrictSUIDSGID=false
 PrivateDevices=false
