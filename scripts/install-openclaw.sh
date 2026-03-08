@@ -593,9 +593,9 @@ RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 # Security enforced by exec-approvals + sudoers instead
 SystemCallArchitectures=native
 
-# Kernel protection (maintained)
-ProtectKernelTunables=true
-ProtectKernelModules=true
+# Kernel protection (relaxed for apt/dpkg)
+ProtectKernelTunables=false
+ProtectKernelModules=false
 ProtectKernelLogs=true
 ProtectControlGroups=true
 ProtectHostname=true

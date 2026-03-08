@@ -853,6 +853,8 @@ SystemCallFilter=
 PrivateDevices=false
 LockPersonality=false
 RestrictRealtime=false
+ProtectKernelTunables=false
+ProtectKernelModules=false
 
 # Add write paths for apt
 ReadWritePaths=/home/openclaw/openclaw/workspace
@@ -1552,9 +1554,9 @@ RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 # Security enforced by exec-approvals + sudoers instead
 SystemCallArchitectures=native
 
-# --- Protect kernel (maintained) ---
-ProtectKernelTunables=true
-ProtectKernelModules=true
+# --- Protect kernel (relaxed for apt/dpkg) ---
+ProtectKernelTunables=false
+ProtectKernelModules=false
 ProtectKernelLogs=true
 ProtectControlGroups=true
 ProtectHostname=true
