@@ -910,12 +910,24 @@ npx playbooks add skill openclaw/skills --skill <skill-name>
 
 **Recommended skills for business/development use:**
 
-| Skill | Purpose |
-|-------|---------|
-| `imap-smtp-email` | Send and receive emails via IMAP/SMTP |
-| `web-search` | Search the web for information |
-| `github` | Interact with GitHub repositories |
-| `memory` | Persistent memory across sessions |
+!!! tip "Skill registries"
+    Skills can be found on [ClawHub](https://clawhub.com) (13,700+ skills) or [Playbooks](https://playbooks.com/skills/openclaw/skills) (18,300+ skills). For a curated, security-filtered list, see [awesome-openclaw-skills](https://github.com/VoltAgent/awesome-openclaw-skills) (5,494 vetted skills).
+
+| Skill | Install | Purpose |
+|-------|---------|---------|
+| `imap-smtp-email` | `npx playbooks add skill openclaw/skills --skill imap-smtp-email` | Send and receive emails via IMAP/SMTP with attachments |
+| `github` | `npx clawhub@latest install github` | Manage GitHub repos, issues, PRs, CI via `gh` CLI |
+| `tavily-search` | `npx clawhub@latest install tavily-search` | AI-optimized web search for research and fact-finding |
+| `gog` | `npx clawhub@latest install gog` | Google Workspace: Gmail, Calendar, Drive, Contacts, Sheets, Docs |
+| `summarize` | `npx clawhub@latest install summarize` | Convert long content into structured summaries |
+| `obsidian` | `npx clawhub@latest install obsidian` | Interact with Obsidian vaults, automate note organization |
+| `memory` | `npx playbooks add skill openclaw/skills --skill memory` | Persistent memory across sessions |
+| `n8n-workflow-automation` | `npx clawhub@latest install n8n-workflow-automation` | Connect OpenClaw with n8n to trigger/manage workflows |
+
+!!! warning "After installing any skill"
+    1. Run `cd ~/.agents/skills/<skill-name> && npm install` — OpenClaw does NOT auto-install npm dependencies
+    2. Run `openclaw security audit` to verify the skill is safe
+    3. Restart OpenClaw: `sudo systemctl stop openclaw && sleep 2 && sudo systemctl start openclaw`
 
 #### Configure email (imap-smtp-email skill)
 

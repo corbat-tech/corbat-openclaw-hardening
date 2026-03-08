@@ -910,12 +910,24 @@ npx playbooks add skill openclaw/skills --skill <nombre-skill>
 
 **Skills recomendados para uso empresarial/desarrollo:**
 
-| Skill | Propósito |
-|-------|-----------|
-| `imap-smtp-email` | Enviar y recibir emails via IMAP/SMTP |
-| `web-search` | Buscar información en la web |
-| `github` | Interactuar con repositorios de GitHub |
-| `memory` | Memoria persistente entre sesiones |
+!!! tip "Registros de skills"
+    Los skills se encuentran en [ClawHub](https://clawhub.com) (13.700+ skills) o [Playbooks](https://playbooks.com/skills/openclaw/skills) (18.300+ skills). Para una lista curada y filtrada por seguridad, consulta [awesome-openclaw-skills](https://github.com/VoltAgent/awesome-openclaw-skills) (5.494 skills verificados).
+
+| Skill | Instalación | Propósito |
+|-------|-------------|-----------|
+| `imap-smtp-email` | `npx playbooks add skill openclaw/skills --skill imap-smtp-email` | Enviar y recibir emails via IMAP/SMTP con adjuntos |
+| `github` | `npx clawhub@latest install github` | Gestionar repos, issues, PRs, CI de GitHub via `gh` CLI |
+| `tavily-search` | `npx clawhub@latest install tavily-search` | Búsqueda web optimizada para IA, investigación y verificación |
+| `gog` | `npx clawhub@latest install gog` | Google Workspace: Gmail, Calendar, Drive, Contactos, Sheets, Docs |
+| `summarize` | `npx clawhub@latest install summarize` | Convertir contenido extenso en resúmenes estructurados |
+| `obsidian` | `npx clawhub@latest install obsidian` | Interactuar con vaults de Obsidian, automatizar organización de notas |
+| `memory` | `npx playbooks add skill openclaw/skills --skill memory` | Memoria persistente entre sesiones |
+| `n8n-workflow-automation` | `npx clawhub@latest install n8n-workflow-automation` | Conectar OpenClaw con n8n para ejecutar/gestionar workflows |
+
+!!! warning "Después de instalar cualquier skill"
+    1. Ejecuta `cd ~/.agents/skills/<skill-name> && npm install` — OpenClaw NO instala las dependencias npm automáticamente
+    2. Ejecuta `openclaw security audit` para verificar que el skill es seguro
+    3. Reinicia OpenClaw: `sudo systemctl stop openclaw && sleep 2 && sudo systemctl start openclaw`
 
 #### Configurar email (skill imap-smtp-email)
 
