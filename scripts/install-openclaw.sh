@@ -304,7 +304,7 @@ cat > ~/.openclaw/openclaw.json << OCEOF
   "tools": {
     "profile": "coding",
     "allow": ["group:web"],
-    "deny": ["group:automation", "process"]
+    "deny": ["group:automation"]
   },
   "messages": {
     "ackReactionScope": "group-mentions"

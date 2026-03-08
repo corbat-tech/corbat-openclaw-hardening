@@ -418,7 +418,7 @@ nano ~/.openclaw/openclaw.json
   "tools": {
     "profile": "coding",
     "allow": ["group:web"],
-    "deny": ["group:automation", "process"]
+    "deny": ["group:automation"]
   },
   "session": {
     "dmScope": "per-channel-peer"
@@ -444,6 +444,7 @@ nano ~/.openclaw/openclaw.json
     - `bind: "loopback"` — Only listens on localhost (never `0.0.0.0`)
     - `sandbox.mode: "off"` — Relies on systemd hardening for isolation (recommended for dedicated VPS). Use `"all"` for shared servers
     - `auth.mode: "token"` — Gateway access requires authentication token
+    - `tools.deny: ["group:automation"]` — Blocks cron and gateway modification only. Do NOT deny `process` — skills need it to run scripts
     - `session.dmScope: "per-channel-peer"` — Isolates DM sessions to prevent context leakage
     - `tls: {}` — TLS enabled with defaults
 
@@ -730,7 +731,7 @@ Add or modify the sandbox section:
     "tools": {
       "profile": "coding",
       "allow": ["group:web"],
-      "deny": ["group:automation", "process"]
+      "deny": ["group:automation"]
     }
     ```
 

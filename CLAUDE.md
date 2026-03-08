@@ -39,6 +39,8 @@ mkdocs.yml           # MkDocs configuration with i18n
 - **SystemCallFilter**: Do NOT deny `@debug` — it causes core dumps with Telegram channel
 - **Sandbox caching**: Clear `~/.openclaw/sandboxes/agent-main-*` when SOUL.md changes aren't picked up, then send `/new` in Telegram
 - **tools.exec.security**: Does NOT exist as a config key
+- **Tools deny list**: Only deny `["group:automation"]` (cron + gateway). Do NOT deny `process` — skills need it to execute their Node.js scripts
+- **Skills require `npm install`**: OpenClaw marks skills "ready" based on SKILL.md presence, but does NOT auto-install npm dependencies. Run `cd ~/.agents/skills/<name> && npm install` after installing any skill
 - **Root-level keys**: `sandbox`, `dmPolicy`, `security`, `tools.blocked` at root level are NOT recognized — they go inside `agents.defaults` or per-channel config
 
 ### Script conventions
