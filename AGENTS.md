@@ -71,26 +71,21 @@ nc -zv imap.gmail.com 993 -w 5
 {
   "auth": {
     "profiles": {
-      "moonshot:default": { "provider": "moonshot", "mode": "api_key" },
+      "your-provider:default": { "provider": "your-provider", "mode": "api_key" },
       "google:default": { "provider": "google", "mode": "api_key" }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "dmPolicy": "allowlist",
+      "allowFrom": ["YOUR_TELEGRAM_USER_ID"]
     }
   },
   "models": {
     "mode": "merge",
     "providers": {
-      "moonshot": {
-        "baseUrl": "https://api.moonshot.ai/v1",
-        "apiKey": "${MOONSHOT_API_KEY}",
-        "api": "openai-completions",
-        "models": [{
-          "id": "kimi-k2.5",
-          "name": "Kimi K2.5",
-          "reasoning": false,
-          "input": ["text", "image"],
-          "contextWindow": 262144,
-          "maxTokens": 65535
-        }]
-      },
       "google": {
         "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
         "apiKey": "${GOOGLE_API_KEY}",
@@ -108,9 +103,12 @@ nc -zv imap.gmail.com 993 -w 5
   },
   "agents": {
     "defaults": {
-      "model": { "primary": "moonshot/kimi-k2.5" },
+      "model": {
+        "primary": "your-provider/your-model",
+        "fallbacks": ["google/gemini-2.5-flash"]
+      },
       "models": {
-        "moonshot/kimi-k2.5": { "alias": "Kimi K2.5" },
+        "your-provider/your-model": { "alias": "Primary Model" },
         "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" }
       },
       "sandbox": { "mode": "off" },
@@ -130,8 +128,8 @@ nc -zv imap.gmail.com 993 -w 5
 | Model | Provider | Tool calls | Cost | Best for |
 |-------|----------|-----------|------|----------|
 | `moonshot/kimi-k2.5` | Moonshot | Yes | Free tier | General assistant, coding |
-| `google/gemini-2.5-flash` | Google | Yes | Free tier | Fast responses, large context |
-| `kimi-coding/k2p5` | Kimi Code | **NO** | Subscription | **Do NOT use** — tool calls broken |
+| `google/gemini-2.5-flash` | Google | Yes | Free tier | Fast responses, large context (1M tokens) |
+| `kimi-coding/kimi-for-coding` | Kimi Code | Limited | Subscription | Coding tasks (tool calls may fail with reasoning enabled) |
 
 To switch models, change `agents.defaults.model.primary` and restart:
 ```bash
@@ -191,7 +189,19 @@ EOF
 himalaya envelope list
 ```
 
-### 8. Security rules
+### 8. Secrets storage
+
+Store all sensitive values securely — **never** as plaintext in `openclaw.json`:
+
+| Secret type | Where to store | How to reference |
+|-------------|---------------|-----------------|
+| API keys (LLM providers) | `sudo systemctl edit openclaw` → `Environment="KEY=value"` | `${KEY}` in openclaw.json |
+| Channel tokens (Telegram) | `~/openclaw/.env` (chmod 600) or systemd override | `${TELEGRAM_BOT_TOKEN}` |
+| Gateway token | `sudo systemctl edit openclaw` → `Environment="GATEWAY_TOKEN=value"` | `${GATEWAY_TOKEN}` |
+
+After editing systemd overrides: `sudo systemctl daemon-reload && sudo systemctl restart openclaw`
+
+### 9. Security rules
 
 - **Never** store API keys in openclaw.json — use `${VAR_NAME}` references
 - **Never** add `SystemCallFilter` in override.conf — causes NAMESPACE errors
@@ -200,7 +210,7 @@ himalaya envelope list
 - **Always** use sandbox `"off"` on dedicated VPS with systemd hardening
 - **Always** restart after config changes: `sudo systemctl daemon-reload && sudo systemctl restart openclaw`
 
-### 9. Troubleshooting
+### 10. Troubleshooting
 
 ```bash
 # Service won't start — check logs

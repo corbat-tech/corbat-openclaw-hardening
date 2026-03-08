@@ -400,7 +400,12 @@ nano ~/.openclaw/openclaw.json
   "agents": {
     "defaults": {
       "model": {
-        "primary": "kimi-coding/k2p5"
+        "primary": "your-provider/your-model",
+        "fallbacks": ["google/gemini-2.5-flash"]
+      },
+      "models": {
+        "your-provider/your-model": { "alias": "Primary Model" },
+        "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" }
       },
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
@@ -409,9 +414,35 @@ nano ~/.openclaw/openclaw.json
       "compaction": {
         "mode": "safeguard"
       },
-      "maxConcurrent": 4,
+      "maxConcurrent": 1,
       "subagents": {
-        "maxConcurrent": 8
+        "maxConcurrent": 1
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "dmPolicy": "allowlist",
+      "allowFrom": ["TU_TELEGRAM_USER_ID"]
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "google": {
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "apiKey": "${GOOGLE_API_KEY}",
+        "api": "openai-completions",
+        "models": [{
+          "id": "gemini-2.5-flash",
+          "name": "Gemini 2.5 Flash",
+          "reasoning": false,
+          "input": ["text", "image"],
+          "contextWindow": 1048576,
+          "maxTokens": 65535
+        }]
       }
     }
   },
@@ -428,24 +459,38 @@ nano ~/.openclaw/openclaw.json
     "mode": "local",
     "bind": "loopback",
     "auth": {
-      "mode": "token"
+      "mode": "token",
+      "token": "${GATEWAY_TOKEN}"
     },
     "tls": {},
     "tailscale": {
       "mode": "off"
     },
-    "nodes": {
-    }
+    "nodes": {}
   }
 }
 ```
+
+!!! tip "Proveedores de modelos"
+    Añade el proveedor de tu modelo elegido en `models.providers`. Opciones comunes:
+
+    | Proveedor | `baseUrl` | `api` | Tier gratuito |
+    |-----------|-----------|-------|---------------|
+    | Google Gemini | `https://generativelanguage.googleapis.com/v1beta/openai` | `openai-completions` | Sí |
+    | Moonshot (Kimi K2.5) | `https://api.moonshot.ai/v1` | `openai-completions` | Sí |
+    | Kimi Code | `https://api.kimi.com/coding/` | `anthropic-messages` | Suscripción |
+    | OpenAI | `https://api.openai.com/v1` | `openai-completions` | No |
+    | Anthropic | `https://api.anthropic.com` | `anthropic-messages` | No |
+
+    Configura `"fallbacks"` en `agents.defaults.model` para que el agente cambie automáticamente si el proveedor principal cae.
 
 !!! danger "Configuración de seguridad crítica"
     - `bind: "loopback"` — Solo escucha en localhost (nunca `0.0.0.0`)
     - `sandbox.mode: "off"` — Se apoya en el hardening de systemd para aislamiento (recomendado para VPS dedicada). Usa `"all"` para servidores compartidos
     - `auth.mode: "token"` — Acceso al Gateway requiere token de autenticación
-    - `tools.deny: ["group:automation"]` — Solo bloquea cron y modificación del gateway. NO denegar `process` — los skills lo necesitan para ejecutar scripts
-    - `session.dmScope: "per-channel-peer"` — Aísla sesiones DM para prevenir filtración de contexto
+    - **Todos los secrets usan referencias `${VAR_NAME}`** — Nunca guardes tokens o API keys como texto plano en este archivo
+    - `tools.deny: ["group:automation"]` — Bloquea solo cron y modificación del gateway. NO denegar `process` — los skills lo necesitan para ejecutar scripts
+    - `session.dmScope: "per-channel-peer"` — Aísla las sesiones DM para prevenir filtración de contexto
     - `tls: {}` — TLS habilitado con valores por defecto
 
 !!! warning "Eliminado en v2026.3.x"
@@ -457,75 +502,53 @@ nano ~/.openclaw/openclaw.json
 
     A partir de OpenClaw v2026.2.x, el modo `"all"` reemplaza a `"always"`.
 
-### Configurar credenciales con SecretRef (RECOMENDADO)
+### Configurar secrets (API keys y tokens)
 
-A partir de OpenClaw v2026.3.x, el mecanismo **SecretRef** permite gestionar credenciales de forma segura sin archivos `.env` en texto plano. Soporta hasta 64 targets.
+Todos los valores sensibles en `openclaw.json` usan referencias `${VAR_NAME}`. Los valores reales se almacenan por separado, nunca en el archivo JSON de configuración.
+
+#### Método 1: Overrides de entorno en systemd (recomendado para VPS)
+
+El método más seguro para despliegues en VPS dedicada. Los secrets se guardan en un archivo propiedad de root que solo systemd lee al arrancar.
 
 ```bash
-# Wizard interactivo de secrets (configura providers + mapea refs)
-openclaw secrets configure
-
-# Auditar secrets por texto plano o refs sin resolver
-openclaw secrets audit
-
-# Recargar secrets en runtime (sin reiniciar)
-openclaw secrets reload
-
-# Usar en openclaw.json con SecretRef
+sudo systemctl edit openclaw
 ```
 
-En `openclaw.json`, referencia los secrets así:
+Añade tus API keys y tokens:
 
-```json
-{
-  "agent": {
-    "model": "anthropic/claude-sonnet-4-5",
-    "apiKey": { "$secretRef": "ANTHROPIC_API_KEY" }
-  }
-}
+```ini
+[Service]
+Environment="GOOGLE_API_KEY=tu-api-key-de-google"
+Environment="MOONSHOT_API_KEY=sk-tu-key-de-moonshot"
+Environment="GATEWAY_TOKEN=tu-token-del-gateway"
 ```
 
-!!! success "SecretRef vs .env"
-    | Característica | SecretRef | .env |
-    |---|---|---|
-    | Almacenamiento | Cifrado en disco | Texto plano |
-    | Riesgo de prompt injection | Bajo | Alto (agente puede leer el archivo) |
-    | Filtración en shell history | No | Sí (si usas `export`) |
-    | Rotación | `openclaw secrets set` | Editar archivo manualmente |
+Guarda y aplica:
 
-### Alternativa: Archivo .env (método legacy)
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart openclaw
+```
 
-Si prefieres el método tradicional o tu versión de OpenClaw no soporta SecretRef:
+El archivo de override se guarda en `/etc/systemd/system/openclaw.service.d/override.conf` con permisos solo de root.
+
+!!! warning "NO añadir SystemCallFilter en el override"
+    Añadir líneas de `SystemCallFilter` en `override.conf` causa errores `NAMESPACE` e impide que el servicio arranque. Solo añade líneas `Environment` aquí.
+
+#### Método 2: Archivo .env (para tokens de canales)
+
+Algunos tokens (como el token del bot de Telegram) pueden guardarse en un archivo `.env`:
 
 ```bash
 nano ~/openclaw/.env
 ```
 
 ```bash
-# ============================================================
-# OpenClaw Environment Variables
-# NUNCA versionar este archivo - chmod 600
-# ============================================================
+# Tokens de canales
+TELEGRAM_BOT_TOKEN=tu-token-del-bot
 
-# --- API Keys ---
-# Usa solo UNA de estas opciones
-
-# Opción 1: Anthropic (recomendado)
-ANTHROPIC_API_KEY=sk-ant-...
-
-# Opción 2: OpenAI
-# OPENAI_API_KEY=sk-...
-
-# Opción 3: NVIDIA NIM (Kimi K2.5 gratis)
-# NVIDIA_API_KEY=nvapi-...
-
-# --- Canales (opcional) ---
-# TELEGRAM_BOT_TOKEN=...
-# DISCORD_BOT_TOKEN=...
-# SLACK_BOT_TOKEN=...
-
-# --- Búsqueda web (recomendado) ---
-# BRAVE_SEARCH_API_KEY=...
+# API keys adicionales (si no usas el método systemd)
+# GOOGLE_API_KEY=tu-key
 ```
 
 **Proteger el archivo:**
@@ -533,24 +556,31 @@ ANTHROPIC_API_KEY=sk-ant-...
 ```bash
 chmod 600 ~/openclaw/.env
 chown openclaw:openclaw ~/openclaw/.env
-
-# Verificar permisos
-ls -la ~/openclaw/.env
 ```
 
-**Salida esperada:**
+#### Método 3: SecretRef (nativo de OpenClaw)
+
+OpenClaw v2026.3.x soporta secrets cifrados via el wizard interactivo:
+
+```bash
+# Wizard interactivo de secrets
+openclaw secrets configure
+
+# Auditar por texto plano
+openclaw secrets audit
+
+# Recargar secrets en runtime (sin reiniciar)
+openclaw secrets reload
 ```
--rw------- 1 openclaw openclaw 512 Feb  1 10:00 /home/openclaw/openclaw/.env
-```
 
-!!! warning "Limitaciones del archivo .env"
-    Los archivos `.env` en texto plano son vulnerables a:
-
-    - **Prompt injection** — un agente comprometido puede intentar leer el archivo
-    - **Filtración en logs** — las variables se expanden en shell history
-    - **Acceso por otros procesos** — cualquier proceso del usuario puede leerlo
-
-    Usa **SecretRef** cuando sea posible.
+!!! success "Comparación de métodos de secrets"
+    | Característica | Override systemd | Archivo .env | SecretRef |
+    |---|---|---|---|
+    | Almacenamiento | Archivo propiedad de root | Texto plano del usuario | Cifrado en disco |
+    | El agente puede leerlo | No | Sí (riesgo de prompt injection) | No |
+    | Filtración en shell history | No | No | No |
+    | Sobrevive actualizaciones | Sí | Sí | Sí |
+    | Mejor para | API keys en VPS | Tokens de canales | Todos los secrets |
 
 ### Configurar SOUL.md (identidad del agente)
 

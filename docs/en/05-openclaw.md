@@ -400,7 +400,12 @@ nano ~/.openclaw/openclaw.json
   "agents": {
     "defaults": {
       "model": {
-        "primary": "kimi-coding/k2p5"
+        "primary": "your-provider/your-model",
+        "fallbacks": ["google/gemini-2.5-flash"]
+      },
+      "models": {
+        "your-provider/your-model": { "alias": "Primary Model" },
+        "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" }
       },
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
@@ -409,9 +414,35 @@ nano ~/.openclaw/openclaw.json
       "compaction": {
         "mode": "safeguard"
       },
-      "maxConcurrent": 4,
+      "maxConcurrent": 1,
       "subagents": {
-        "maxConcurrent": 8
+        "maxConcurrent": 1
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "dmPolicy": "allowlist",
+      "allowFrom": ["YOUR_TELEGRAM_USER_ID"]
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "google": {
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "apiKey": "${GOOGLE_API_KEY}",
+        "api": "openai-completions",
+        "models": [{
+          "id": "gemini-2.5-flash",
+          "name": "Gemini 2.5 Flash",
+          "reasoning": false,
+          "input": ["text", "image"],
+          "contextWindow": 1048576,
+          "maxTokens": 65535
+        }]
       }
     }
   },
@@ -428,22 +459,36 @@ nano ~/.openclaw/openclaw.json
     "mode": "local",
     "bind": "loopback",
     "auth": {
-      "mode": "token"
+      "mode": "token",
+      "token": "${GATEWAY_TOKEN}"
     },
     "tls": {},
     "tailscale": {
       "mode": "off"
     },
-    "nodes": {
-    }
+    "nodes": {}
   }
 }
 ```
+
+!!! tip "Model providers"
+    Add your chosen model provider to `models.providers`. Common options:
+
+    | Provider | `baseUrl` | `api` | Free tier |
+    |----------|-----------|-------|-----------|
+    | Google Gemini | `https://generativelanguage.googleapis.com/v1beta/openai` | `openai-completions` | Yes |
+    | Moonshot (Kimi K2.5) | `https://api.moonshot.ai/v1` | `openai-completions` | Yes |
+    | Kimi Code | `https://api.kimi.com/coding/` | `anthropic-messages` | Subscription |
+    | OpenAI | `https://api.openai.com/v1` | `openai-completions` | No |
+    | Anthropic | `https://api.anthropic.com` | `anthropic-messages` | No |
+
+    Set `"fallbacks"` in `agents.defaults.model` so the agent auto-switches if the primary provider is down.
 
 !!! danger "Critical security configuration"
     - `bind: "loopback"` — Only listens on localhost (never `0.0.0.0`)
     - `sandbox.mode: "off"` — Relies on systemd hardening for isolation (recommended for dedicated VPS). Use `"all"` for shared servers
     - `auth.mode: "token"` — Gateway access requires authentication token
+    - **All secrets use `${VAR_NAME}` references** — Never store tokens or API keys as plaintext in this file
     - `tools.deny: ["group:automation"]` — Blocks cron and gateway modification only. Do NOT deny `process` — skills need it to run scripts
     - `session.dmScope: "per-channel-peer"` — Isolates DM sessions to prevent context leakage
     - `tls: {}` — TLS enabled with defaults
@@ -457,75 +502,53 @@ nano ~/.openclaw/openclaw.json
 
     Starting with OpenClaw v2026.2.x, mode `"all"` replaces `"always"`.
 
-### Configure credentials with SecretRef (RECOMMENDED)
+### Configure secrets (API keys and tokens)
 
-Starting with OpenClaw v2026.3.x, the **SecretRef** mechanism allows managing credentials securely without plaintext `.env` files. Supports up to 64 targets.
+All sensitive values in `openclaw.json` use `${VAR_NAME}` references. The actual values are stored separately, never in the JSON config file.
+
+#### Method 1: systemd environment overrides (recommended for VPS)
+
+This is the most secure method for dedicated VPS deployments. Secrets are stored in a root-owned file that only systemd reads at startup.
 
 ```bash
-# Interactive secrets wizard (configures providers + maps refs)
-openclaw secrets configure
-
-# Audit secrets for plaintext leaks or unresolved refs
-openclaw secrets audit
-
-# Reload secrets at runtime (no restart needed)
-openclaw secrets reload
-
-# Use in openclaw.json with SecretRef
+sudo systemctl edit openclaw
 ```
 
-In `openclaw.json`, reference secrets like this:
+Add your API keys and tokens:
 
-```json
-{
-  "agent": {
-    "model": "anthropic/claude-sonnet-4-5",
-    "apiKey": { "$secretRef": "ANTHROPIC_API_KEY" }
-  }
-}
+```ini
+[Service]
+Environment="GOOGLE_API_KEY=your-google-api-key"
+Environment="MOONSHOT_API_KEY=sk-your-moonshot-key"
+Environment="GATEWAY_TOKEN=your-gateway-token"
 ```
 
-!!! success "SecretRef vs .env"
-    | Feature | SecretRef | .env |
-    |---|---|---|
-    | Storage | Encrypted on disk | Plaintext |
-    | Prompt injection risk | Low | High (agent can read the file) |
-    | Shell history leakage | No | Yes (if using `export`) |
-    | Rotation | `openclaw secrets set` | Edit file manually |
+Save and apply:
 
-### Alternative: .env file (legacy method)
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart openclaw
+```
 
-If you prefer the traditional method or your OpenClaw version does not support SecretRef:
+The override file is stored at `/etc/systemd/system/openclaw.service.d/override.conf` with root-only permissions.
+
+!!! warning "Do NOT add SystemCallFilter in the override"
+    Adding `SystemCallFilter` lines in `override.conf` causes `NAMESPACE` errors and prevents the service from starting. Only add `Environment` lines here.
+
+#### Method 2: .env file (for channel tokens)
+
+Some tokens (like Telegram bot token) can be stored in a `.env` file:
 
 ```bash
 nano ~/openclaw/.env
 ```
 
 ```bash
-# ============================================================
-# OpenClaw Environment Variables
-# NEVER version this file - chmod 600
-# ============================================================
+# Channel tokens
+TELEGRAM_BOT_TOKEN=your-bot-token
 
-# --- API Keys ---
-# Use only ONE of these options
-
-# Option 1: Anthropic (recommended)
-ANTHROPIC_API_KEY=sk-ant-...
-
-# Option 2: OpenAI
-# OPENAI_API_KEY=sk-...
-
-# Option 3: NVIDIA NIM (Kimi K2.5 free)
-# NVIDIA_API_KEY=nvapi-...
-
-# --- Channels (optional) ---
-# TELEGRAM_BOT_TOKEN=...
-# DISCORD_BOT_TOKEN=...
-# SLACK_BOT_TOKEN=...
-
-# --- Web search (recommended) ---
-# BRAVE_SEARCH_API_KEY=...
+# Additional API keys (if not using systemd method)
+# GOOGLE_API_KEY=your-key
 ```
 
 **Protect the file:**
@@ -533,24 +556,31 @@ ANTHROPIC_API_KEY=sk-ant-...
 ```bash
 chmod 600 ~/openclaw/.env
 chown openclaw:openclaw ~/openclaw/.env
-
-# Verify permissions
-ls -la ~/openclaw/.env
 ```
 
-**Expected output:**
+#### Method 3: SecretRef (OpenClaw native)
+
+OpenClaw v2026.3.x supports encrypted secrets via the interactive wizard:
+
+```bash
+# Interactive secrets wizard
+openclaw secrets configure
+
+# Audit for plaintext leaks
+openclaw secrets audit
+
+# Reload secrets at runtime (no restart needed)
+openclaw secrets reload
 ```
--rw------- 1 openclaw openclaw 512 Feb  1 10:00 /home/openclaw/openclaw/.env
-```
 
-!!! warning ".env file limitations"
-    Plaintext `.env` files are vulnerable to:
-
-    - **Prompt injection** — a compromised agent can try to read the file
-    - **Log leakage** — variables expand in shell history
-    - **Access by other processes** — any user process can read it
-
-    Use **SecretRef** when possible.
+!!! success "Secrets methods comparison"
+    | Feature | systemd override | .env file | SecretRef |
+    |---|---|---|---|
+    | Storage | Root-owned file | User-owned plaintext | Encrypted on disk |
+    | Agent can read it | No | Yes (prompt injection risk) | No |
+    | Shell history leakage | No | No | No |
+    | Survives OpenClaw updates | Yes | Yes | Yes |
+    | Best for | API keys on VPS | Channel tokens | All secrets |
 
 ### Configure SOUL.md (agent identity)
 
