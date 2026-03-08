@@ -1073,22 +1073,22 @@ Después de instalar el skill `imap-smtp-email`, configura las credenciales.
 **Paso 1 — Guardar credenciales con SecretRef (recomendado):**
 
 ```bash
-openclaw secrets set IMAP_HOST
+openclaw secrets configure IMAP_HOST
 # Introduce: imap.tu-proveedor.com
 
-openclaw secrets set IMAP_USER
+openclaw secrets configure IMAP_USER
 # Introduce: tu@email.com
 
-openclaw secrets set IMAP_PASS
+openclaw secrets configure IMAP_PASS
 # Introduce: tu-contraseña-de-email
 
-openclaw secrets set SMTP_HOST
+openclaw secrets configure SMTP_HOST
 # Introduce: smtp.tu-proveedor.com
 
-openclaw secrets set SMTP_USER
+openclaw secrets configure SMTP_USER
 # Introduce: tu@email.com
 
-openclaw secrets set SMTP_PASS
+openclaw secrets configure SMTP_PASS
 # Introduce: tu-contraseña-de-email
 
 # Verifica que todos los secretos estén guardados

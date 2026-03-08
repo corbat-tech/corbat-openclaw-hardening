@@ -202,7 +202,7 @@ A partir de v2026.3.x, OpenClaw incluye **SecretRef** para gestión segura de cr
 
 ```bash
 # Almacenar API key de forma segura (cifrada en disco)
-openclaw secrets set ANTHROPIC_API_KEY
+openclaw secrets configure ANTHROPIC_API_KEY
 # Introduce el valor de forma interactiva (no se muestra en pantalla)
 
 # Listar secrets almacenados

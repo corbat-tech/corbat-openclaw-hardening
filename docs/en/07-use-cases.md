@@ -1,6 +1,6 @@
 # 7. Use cases & tools
 
-> **TL;DR**: Practical configurations for different use cases, recommended tools, operational security tips, and guidance for getting the most out of OpenClaw once installed.
+> **TL;DR**: Practical configurations for different use cases. All share the same base `openclaw.json` from section 5 — behavior is controlled via SOUL.md, not tool schema.
 
 > **Estimated time**: 20-30 minutes (depending on chosen configuration)
 
@@ -9,16 +9,30 @@
 ## Prerequisites
 
 - [ ] Section 6 (LLM APIs) completed
-- [ ] OpenClaw running with sandbox mode `"all"`
+- [ ] OpenClaw running with the configuration from section 5
 
 ## Objectives
 
 By the end of this section you will have:
 
-- Configuration adapted to your use case
-- Tools and channels configured
-- Output filtering to prevent data leakage
+- SOUL.md adapted to your use case
+- Workspace structure organized
 - Operational security tips applied
+
+---
+
+## How use case configs work in OpenClaw
+
+!!! info "SOUL.md controls behavior, openclaw.json controls access"
+    A common misconception is that you configure tool restrictions per-tool in `openclaw.json` (e.g., `"shell": { "enabled": false }`). **This is NOT how OpenClaw works.**
+
+    In OpenClaw:
+
+    - **`openclaw.json`** controls which tools are *available* via `tools.profile` and `tools.deny` — this is the same for all use cases (configured in section 5)
+    - **`SOUL.md`** controls how the agent *behaves* — this is where you define per-use-case restrictions, capabilities, and guidelines
+    - **MCP servers** extend capabilities with external integrations (GitHub, databases, etc.)
+
+    The base `openclaw.json` from section 5 gives the agent access to all tools except `gateway`. **Use SOUL.md to tell the agent what it should and shouldn't do.**
 
 ---
 
@@ -48,11 +62,11 @@ By the end of this section you will have:
 
 ### Secure configuration principles
 
-1. **Start with everything disabled** -- enable only what you need
-2. **Use allowlists, never denylists** as the only control
+1. **Define strict limits in SOUL.md** — the agent follows behavioral constraints
+2. **Use dedicated accounts** for every external service
 3. **Review the code of every skill** before installing it (remember: 20% of ClawHub was malicious)
 4. **Run `openclaw security audit`** after every change
-5. **Enable human-in-the-loop** for irreversible actions
+5. **Enable human-in-the-loop** via SOUL.md instructions for irreversible actions
 
 ---
 
@@ -62,25 +76,25 @@ By the end of this section you will have:
 
 | Channel | Configuration | Security notes |
 |---------|--------------|----------------|
-| **Telegram** | Bot via @BotFather | Recommended: use `dmPolicy: "pairing"` |
+| **Telegram** | Bot via @BotFather | Use `dmPolicy: "allowlist"` with `allowFrom` |
 | **WhatsApp** | Via WhatsApp Business API | Requires a dedicated number |
 | **Discord** | Bot with limited permissions | Restrict to specific channels |
 | **Slack** | App with minimal scopes | Only necessary channels |
 | **Signal** | Via Signal CLI | More private, more complex to configure |
-| **Email** | Via IMAP/SMTP | Use a dedicated account (see above) |
+| **Email** | Via himalaya skill (IMAP/SMTP) | Use a dedicated account (see above) |
 
-### Integrated tools
+### Tools available via profile "full"
 
-| Tool | Function | Risk | Recommendation |
-|------|----------|------|----------------|
-| `filesystem` | Read/write files | Medium | Restrict to workspace |
-| `git` | Git operations | Medium | Read-only by default |
-| `http_client` | HTTP requests | High | Strict domain allowlist |
-| `browser` | Web browsing | Very high | Disabled by default |
-| `shell` | Command execution | Very high | Disabled by default |
-| `email` | Send/receive email | High | Dedicated account only |
-| `calendar` | Calendar management | Medium | Read-only preferred |
-| `pdf` | PDF analysis | Low | New in v2026.3.2 |
+| Tool | Group | Function | Risk mitigation |
+|------|-------|----------|-----------------|
+| `read`, `write`, `edit`, `apply_patch` | `group:fs` | File operations | Restricted to workspace via systemd `ReadWritePaths` |
+| `exec`, `bash`, `process` | `group:runtime` | Command execution | Systemd `CapabilityBoundingSet`, `NoNewPrivileges` |
+| `web_search`, `web_fetch` | `group:web` | Web search and fetch | Requires API key (Gemini) |
+| `browser`, `canvas` | `group:ui` | Web browsing, visual content | SOUL.md guidelines |
+| `sessions_*`, `session_status` | `group:sessions` | Sub-agent sessions | Controlled by `maxConcurrent` |
+| `memory_search`, `memory_get` | `group:memory` | Persistent memory | Agent-scoped |
+| `cron` | individual | Scheduled tasks | SOUL.md approval rules |
+| `gateway` | individual | Gateway config | **DENIED** — security risk |
 
 ### MCP servers (Model Context Protocol)
 
@@ -113,56 +127,13 @@ Ideal for freelancers and SMBs that need to organize documents, manage tasks, an
 
 ### Configuration
 
-```json
-{
-  "agents": {
-    "defaults": {
-      "workspace": "/home/openclaw/openclaw/workspace",
-      "sandbox": { "mode": "all" }
-    }
-  },
-
-  "tools": {
-    "filesystem": {
-      "enabled": true,
-      "allowed_paths": [
-        "/home/openclaw/openclaw/workspace/documents",
-        "/home/openclaw/openclaw/workspace/crm",
-        "/home/openclaw/openclaw/workspace/output"
-      ],
-      "allowed_operations": ["read", "write", "list", "create_directory", "move", "copy"],
-      "denied_operations": ["delete_recursive", "change_permissions"],
-      "max_file_size_mb": 50
-    },
-
-    "email": {
-      "enabled": true,
-      "account": "my-openclaw@proton.me",
-      "allowed_operations": ["read", "draft"],
-      "denied_operations": ["send", "delete", "forward"],
-      "require_approval": ["send"]
-    },
-
-    "calendar": {
-      "enabled": true,
-      "allowed_operations": ["read", "create_event"],
-      "denied_operations": ["delete_event", "modify_event"],
-      "require_approval": ["create_event"]
-    },
-
-    "http_client": {
-      "enabled": true,
-      "allowlist": ["api.notion.com", "api.airtable.com"]
-    },
-
-    "git": { "enabled": false },
-    "shell": { "enabled": false },
-    "browser": { "enabled": false }
-  }
-}
-```
+No changes needed to `openclaw.json` — the base config from section 5 works for all use cases. Behavior is controlled via SOUL.md:
 
 ### SOUL.md for business assistant
+
+```bash
+nano ~/openclaw/workspace/SOUL.md
+```
 
 ```markdown
 # Business Assistant
@@ -174,15 +145,18 @@ You are a business administration and organization assistant.
 - Summarize and organize documents (invoices, contracts, reports)
 - Manage a CRM database in CSV/JSON files
 - Draft emails (NEVER send without approval)
-- Create calendar events
+- Create calendar events via cron
 - Generate reports
+- Search the web for business information
 
 ## Strict limits
 - Do not send emails without explicit user confirmation
 - Do not delete files or customer data
 - Do not access information outside the workspace
-- Do not make API calls not included in the allowlist
+- Do not execute shell commands unless explicitly asked
+- Do not push to any git repository
 - Redact any sensitive data (national ID numbers, account numbers, etc.)
+- Always ask before performing any irreversible action
 ```
 
 ### Workspace structure
@@ -217,58 +191,6 @@ EOF
 
 For developers who want an agent that reviews code, generates documentation, analyzes repos, and helps with development tasks.
 
-### Configuration
-
-```json
-{
-  "agents": {
-    "defaults": {
-      "workspace": "/home/openclaw/openclaw/workspace",
-      "sandbox": { "mode": "all" }
-    }
-  },
-
-  "tools": {
-    "filesystem": {
-      "enabled": true,
-      "allowed_paths": ["/home/openclaw/openclaw/workspace"],
-      "allowed_operations": ["read", "write", "list", "create_directory"],
-      "denied_operations": ["delete_recursive", "change_permissions"]
-    },
-
-    "git": {
-      "enabled": true,
-      "allowed_operations": ["clone", "status", "diff", "log", "branch", "checkout", "commit"],
-      "denied_operations": ["push", "force-push", "reset --hard", "clean"],
-      "require_approval": ["commit"]
-    },
-
-    "http_client": {
-      "enabled": true,
-      "allowlist": [
-        "api.github.com",
-        "api.gitlab.com",
-        "registry.npmjs.org",
-        "pypi.org"
-      ]
-    },
-
-    "shell": {
-      "enabled": true,
-      "allowed_commands": ["npm test", "npm run lint", "python -m pytest", "make test"],
-      "denied_commands": ["rm -rf", "sudo", "chmod", "curl", "wget"],
-      "sandbox": "all"
-    },
-
-    "email": { "enabled": false },
-    "browser": { "enabled": false }
-  }
-}
-```
-
-!!! warning "Shell enabled with restrictions"
-    In this use case, shell is enabled but **strictly limited** to testing and linting commands. Every execution is containerized in a sandbox. Never enable `"allowed_commands": ["*"]`.
-
 ### SOUL.md for programming agent
 
 ```markdown
@@ -280,12 +202,13 @@ You are a software development assistant specialized in code review, testing, an
 ## Capabilities
 - Clone and analyze repositories
 - Review code and suggest improvements
-- Run tests and report results
+- Run tests (npm test, pytest, make test) and report results
 - Generate technical documentation
 - Create commits (with approval)
+- Search for documentation and APIs online
 
 ## Strict limits
-- Do not push to remote repositories
+- Do not push to remote repositories without explicit approval
 - Do not execute destructive commands (rm -rf, reset --hard)
 - Do not install dependencies without approval
 - Do not access files outside the workspace
@@ -336,99 +259,73 @@ openclaw agent --message "Review the changes in the feature/auth branch and sugg
 
 For researchers, writers, and professionals who need to search, summarize, and organize information.
 
-### Configuration
+### SOUL.md for research assistant
 
-```json
-{
-  "tools": {
-    "filesystem": {
-      "enabled": true,
-      "allowed_paths": [
-        "/home/openclaw/openclaw/workspace/research",
-        "/home/openclaw/openclaw/workspace/notes",
-        "/home/openclaw/openclaw/workspace/output"
-      ],
-      "allowed_operations": ["read", "write", "list", "create_directory"]
-    },
+```markdown
+# Research Assistant
 
-    "http_client": {
-      "enabled": true,
-      "allowlist": [
-        "api.semanticscholar.org",
-        "export.arxiv.org",
-        "api.crossref.org",
-        "api.openalex.org"
-      ]
-    },
+## Identity
+You are a research assistant specialized in finding, summarizing, and organizing academic and technical information.
 
-    "pdf": {
-      "enabled": true,
-      "max_pages": 100
-    },
+## Capabilities
+- Search the web for papers, articles, and documentation
+- Fetch and summarize web pages and PDFs
+- Organize research notes by topic in the workspace
+- Generate bibliographies and citation lists
+- Compare and synthesize information from multiple sources
 
-    "git": { "enabled": false },
-    "shell": { "enabled": false },
-    "browser": { "enabled": false },
-    "email": { "enabled": false }
-  }
-}
+## Strict limits
+- Do not execute shell commands unless needed for file organization
+- Do not modify files outside the workspace research directories
+- Do not send any communications without approval
+- Always cite sources when summarizing information
+- Do not access or store personal data
+```
+
+### Workspace structure
+
+```bash
+mkdir -p ~/openclaw/workspace/{research,notes,output,bibliography}
 ```
 
 ### Typical tasks
 
-- "Search for recent papers on [topic] in Semantic Scholar"
-- "Summarize this 50-page PDF and extract the key points"
+- "Search for recent papers on [topic] using web search"
+- "Fetch and summarize this web page: [URL]"
 - "Organize my research notes by topic"
-- "Generate a bibliography in APA format from these papers"
+- "Generate a bibliography in APA format from these notes"
 - "Compare the conclusions of these 3 articles"
 
 ---
 
 ## Use case 4: Personal automation and productivity
 
-### Profile: Personal assistant via Telegram/WhatsApp
+### Profile: Personal assistant via Telegram
 
 For users who want an assistant accessible from their phone for daily tasks.
 
-### Configuration
+### SOUL.md for personal assistant
 
-```json
-{
-  "dmPolicy": "pairing",
+```markdown
+# Personal Assistant
 
-  "channels": {
-    "telegram": {
-      "enabled": true,
-      "bot_token": { "$secretRef": "TELEGRAM_BOT_TOKEN" }
-    }
-  },
+## Identity
+You are a personal productivity assistant accessible via Telegram.
 
-  "tools": {
-    "filesystem": {
-      "enabled": true,
-      "allowed_paths": ["/home/openclaw/openclaw/workspace"],
-      "allowed_operations": ["read", "write", "list", "create_directory"]
-    },
+## Capabilities
+- Create and manage reminders via cron
+- Summarize documents and web pages
+- Search the web for information
+- Manage lists and notes in the workspace
+- Read and draft emails (via himalaya skill, if installed)
 
-    "calendar": {
-      "enabled": true,
-      "allowed_operations": ["read", "create_event"],
-      "require_approval": ["create_event"]
-    },
-
-    "http_client": {
-      "enabled": true,
-      "allowlist": [
-        "api.openweathermap.org",
-        "api.telegram.org"
-      ]
-    },
-
-    "shell": { "enabled": false },
-    "browser": { "enabled": false },
-    "git": { "enabled": false }
-  }
-}
+## Strict limits
+- Do not send emails without explicit approval
+- Do not execute shell commands unless needed for scheduled tasks
+- Do not access files outside the workspace
+- Do not push to git repositories
+- Always confirm before creating calendar events or reminders
+- Never share personal information in responses
 ```
 
 ### Get Telegram token
@@ -436,16 +333,17 @@ For users who want an assistant accessible from their phone for daily tasks.
 1. Talk to [@BotFather](https://t.me/BotFather) on Telegram
 2. Send `/newbot`
 3. Follow the instructions to create the bot
-4. Store the token with SecretRef:
+4. Store the token:
    ```bash
-   openclaw secrets set TELEGRAM_BOT_TOKEN
+   openclaw secrets configure
+   # Follow the interactive wizard to add TELEGRAM_BOT_TOKEN
    ```
 
 ### Typical tasks via Telegram
 
 - "Remind me tomorrow at 9 that I have a meeting"
 - "Summarize this document I'm sending you"
-- "What do I have on the calendar this week?"
+- "Search the web for [topic] and give me a summary"
 - "Create a shopping list based on this week's recipes"
 
 ---
@@ -456,96 +354,55 @@ For users who want an assistant accessible from their phone for daily tasks.
 
 For system administrators who want an agent that monitors and alerts on issues.
 
-### Configuration
+### SOUL.md for DevOps assistant
 
-```json
-{
-  "tools": {
-    "filesystem": {
-      "enabled": true,
-      "allowed_paths": [
-        "/home/openclaw/openclaw/workspace",
-        "/var/log"
-      ],
-      "allowed_operations": ["read", "list"]
-    },
+```markdown
+# DevOps Assistant
 
-    "shell": {
-      "enabled": true,
-      "allowed_commands": [
-        "df -h", "free -h", "uptime", "top -bn1",
-        "systemctl status *", "journalctl -n 50 -u *",
-        "docker ps", "docker logs *",
-        "ss -tlnp", "fail2ban-client status *"
-      ],
-      "denied_commands": ["rm", "sudo", "chmod", "kill", "reboot", "shutdown"],
-      "sandbox": "all"
-    },
+## Identity
+You are an infrastructure monitoring assistant. Your primary role is to observe, analyze, and alert — NOT to modify systems.
 
-    "http_client": {
-      "enabled": true,
-      "allowlist": ["api.telegram.org"]
-    },
+## Capabilities
+- Check system status: disk, memory, CPU, uptime
+- Read system logs (journalctl, /var/log)
+- Check service status (systemctl)
+- Check network connections (ss)
+- Send alerts via Telegram when thresholds are exceeded
+- Schedule monitoring checks via cron
 
-    "git": { "enabled": false },
-    "browser": { "enabled": false }
-  }
-}
+## Strict limits
+- NEVER execute destructive commands (rm, kill, reboot, shutdown)
+- NEVER use sudo
+- NEVER modify system configuration
+- NEVER change file permissions
+- NEVER install or remove packages
+- Only READ system information — never WRITE to system paths
+- Ask before restarting any service
 ```
 
 !!! tip "Automatic alerts"
-    Combine this use case with a Telegram channel to receive alerts:
-    "If disk usage exceeds 80%, notify me via Telegram"
+    Combine this use case with a Telegram channel and cron to receive alerts:
+    "Schedule a check every 30 minutes — if disk usage exceeds 80%, notify me via Telegram"
 
 ---
 
-## Prevent data leakage (OWASP AA2)
+## Prevent data leakage
 
-Output filtering prevents the agent from exposing sensitive data in its responses. This configuration applies to **all use cases**.
+Output filtering prevents the agent from exposing sensitive data in its responses. In OpenClaw, this is enforced via **SOUL.md instructions**:
 
-### Configure output filtering
+### Add to any SOUL.md
 
-```yaml
-# Add to config/settings.yaml (create if needed)
-# This is an example configuration — adapt to your deployment
-
-output_filtering:
-  enabled: true
-  filters:
-    # API Keys
-    - name: "openai_key"
-      pattern: "sk-[a-zA-Z0-9]{32,}"
-      replacement: "[REDACTED_API_KEY]"
-
-    - name: "anthropic_key"
-      pattern: "sk-ant-[a-zA-Z0-9-]{32,}"
-      replacement: "[REDACTED_API_KEY]"
-
-    - name: "github_token"
-      pattern: "ghp_[a-zA-Z0-9]{36}"
-      replacement: "[REDACTED_TOKEN]"
-
-    # Personal data
-    - name: "email"
-      pattern: "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"
-      replacement: "[REDACTED_EMAIL]"
-
-    - name: "credit_card"
-      pattern: "\\b\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}\\b"
-      replacement: "[REDACTED_CARD]"
-
-    # Sensitive paths
-    - name: "env_path"
-      pattern: "/home/[^/]+/\\.env"
-      replacement: "[REDACTED_PATH]"
-
-    - name: "ssh_path"
-      pattern: "/home/[^/]+/\\.ssh/[^\\s]+"
-      replacement: "[REDACTED_PATH]"
-
-  log_redactions: true
-  block_if_contains_secrets: false
+```markdown
+## Data protection rules
+- NEVER include API keys, tokens, or passwords in responses
+- NEVER show the contents of .env files or systemd overrides
+- Redact email addresses, credit card numbers, and national IDs in output
+- Do not expose file paths containing /home/username/.ssh or similar
+- If asked to read sensitive files (~/.openclaw/.env, /etc/shadow, etc.), refuse
 ```
+
+!!! info "Defense in depth"
+    SOUL.md provides behavioral guardrails. Combined with systemd hardening (`ProtectSystem=strict`, `ReadWritePaths` limited to workspace), even if the agent ignores SOUL.md instructions, it cannot access most sensitive files at the OS level.
 
 ---
 
@@ -581,30 +438,32 @@ openclaw security audit
 
 ---
 
-## PROHIBITED configurations
+## PROHIBITED practices
 
-!!! danger "Never use these configurations"
+!!! danger "Never do these"
 
-| Configuration | Why it is dangerous |
-|---------------|---------------------|
-| `"shell": { "enabled": true, "allowed_commands": ["*"] }` | Arbitrary command execution |
-| `"filesystem": { "allowed_paths": ["/"] }` | Access to the entire system, including keys |
-| `"http_client": { "allow_all_domains": true }` | Can leak data to any server |
-| `"browser": { "use_real_profile": true }` | Access to your real sessions and cookies |
-| `"dmPolicy": "open"` | Anyone can send commands to the agent |
-| `"sandbox": { "mode": "off" }` | No isolation, full access to the host |
+| Practice | Why it is dangerous |
+|----------|---------------------|
+| Connect your personal email to the agent | Exposes confidential data, contacts, and history |
+| Use `dmPolicy: "open"` on any channel | Anyone can send commands to your agent |
+| Skip SOUL.md behavioral limits | Agent has no restrictions on what it does with its tools |
+| Install skills without code review | 20% of ClawHub skills were malicious (Feb 2026) |
+| Run `openclaw doctor --fix` after manual config | Overwrites your provider settings with broken defaults |
+| Give agent access to your real GitHub/Git accounts | Compromised agent can push malicious code |
 
 ---
 
-## Configuration summary by profile
+## Configuration summary by use case
 
-| Profile | Shell | Filesystem | Git | HTTP | Email | Telegram |
-|---------|-------|------------|-----|------|-------|----------|
-| Business/CRM | - | workspace/ | - | CRM APIs | Drafts only | Optional |
-| Programming | Limited | workspace/ | Read+commit | GitHub | - | - |
-| Research | - | research/ | - | Paper APIs | - | - |
-| Personal | - | workspace/ | - | Limited | - | Dedicated bot |
-| DevOps | Read-only | logs/ | - | Telegram | - | Alerts |
+All use cases share the same base `openclaw.json` (section 5). Differences are in SOUL.md:
+
+| Use case | Shell use | Web access | File scope | Key SOUL.md rule |
+|----------|-----------|------------|------------|------------------|
+| Business/CRM | Minimal | Web search | workspace/ | No emails without approval |
+| Programming | Tests, git | GitHub API | workspace/ | No push without approval |
+| Research | Minimal | Web search + fetch | workspace/ | Always cite sources |
+| Personal | Scheduled tasks | Web search | workspace/ | Confirm before actions |
+| DevOps | Read-only monitoring | Alerts only | Logs (read) | NEVER destructive commands |
 
 ---
 

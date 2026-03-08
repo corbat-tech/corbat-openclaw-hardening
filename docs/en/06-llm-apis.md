@@ -202,7 +202,7 @@ Starting from v2026.3.x, OpenClaw includes **SecretRef** for secure credential m
 
 ```bash
 # Store API key securely (encrypted on disk)
-openclaw secrets set ANTHROPIC_API_KEY
+openclaw secrets configure ANTHROPIC_API_KEY
 # Enter the value interactively (not shown on screen)
 
 # List stored secrets
