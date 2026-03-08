@@ -70,3 +70,66 @@ AGENTS.md            # Agentic self-configuration guide for OpenClaw agents
 - Google Gemini API: use `openai-completions` api with baseUrl `https://generativelanguage.googleapis.com/v1beta/openai` and `compat.supportsStore: false`
 - Channels: Telegram with allowlist
 - Email: Gmail with app password via himalaya skill
+
+## Agent Deployment Guide
+
+Step-by-step reference for an AI agent assisting a user with OpenClaw deployment on a fresh VPS.
+
+### Deployment flow (step by step)
+
+1. **Provision VPS** — User creates Hetzner CPX22 (or equivalent), Ubuntu 24.04, pasting cloud-init from section 02 during creation.
+2. **First SSH** — User connects as `root` via public IP, downloads `harden.sh` and `install-openclaw.sh` from this repo.
+3. **Run harden.sh** — Executes sections 3-4: creates `openclaw` user, hardens SSH, configures UFW, installs Tailscale.
+4. **Approve Tailscale** — User opens the auth URL printed by the script and approves the node in the Tailscale admin console.
+5. **Reconnect via Tailscale** — User disconnects public SSH, reconnects as `openclaw@<tailscale-ip>`. Disable public SSH in Hetzner firewall.
+6. **Run install-openclaw.sh** — Executes section 5: installs OpenClaw, generates `openclaw.json`, creates systemd unit.
+7. **Configure API keys** — Run `sudo systemctl edit openclaw` and add env vars in the `[Service]` section (see Required env vars below).
+8. **Start service** — `sudo systemctl start openclaw && sudo journalctl -u openclaw -f` — verify clean startup, no auth errors.
+9. **Test Telegram** — If Telegram channel configured, send a test message to the bot and confirm response.
+10. **Run verification** — Execute the final checklist script or manually walk through section 10.
+
+### Config precedence (important for debugging)
+
+```
+auth-profiles.json > process.env (systemd) > ~/.openclaw/.env > openclaw.json env.vars
+```
+
+If auth fails despite correct systemd env vars, check `~/.openclaw/agents/main/agent/auth-profiles.json` for stale keys.
+
+### Required env vars
+
+| Variable | Where | Purpose |
+|---|---|---|
+| `KIMI_API_KEY` | systemd override | Kimi Coding LLM (primary model) |
+| `GOOGLE_API_KEY` | systemd override | Google Gemini LLM completions |
+| `GEMINI_API_KEY` | systemd override | Gemini web search/grounding (same value as GOOGLE_API_KEY) |
+| `GATEWAY_TOKEN` | systemd override | OpenClaw gateway authentication |
+| `TELEGRAM_BOT_TOKEN` | `~/.openclaw/.env` | Telegram channel (if configured) |
+
+### Quick diagnostic commands
+
+```bash
+# Service status and recent logs
+sudo systemctl status openclaw
+sudo journalctl -u openclaw -n 50 --no-pager
+
+# Live log stream (use during startup/testing)
+sudo journalctl -u openclaw -f
+
+# Check effective env vars reaching the process
+sudo cat /proc/$(pidof openclaw)/environ | tr '\0' '\n' | sort
+
+# Verify config files
+cat ~/.openclaw/openclaw.json | jq .
+cat ~/.openclaw/agents/main/agent/auth-profiles.json
+
+# Reset stale auth profiles
+echo '{}' > ~/.openclaw/agents/main/agent/auth-profiles.json
+
+# Restart after config changes
+sudo systemctl daemon-reload && sudo systemctl restart openclaw
+
+# Tailscale connectivity
+tailscale status
+tailscale ping <peer>
+```

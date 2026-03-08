@@ -144,30 +144,41 @@ case "$PROVIDER_CHOICE" in
     1)
         PROVIDER="kimi-coding"
         PROVIDER_NAME="Kimi for Coding"
-        MODEL_ID="k2p5"
-        MODEL_PRIMARY="kimi-coding/k2p5"
+        MODEL_ID="kimi-for-coding"
+        MODEL_PRIMARY="kimi-coding/kimi-for-coding"
+        MODEL_JSON='{ "primary": "kimi-coding/kimi-for-coding", "fallbacks": ["google/gemini-2.5-flash"] }'
         AUTH_MODE="api_key"
         PROVIDER_CONFIG=$(cat <<'PCONF'
     "providers": {
       "kimi-coding": {
         "baseUrl": "https://api.kimi.com/coding",
         "api": "anthropic-messages",
+        "headers": { "User-Agent": "claude-code/0.1.0" },
         "models": [
           {
-            "id": "k2p5",
+            "id": "kimi-for-coding",
             "name": "Kimi for Coding",
-            "reasoning": true,
-            "input": ["text", "image"],
+            "reasoning": false,
+            "input": ["text"],
             "cost": { "input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0 },
             "contextWindow": 262144,
             "maxTokens": 32768
+          }
+        ]
+      },
+      "google": {
+        "models": [
+          {
+            "id": "gemini-2.5-flash",
+            "name": "Gemini 2.5 Flash",
+            "maxTokens": 65536
           }
         ]
       }
     }
 PCONF
         )
-        info "Selected: Kimi Code (k2p5)"
+        info "Selected: Kimi Code (kimi-for-coding)"
         info "You'll need to run 'openclaw onboard' after to enter your API key,"
         info "or set it manually with 'openclaw models auth add'."
         ;;
@@ -176,6 +187,7 @@ PCONF
         PROVIDER_NAME="Claude"
         MODEL_ID="claude-sonnet-4-5-20250514"
         MODEL_PRIMARY="anthropic/claude-sonnet-4-5-20250514"
+        MODEL_JSON='{ "primary": "anthropic/claude-sonnet-4-5-20250514" }'
         AUTH_MODE="api_key"
         PROVIDER_CONFIG='"providers": {}'
         info "Selected: Anthropic. Run 'openclaw models auth add' after to set your API key."
@@ -185,6 +197,7 @@ PCONF
         PROVIDER_NAME="GPT"
         MODEL_ID="gpt-4o"
         MODEL_PRIMARY="openai/gpt-4o"
+        MODEL_JSON='{ "primary": "openai/gpt-4o" }'
         AUTH_MODE="api_key"
         PROVIDER_CONFIG='"providers": {}'
         info "Selected: OpenAI. Run 'openclaw models auth add' after to set your API key."
@@ -192,6 +205,7 @@ PCONF
     4)
         PROVIDER="none"
         MODEL_PRIMARY="change-me/model"
+        MODEL_JSON='{ "primary": "change-me/model" }'
         PROVIDER_CONFIG='"providers": {}'
         info "Skipped. Configure manually with 'openclaw configure' or edit ~/.openclaw/openclaw.json"
         ;;
@@ -199,6 +213,7 @@ PCONF
         error "Invalid selection. Defaulting to skip."
         PROVIDER="none"
         MODEL_PRIMARY="change-me/model"
+        MODEL_JSON='{ "primary": "change-me/model" }'
         PROVIDER_CONFIG='"providers": {}'
         ;;
 esac
@@ -244,6 +259,7 @@ if [ -n "$TELEGRAM_TOKEN" ]; then
       "botToken": "${TELEGRAM_TOKEN}",
       "dmPolicy": "${TELEGRAM_DM_POLICY}",
       ${ALLOW_FROM}
+      "streaming": "partial",
       "groupPolicy": "allowlist"
     }
   },
@@ -276,7 +292,11 @@ cat > ~/.openclaw/openclaw.json << OCEOF
       "${PROVIDER}:default": {
         "provider": "${PROVIDER}",
         "mode": "${AUTH_MODE:-api_key}"
-      }
+      }$(if [ "${PROVIDER}" = "kimi-coding" ]; then echo ',
+      "google:default": {
+        "provider": "google",
+        "mode": "api_key"
+      }'; fi)
     }
   },
   "models": {
@@ -285,9 +305,7 @@ cat > ~/.openclaw/openclaw.json << OCEOF
   },
   "agents": {
     "defaults": {
-      "model": {
-        "primary": "${MODEL_PRIMARY}"
-      },
+      "model": ${MODEL_JSON},
       "workspace": "/home/openclaw/openclaw/workspace",
       "sandbox": {
         "mode": "off"
@@ -295,16 +313,26 @@ cat > ~/.openclaw/openclaw.json << OCEOF
       "compaction": {
         "mode": "safeguard"
       },
-      "maxConcurrent": 4,
+      "maxConcurrent": 1,
       "subagents": {
-        "maxConcurrent": 8
+        "maxConcurrent": 3
       }
     }
   },
   "tools": {
-    "profile": "coding",
-    "allow": ["group:web"],
-    "deny": ["group:automation"]
+    "profile": "full",
+    "deny": ["gateway"]$(if [ "${PROVIDER}" = "kimi-coding" ]; then echo ',
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "gemini",
+        "gemini": {
+          "apiKey": "\${GEMINI_API_KEY}",
+          "model": "gemini-2.5-flash"
+        }
+      },
+      "fetch": { "enabled": true }
+    }'; fi)
   },
   "messages": {
     "ackReactionScope": "group-mentions"
@@ -520,16 +548,25 @@ echo "  Gateway token:  ${GATEWAY_TOKEN}"
 echo "  Sandbox:        off (systemd hardening provides isolation)"
 echo "  Docker:         $(docker --version 2>/dev/null || echo 'not found')"
 echo "  Bind:           loopback only"
-echo "  Tools:          coding + web (automation/process blocked)"
+echo "  Tools:          full (gateway denied)"
 if [ -n "$TELEGRAM_TOKEN" ]; then
-echo "  Telegram:       configured (dmPolicy: pairing)"
+echo "  Telegram:       configured (dmPolicy: ${TELEGRAM_DM_POLICY})"
 fi
 echo ""
 echo "  SAVE YOUR GATEWAY TOKEN — you'll need it for remote access."
 echo ""
 echo "  NEXT STEPS:"
+if [ "${PROVIDER}" = "kimi-coding" ]; then
+echo "  1. Configure API keys via systemd override:"
+echo "     sudo systemctl edit openclaw"
+echo "     # Add under [Service]:"
+echo "     #   Environment=\"KIMI_API_KEY=your-key\""
+echo "     #   Environment=\"GOOGLE_API_KEY=your-key\""
+echo "     #   Environment=\"GEMINI_API_KEY=your-google-key\"  # same as GOOGLE_API_KEY"
+else
 echo "  1. Configure your API key:"
 echo "     openclaw models auth add"
+fi
 echo "  2. Start the service:"
 echo "     sudo systemctl start openclaw"
 echo "  3. Check status (wait ~2 min for gateway to start):"
