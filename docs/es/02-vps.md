@@ -91,6 +91,7 @@ Al terminar esta sección tendrás:
 | **Outbound** | TCP | 993 | Any | IMAP (lectura de email) |
 | **Outbound** | UDP | 41641 | Any | Tailscale (WireGuard) |
 | **Outbound** | UDP | 3478 | Any | STUN (Tailscale NAT traversal) |
+| **Outbound** | TCP | 53 | Any | DNS (fallback TCP) |
 | **Outbound** | UDP | 53 | Any | DNS |
 
 !!! info "Inbound deny-all por defecto"

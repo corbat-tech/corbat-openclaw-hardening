@@ -42,8 +42,8 @@ AGENTS.md            # Agentic self-configuration guide for OpenClaw agents
 - **Tools deny list**: Only deny `["group:automation"]` (cron + gateway). Do NOT deny `process` — skills need it to execute scripts
 - **Skills require `npm install`**: OpenClaw marks skills "ready" based on SKILL.md presence, but does NOT auto-install npm dependencies
 - **Root-level keys**: `sandbox`, `dmPolicy`, `security`, `tools.blocked` at root level are NOT recognized — they go inside `agents.defaults` or per-channel config
-- **Model compatibility**: `kimi-coding/k2p5` does NOT execute tool calls (known bug). Use `moonshot/kimi-k2.5` or `google/gemini-2.5-flash` instead
-- **Hetzner Cloud Firewall**: Must include outbound TCP 587 (SMTP), TCP 993 (IMAP), UDP 3478 (STUN) in addition to 443, 80, 41641, 53
+- **Model compatibility**: `kimi-coding/k2p5` does NOT execute tool calls (known bug). `moonshot/kimi-k2.5` works correctly with tools (exec, browser, etc.). `google/gemini-2.5-flash` also works
+- **Hetzner Cloud Firewall**: Must include outbound TCP 587 (SMTP), TCP 993 (IMAP), UDP 3478 (STUN), TCP 53 (DNS fallback) in addition to 443, 80, 41641, UDP 53
 - **Service name**: The systemd service is `openclaw.service`, NOT `openclaw-gateway.service`
 
 ### Script conventions
