@@ -485,6 +485,9 @@ info "=== Setting file permissions ==="
 
 chmod 700 ~/.openclaw
 chmod 600 ~/.openclaw/*.json 2>/dev/null || true
+# NOTE: Our guide recommends storing all secrets (including TELEGRAM_BOT_TOKEN)
+# in /etc/openclaw/env (mode 600, root:openclaw) loaded via systemd EnvironmentFile.
+# This chmod is kept as a safety measure in case OpenClaw creates ~/.openclaw/.env.
 chmod 600 ~/.openclaw/.env 2>/dev/null || true
 
 # =============================================================================

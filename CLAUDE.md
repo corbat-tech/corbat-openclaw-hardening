@@ -35,7 +35,7 @@ AGENTS.md            # Agentic self-configuration guide for OpenClaw agents
 - **Skills auto-discover** from `~/.agents/skills/`, `~/.openclaw/skills/`, and `<workspace>/skills/` — no `skills` section needed in `openclaw.json`
 - **Verify skill paths**: Always run `find /home/openclaw -name "SKILL.md" -path "*<skill-name>*"` to confirm
 - **Secrets CLI**: `openclaw secrets configure` (interactive wizard), `openclaw secrets audit`, `openclaw secrets reload` — there is NO `openclaw secrets set` command
-- **Secrets storage**: Store API keys in systemd overrides (`sudo systemctl edit openclaw`), NOT in `.bashrc` or plaintext in `openclaw.json`. Reference with `${VAR_NAME}`
+- **Secrets storage**: Store ALL API keys and tokens in `/etc/openclaw/env` (mode `600`, `root:openclaw`), loaded via `EnvironmentFile=` in the systemd override. NOT in `.bashrc`, `~/.openclaw/.env`, or plaintext in `openclaw.json`. Reference with `${VAR_NAME}`
 - **Google Gemini requires two env vars**: Both `GOOGLE_API_KEY` and `GEMINI_API_KEY` must be set (same value). `GOOGLE_API_KEY` for LLM completions, `GEMINI_API_KEY` for web search/grounding
 - **dmPolicy**: Use `"allowlist"` with `allowFrom` to restrict access. `"pairing"` ignores `allowFrom`
 - **SOUL.md path**: Must be in the workspace dir from `agents.defaults.workspace` (e.g., `~/openclaw/workspace/SOUL.md`), NOT in `~/.openclaw/workspace/`
@@ -95,20 +95,22 @@ Step-by-step reference for an AI agent assisting a user with OpenClaw deployment
 ### Config precedence (important for debugging)
 
 ```
-auth-profiles.json > process.env (systemd) > ~/.openclaw/.env > openclaw.json env.vars
+auth-profiles.json > process.env (systemd/EnvironmentFile) > ~/.openclaw/.env > openclaw.json env.vars
 ```
 
-If auth fails despite correct systemd env vars, check `~/.openclaw/agents/main/agent/auth-profiles.json` for stale keys.
+Our guide centralizes all secrets in `/etc/openclaw/env` (loaded via `EnvironmentFile=` in the systemd override), so they arrive as process.env — second highest priority.
+
+If auth fails despite correct env vars, check `~/.openclaw/agents/main/agent/auth-profiles.json` for stale keys.
 
 ### Required env vars
 
 | Variable | Where | Purpose |
 |---|---|---|
-| `KIMI_API_KEY` | systemd override | Kimi Coding LLM (primary model) |
-| `GOOGLE_API_KEY` | systemd override | Google Gemini LLM completions |
-| `GEMINI_API_KEY` | systemd override | Gemini web search/grounding (same value as GOOGLE_API_KEY) |
-| `GATEWAY_TOKEN` | systemd override | OpenClaw gateway authentication |
-| `TELEGRAM_BOT_TOKEN` | `~/.openclaw/.env` | Telegram channel (if configured) |
+| `KIMI_API_KEY` | `/etc/openclaw/env` | Kimi Coding LLM (primary model) |
+| `GOOGLE_API_KEY` | `/etc/openclaw/env` | Google Gemini LLM completions |
+| `GEMINI_API_KEY` | `/etc/openclaw/env` | Gemini web search/grounding (same value as GOOGLE_API_KEY) |
+| `GATEWAY_TOKEN` | `/etc/openclaw/env` | OpenClaw gateway authentication |
+| `TELEGRAM_BOT_TOKEN` | `/etc/openclaw/env` | Telegram channel (if configured) |
 
 ### Quick diagnostic commands
 

@@ -212,12 +212,15 @@ else
     check "OpenClaw en localhost (127.0.0.1:18789)" "warn"
 fi
 
-# .env con permisos 600
-ENV_PERMS=$(stat -c "%a" /home/openclaw/.openclaw/.env 2>/dev/null || stat -c "%a" ~/.openclaw/.env 2>/dev/null)
-if [ "$ENV_PERMS" = "600" ]; then
-    check ".env permisos 600" "pass"
+# /etc/openclaw/env con permisos 600 y propietario root
+ENV_PERMS=$(stat -c "%a" /etc/openclaw/env 2>/dev/null)
+ENV_OWNER=$(stat -c "%U" /etc/openclaw/env 2>/dev/null)
+if [ "$ENV_PERMS" = "600" ] && [ "$ENV_OWNER" = "root" ]; then
+    check "/etc/openclaw/env permisos 600, propietario root" "pass"
+elif [ "$ENV_PERMS" = "600" ]; then
+    check "/etc/openclaw/env propietario debe ser root (es $ENV_OWNER)" "fail" "critical"
 else
-    check ".env permisos 600" "fail" "critical"
+    check "/etc/openclaw/env permisos 600" "fail" "critical"
 fi
 
 # Puntuación systemd < 5
@@ -401,8 +404,8 @@ chmod +x ~/openclaw/scripts/verificar_seguridad.sh
 |---|---------|--------------|--------|
 | 4.1 | Directorio estructura correcta | `ls ~/.openclaw/` | ⬜ |
 | 4.2 | openclaw.json existe | `ls ~/.openclaw/openclaw.json` | ⬜ |
-| 4.3 | .env existe y permisos 600 | `stat -c %a ~/.openclaw/.env` = 600 | ⬜ |
-| 4.4 | .env propietario correcto | `stat -c %U ~/.openclaw/.env` = openclaw | ⬜ |
+| 4.3 | Archivo env existe y permisos 600 | `stat -c %a /etc/openclaw/env` = 600 | ⬜ |
+| 4.4 | Archivo env propietario correcto | `stat -c %U /etc/openclaw/env` = root | ⬜ |
 | 4.5 | Gateway host = 127.0.0.1 | `grep host ~/.openclaw/openclaw.json` | ⬜ |
 | 4.6 | OpenClaw escucha localhost:18789 | `ss -tlnp \| grep 18789` = 127.0.0.1 | ⬜ |
 | 4.7 | No escucha en 0.0.0.0 | `ss -tlnp \| grep 18789` ≠ 0.0.0.0 | ⬜ |

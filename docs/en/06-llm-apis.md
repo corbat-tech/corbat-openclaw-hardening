@@ -80,8 +80,8 @@ By the end of this section you will have:
 4. Copy the key starting with `nvapi-...`
 
 ```bash
-# On the VPS, edit .env
-nano ~/.openclaw/.env
+# On the VPS, edit the env file (root-owned, loaded by systemd)
+sudo nano /etc/openclaw/env
 ```
 
 ```bash
@@ -241,12 +241,13 @@ export ANTHROPIC_API_KEY=$(lkr get ANTHROPIC_API_KEY)
 If you must use `.env`, apply restrictive permissions:
 
 ```bash
-# Verify .env has restrictive permissions
-ls -la ~/.openclaw/.env
-# Should show: -rw------- (600)
+# Verify env file has restrictive permissions
+ls -la /etc/openclaw/env
+# Should show: -rw------- (600), owner root:openclaw
 
 # If not, fix:
-chmod 600 ~/.openclaw/.env
+sudo chmod 600 /etc/openclaw/env
+sudo chown root:openclaw /etc/openclaw/env
 ```
 
 ### Don't expose keys in logs
@@ -268,9 +269,9 @@ logging:
 **Rotation procedure:**
 
 1. **Generate new key** in the provider's panel
-2. **Update .env** on the VPS:
+2. **Update env file** on the VPS:
    ```bash
-   nano ~/.openclaw/.env
+   sudo nano /etc/openclaw/env
    # Replace the old key with the new one
    ```
 3. **Restart service:**
@@ -388,10 +389,10 @@ routing:
 **Solution:**
 ```bash
 # Verify key is copied correctly (no spaces)
-grep API_KEY ~/.openclaw/.env
+sudo grep API_KEY /etc/openclaw/env
 
 # Verify no hidden characters
-cat -A ~/.openclaw/.env | grep API_KEY
+sudo cat -A /etc/openclaw/env | grep API_KEY
 ```
 
 ### Error: "Rate limit exceeded"

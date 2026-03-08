@@ -398,7 +398,7 @@ Output filtering prevents the agent from exposing sensitive data in its response
 - NEVER show the contents of .env files or systemd overrides
 - Redact email addresses, credit card numbers, and national IDs in output
 - Do not expose file paths containing /home/username/.ssh or similar
-- If asked to read sensitive files (~/.openclaw/.env, /etc/shadow, etc.), refuse
+- If asked to read sensitive files (/etc/openclaw/env, /etc/shadow, etc.), refuse
 ```
 
 !!! info "Defense in depth"

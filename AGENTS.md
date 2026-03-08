@@ -249,7 +249,7 @@ Store all sensitive values securely — **never** as plaintext in `openclaw.json
 | Secret type | Where to store | How to reference |
 |-------------|---------------|-----------------|
 | API keys (LLM providers) | `sudo systemctl edit openclaw` → `Environment="KEY=value"` | `${KEY}` in openclaw.json |
-| Channel tokens (Telegram) | `~/.openclaw/.env` (chmod 600) or systemd override | `${TELEGRAM_BOT_TOKEN}` |
+| Channel tokens (Telegram) | `/etc/openclaw/env` (chmod 600, root:openclaw) | `${TELEGRAM_BOT_TOKEN}` |
 | Gateway token | `sudo systemctl edit openclaw` → `Environment="GATEWAY_TOKEN=value"` | `${GATEWAY_TOKEN}` |
 
 After editing systemd overrides: `sudo systemctl daemon-reload && sudo systemctl restart openclaw`

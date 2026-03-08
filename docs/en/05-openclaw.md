@@ -803,6 +803,8 @@ This creates `/etc/sudoers.d/openclaw` with NOPASSWD access to **only** these co
     3. `~/.openclaw/.env` (global fallback)
     4. `config.env.vars` in openclaw.json
 
+    Our guide uses `/etc/openclaw/env` via systemd `EnvironmentFile=`, which is injected as process environment (priority 1 above).
+
     Only uppercase names matching `[A-Z_][A-Z0-9_]*` are substituted. Use `$${VAR}` to produce a literal `${VAR}`.
 
 !!! danger "Critical security configuration"
@@ -852,7 +854,7 @@ sudo chown root:openclaw /etc/openclaw/env
     | `GEMINI_API_KEY` | Web search — same value as `GOOGLE_API_KEY` but required as a separate variable |
     | `GATEWAY_TOKEN` | Gateway authentication |
 
-    `TELEGRAM_BOT_TOKEN` goes in `~/.openclaw/.env` (read by the gateway process), not in the environment file.
+    `TELEGRAM_BOT_TOKEN` also goes in `/etc/openclaw/env` alongside the other keys. Our guide centralizes all secrets in one file for easier management.
 
 **Step 2: Create the systemd override**
 
@@ -914,9 +916,11 @@ The override file is stored at `/etc/systemd/system/openclaw.service.d/override.
 !!! note "Why the override includes hardening relaxation"
     All 8 directives (`ProtectSystem`, `SystemCallFilter`, `CapabilityBoundingSet`, `PrivateDevices`, `LockPersonality`, `RestrictRealtime`, `ProtectKernelTunables`, `ProtectKernelModules`) implicitly force `NoNewPrivileges=true` or block `sudo` in other ways. Setting them to `false` (or empty for `SystemCallFilter`, or specific caps for `CapabilityBoundingSet`) prevents this. The 6 capabilities (`CAP_SETUID`, `CAP_SETGID`, `CAP_AUDIT_WRITE`, `CAP_CHOWN`, `CAP_DAC_OVERRIDE`, `CAP_FOWNER`) are the minimum set required for `sudo apt-get install` to work. Security is enforced by `exec-approvals` allowlist + OS sudoers instead.
 
-#### Method 2: .env file (for channel tokens)
+#### Method 2: .env file (OpenClaw native fallback)
 
-Some tokens (like Telegram bot token) can be stored in a `.env` file:
+OpenClaw natively reads `~/.openclaw/.env` as a global fallback for environment variables. This works but scatters secrets across multiple locations. **Our guide recommends putting ALL keys (including `TELEGRAM_BOT_TOKEN`) in `/etc/openclaw/env`** for centralized management.
+
+If you prefer the native `.env` fallback:
 
 ```bash
 nano ~/.openclaw/.env
@@ -1093,7 +1097,7 @@ NOT available — modifying gateway config at runtime is a security risk.
 
 - Always ask before: sending emails, pushing to remote repos, deleting files
 - Prefer workspace paths for all file operations
-- Never access: ~/.ssh, ~/.openclaw/.env, /etc/systemd
+- Never access: ~/.ssh, /etc/openclaw/env, /etc/systemd
 - Never expose secrets, tokens, or credentials in outputs
 ```
 
@@ -1466,7 +1470,7 @@ nano ~/openclaw/workspace/AGENTS.md
 ```bash
 # Run the Gateway manually with environment variables loaded inline
 # This avoids leaking secrets into the shell environment and /proc/*/environ
-env $(grep -v '^#' ~/.openclaw/.env | xargs) openclaw gateway --port 18789 --verbose
+env $(grep -v '^#' /etc/openclaw/env | xargs) openclaw gateway --port 18789 --verbose
 ```
 
 !!! warning "Do not use `export` to load secrets"
@@ -1754,12 +1758,12 @@ else
 fi
 echo ""
 
-echo "--- Verify .env permissions ---"
-perms=$(stat -c "%a" ~/.openclaw/.env 2>/dev/null)
+echo "--- Verify /etc/openclaw/env permissions ---"
+perms=$(stat -c "%a" /etc/openclaw/env 2>/dev/null)
 if [ "$perms" = "600" ]; then
-    echo "✅ .env has permissions 600"
+    echo "✅ /etc/openclaw/env has permissions 600"
 else
-    echo "❌ .env has permissions $perms (should be 600)"
+    echo "❌ /etc/openclaw/env has permissions $perms (should be 600)"
 fi
 echo ""
 
@@ -1821,7 +1825,7 @@ sudo ss -tp | grep -E "(node|python)" | awk '{print $5}' | cut -d: -f1 | sort -u
 | `401 authentication_error` | Invalid API key, wrong User-Agent, or stale `auth-profiles.json` | Verify key with curl (see below). Add `"headers": { "User-Agent": "claude-code/0.1.0" }` for Kimi. Check `auth-profiles.json` (see below). |
 | `401` persists after fixing API key | `auth-profiles.json` has a stale/invalid key that overrides env vars | Empty the file: `echo '{}' > ~/.openclaw/agents/main/agent/auth-profiles.json` and restart. |
 | `404 Not Found` | Wrong model ID or baseUrl | Verify model ID via provider's `/v1/models` endpoint. |
-| `MissingEnvVarError` | `${VAR}` in config but var not set | Add var to systemd override or `~/.openclaw/.env`. |
+| `MissingEnvVarError` | `${VAR}` in config but var not set | Add var to `/etc/openclaw/env` and restart the service. |
 | `Config invalid: Unrecognized key` | Unknown field in openclaw.json | Remove the field. Only use documented schema fields. |
 | `tools.profile allowlist contains unknown entries` | Profile references uninstalled tools | Harmless warning. Those tools simply won't load. |
 | `web_search not available` | Missing search API key | Set `GEMINI_API_KEY` or `BRAVE_API_KEY` in `.env` or systemd override. |
@@ -2187,7 +2191,7 @@ sudo systemctl daemon-reload
 !!! warning "Backup before removing"
     Before removing `~/.openclaw` or `~/openclaw`, make sure you have a backup of:
 
-    - `~/.openclaw/.env` (API keys)
+    - `/etc/openclaw/env` (API keys)
     - `~/.openclaw/openclaw.json` (configuration)
     - `~/openclaw/workspace/` (work data)
 

@@ -147,7 +147,7 @@ sudo tailscale up --advertise-tags=tag:vps --reset
 ```bash
 # Backup de configuración
 cp ~/.openclaw/openclaw.json ~/.openclaw/openclaw.json.backup.$(date +%Y%m%d)
-cp ~/.openclaw/.env ~/.openclaw/.env.backup.$(date +%Y%m%d)
+sudo cp /etc/openclaw/env /etc/openclaw/env.backup.$(date +%Y%m%d)
 ```
 
 ### Actualizar OpenClaw
@@ -214,11 +214,11 @@ systemd-analyze security openclaw.service
 #### 2. Actualizar .env en el VPS
 
 ```bash
-# Backup de .env actual
-cp ~/.openclaw/.env ~/.openclaw/.env.backup.$(date +%Y%m%d)
+# Backup del archivo env actual
+sudo cp /etc/openclaw/env /etc/openclaw/env.backup.$(date +%Y%m%d)
 
-# Editar .env
-nano ~/.openclaw/.env
+# Editar archivo env
+sudo nano /etc/openclaw/env
 
 # Reemplazar la key antigua por la nueva
 # Ejemplo: ANTHROPIC_API_KEY=sk-ant-NUEVA_KEY_AQUI
@@ -360,7 +360,7 @@ nano ~/.ssh/config
 | Archivo/Directorio | Criticidad | Frecuencia |
 |--------------------|------------|------------|
 | `~/.openclaw/openclaw.json` | Crítica | Semanal |
-| `~/.openclaw/.env` | Crítica | Semanal |
+| `/etc/openclaw/env` | Crítica | Semanal |
 | `~/openclaw/workspace/` | Media | Diario (si hay datos) |
 | SSH keys (`.ssh/`) | Alta | Después de rotación |
 | Configuración systemd | Media | Después de cambios |
@@ -617,9 +617,10 @@ cp /tmp/openclaw_backup_*/SOUL.md ~/.openclaw/workspace/ 2>/dev/null || true
 cp /tmp/openclaw_backup_*/TOOLS.md ~/.openclaw/workspace/ 2>/dev/null || true
 cp -r /tmp/openclaw_backup_*/scripts/* ~/openclaw/scripts/ 2>/dev/null || true
 
-# Restaurar .env (descifrar)
-gpg -d /tmp/openclaw_backup_*/env.gpg > ~/.openclaw/.env
-chmod 600 ~/.openclaw/.env
+# Restaurar archivo env (descifrar)
+gpg -d /tmp/openclaw_backup_*/env.gpg | sudo tee /etc/openclaw/env > /dev/null
+sudo chmod 600 /etc/openclaw/env
+sudo chown root:openclaw /etc/openclaw/env
 
 # Restaurar servicio systemd
 sudo cp /tmp/openclaw_backup_*/openclaw.service /etc/systemd/system/
