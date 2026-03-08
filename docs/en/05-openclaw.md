@@ -885,11 +885,22 @@ sudo systemctl daemon-reload
 sudo systemctl restart openclaw
 ```
 
-Verify that `NoNewPrivileges` is disabled (required for sudo):
+Verify the hardening overrides are applied:
 
 ```bash
+# NoNewPrivileges must be 0 for sudo to work
 cat /proc/$(pgrep -f "openclaw gateway")/status | grep NoNewPrivs
 # Expected: NoNewPrivs: 0
+
+# Verify filesystem protection is disabled
+sudo systemctl show openclaw | grep ProtectHome
+# Expected: ProtectHome=no
+sudo systemctl show openclaw | grep ProtectSystem
+# Expected: ProtectSystem=no
+
+# Verify API keys are NOT visible (EnvironmentFile benefit)
+sudo systemctl show openclaw | grep -i api_key
+# Expected: (no output)
 ```
 
 !!! success "Why EnvironmentFile instead of Environment="
