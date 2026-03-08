@@ -844,28 +844,17 @@ Environment="GOOGLE_API_KEY=tu-api-key-de-google"
 Environment="GEMINI_API_KEY=tu-api-key-de-google"
 Environment="GATEWAY_TOKEN=tu-token-del-gateway"
 
-# === Relajar hardening para apt-get (VPS dedicado) ===
+# === Relajar hardening para sudo/apt-get (VPS dedicado) ===
 # VPS dedicado + Tailscale + non-root + gateway token + sudoers restringido
 ProtectSystem=false
 
-# Desactivar filtros que activan NoNewPrivs implícitamente
+# Desactivar directivas que fuerzan NoNewPrivileges=true implícitamente
 SystemCallFilter=
 PrivateDevices=false
 LockPersonality=false
 RestrictRealtime=false
 ProtectKernelTunables=false
 ProtectKernelModules=false
-
-# Añadir paths de escritura para apt
-ReadWritePaths=/home/openclaw/openclaw/workspace
-ReadWritePaths=/home/openclaw/openclaw/logs
-ReadWritePaths=/home/openclaw/.openclaw
-ReadWritePaths=/var/cache/apt
-ReadWritePaths=/var/lib/apt
-ReadWritePaths=/var/lib/apt/lists
-ReadWritePaths=/var/lib/dpkg
-ReadWritePaths=/var/log/apt
-ReadWritePaths=/tmp
 ```
 
 !!! important "Variables de entorno necesarias"
@@ -878,12 +867,42 @@ ReadWritePaths=/tmp
 
     `TELEGRAM_BOT_TOKEN` va en `~/.openclaw/.env` (leído por el proceso del gateway), no en systemd overrides.
 
+Verifica que `NoNewPrivileges` está desactivado (necesario para sudo):
+
+```bash
+cat /proc/$(pgrep -f "openclaw gateway")/status | grep NoNewPrivs
+# Esperado: NoNewPrivs: 0
+```
+
 Guarda y aplica:
 
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl restart openclaw
 ```
+
+!!! tip "Mejora futura: EnvironmentFile"
+    Para mayor seguridad, migra las API keys de las líneas `Environment=` del override a un archivo dedicado:
+
+    ```bash
+    # Crear archivo env con permisos restringidos
+    sudo mkdir -p /etc/openclaw
+    sudo tee /etc/openclaw/env > /dev/null << 'EOF'
+    KIMI_API_KEY=sk-kimi-tu-key
+    GOOGLE_API_KEY=tu-api-key-de-google
+    GEMINI_API_KEY=tu-api-key-de-google
+    GATEWAY_TOKEN=tu-token-del-gateway
+    EOF
+    sudo chmod 600 /etc/openclaw/env
+    ```
+
+    Luego reemplaza las líneas `Environment=` en el override con:
+
+    ```ini
+    EnvironmentFile=/etc/openclaw/env
+    ```
+
+    Esto evita que las API keys aparezcan en la salida de `systemctl show openclaw`.
 
 El archivo de override se guarda en `/etc/systemd/system/openclaw.service.d/override.conf` con permisos solo de root.
 
@@ -1532,13 +1551,6 @@ ProtectHome=read-only
 ReadWritePaths=/home/openclaw/openclaw/workspace
 ReadWritePaths=/home/openclaw/openclaw/logs
 ReadWritePaths=/home/openclaw/.openclaw
-ReadWritePaths=/var/tmp/openclaw-compile-cache
-ReadWritePaths=/var/cache/apt
-ReadWritePaths=/var/lib/apt
-ReadWritePaths=/var/lib/apt/lists
-ReadWritePaths=/var/lib/dpkg
-ReadWritePaths=/var/log/apt
-ReadWritePaths=/tmp
 PrivateTmp=true
 
 # --- Control de privilegios ---
@@ -1560,7 +1572,8 @@ RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 # Seguridad aplicada por exec-approvals + sudoers
 SystemCallArchitectures=native
 
-# --- Proteger kernel (relajado para apt/dpkg) ---
+# --- Proteger kernel ---
+# ProtectKernelTunables/Modules fuerzan NoNewPrivileges=true implícitamente
 ProtectKernelTunables=false
 ProtectKernelModules=false
 ProtectKernelLogs=true

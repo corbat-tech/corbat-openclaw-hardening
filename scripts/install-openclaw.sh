@@ -567,13 +567,6 @@ ProtectHome=read-only
 ReadWritePaths=/home/openclaw/openclaw/workspace
 ReadWritePaths=/home/openclaw/openclaw/logs
 ReadWritePaths=/home/openclaw/.openclaw
-ReadWritePaths=/var/tmp/openclaw-compile-cache
-ReadWritePaths=/var/cache/apt
-ReadWritePaths=/var/lib/apt
-ReadWritePaths=/var/lib/apt/lists
-ReadWritePaths=/var/lib/dpkg
-ReadWritePaths=/var/log/apt
-ReadWritePaths=/tmp
 PrivateTmp=true
 
 # Privilege control — relaxed for restricted sudo (see /etc/sudoers.d/openclaw)
@@ -594,7 +587,7 @@ RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
 # Security enforced by exec-approvals + sudoers instead
 SystemCallArchitectures=native
 
-# Kernel protection (relaxed for apt/dpkg)
+# Kernel protection — ProtectKernelTunables/Modules implicitly force NoNewPrivileges=true
 ProtectKernelTunables=false
 ProtectKernelModules=false
 ProtectKernelLogs=true
