@@ -866,11 +866,10 @@ Add the `EnvironmentFile` reference and hardening overrides:
 [Service]
 EnvironmentFile=/etc/openclaw/env
 
-# === Relax hardening for sudo/apt-get (dedicated VPS) ===
-# Dedicated VPS + Tailscale + non-root + gateway token + restricted sudoers
-ProtectSystem=false
 
-# Disable directives that implicitly force NoNewPrivileges=true
+# === Relax hardening to allow sudo/apt-get ===
+# Dedicated VPS + Tailscale. Date: 2026-03-08
+ProtectSystem=false
 SystemCallFilter=
 PrivateDevices=false
 LockPersonality=false
