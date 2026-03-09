@@ -248,11 +248,12 @@ if [ ! -f "$CONFIG_FILE" ]; then
 fi
 
 if [ -f "$CONFIG_FILE" ]; then
-    # Sandbox mode active
-    if grep -q '"sandbox"' "$CONFIG_FILE" && grep -A2 '"sandbox"' "$CONFIG_FILE" | grep -qE '"mode":\s*"(all|always)"'; then
-        check "Sandbox mode active" "pass"
+    # Sandbox mode configured (off = dedicated VPS with systemd hardening, all = Docker)
+    if grep -q '"sandbox"' "$CONFIG_FILE" && grep -A2 '"sandbox"' "$CONFIG_FILE" | grep -qE '"mode":\s*"(all|off)"'; then
+        SANDBOX_MODE=$(grep -A2 '"sandbox"' "$CONFIG_FILE" | grep -oE '"(all|off)"' | tr -d '"')
+        check "Sandbox mode configured ($SANDBOX_MODE)" "pass"
     else
-        check "Sandbox mode active" "fail" "critical"
+        check "Sandbox mode configured" "fail" "critical"
     fi
 
     # dmPolicy configured

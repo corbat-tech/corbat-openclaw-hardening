@@ -274,19 +274,26 @@ if [ -n "$TELEGRAM_TOKEN" ]; then
     fi
 
     # TELEGRAM_TOKEN and TELEGRAM_USER_ID are validated above (regex-safe for JSON)
-    CHANNELS_CONFIG=$(cat <<CHCONF
+    # NOTE: botToken uses env var reference — actual token goes to /etc/openclaw/env
+    CHANNELS_CONFIG=$(cat <<'CHCONF'
   "channels": {
     "telegram": {
       "enabled": true,
-      "botToken": "${TELEGRAM_TOKEN}",
-      "dmPolicy": "${TELEGRAM_DM_POLICY}",
-      ${ALLOW_FROM}
+      "dmPolicy": "TELEGRAM_DM_POLICY_PLACEHOLDER",
+      ALLOW_FROM_PLACEHOLDER
       "streaming": "partial",
       "groupPolicy": "allowlist"
     }
   },
 CHCONF
     )
+    # Substitute placeholders (botToken removed — loaded from env var TELEGRAM_BOT_TOKEN)
+    CHANNELS_CONFIG="${CHANNELS_CONFIG//TELEGRAM_DM_POLICY_PLACEHOLDER/${TELEGRAM_DM_POLICY}}"
+    if [ -n "$ALLOW_FROM" ]; then
+        CHANNELS_CONFIG="${CHANNELS_CONFIG//ALLOW_FROM_PLACEHOLDER/${ALLOW_FROM}}"
+    else
+        CHANNELS_CONFIG="${CHANNELS_CONFIG//ALLOW_FROM_PLACEHOLDER/}"
+    fi
     info "Telegram configured with dmPolicy: ${TELEGRAM_DM_POLICY}"
 else
     CHANNELS_CONFIG=""
@@ -298,7 +305,7 @@ fi
 # =============================================================================
 
 GATEWAY_TOKEN=$(openssl rand -hex 24)
-info "Generated gateway token."
+info "Generated gateway token (will be saved to /etc/openclaw/env)."
 
 # =============================================================================
 # 5.6 Write openclaw.json (hardened)
@@ -470,7 +477,8 @@ cat > ~/.openclaw/exec-approvals.json << EAEOF
         { "pattern": "/home/openclaw/.nvm/**/corepack" },
         { "pattern": "/home/openclaw/.local/bin/*" },
         { "pattern": "/usr/local/bin/*" },
-        { "pattern": "/usr/bin/sudo" }
+        { "pattern": "/usr/local/bin/safe-apt-install" },
+        { "pattern": "/usr/local/bin/safe-systemctl" }
       ]
     }
   }
@@ -523,8 +531,9 @@ You work for the owner of this instance — follow their instructions and act in
 - Do not access `/home/openclaw/.ssh`, `/home/openclaw/.env`, `/etc`, `/var`
 
 ### Execution
-- Do not execute commands as root/sudo unless using the restricted sudoers allowlist (apt, pip3, systemctl)
-- Only install well-known packages (high download count, established maintainers, official repositories). If a package is relatively unknown or you are unsure, ask for explicit approval via the configured channel before installing
+- Use `sudo safe-apt-install <package>` to install packages — raw `sudo apt-get install` is blocked
+- Use `sudo safe-systemctl <action> <service>` for service management — raw `sudo systemctl` is blocked
+- Only install packages that are in the safe-apt-install allowlist. If a package is not listed, ask for explicit approval via the configured channel before requesting it be added
 - Do not modify system configuration
 
 ### Communication
@@ -577,6 +586,9 @@ Environment=NVM_DIR=/home/openclaw/.nvm
 Environment=NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache
 Environment=OPENCLAW_NO_RESPAWN=1
 
+# Load API keys and secrets (dash prefix = don't fail if file missing)
+EnvironmentFile=-/etc/openclaw/env
+
 ExecStart=${OPENCLAW_BIN} gateway --port 18789
 Restart=on-failure
 RestartSec=10
@@ -618,9 +630,11 @@ ProtectHostname=true
 ProtectClock=true
 
 # === Resource limits ===
-CPUQuota=50%
+# Adjust CPUQuota if VPS is dedicated to OpenClaw (can use 80-100%)
+CPUQuota=80%
 MemoryMax=2G
-TasksMax=100
+# Node.js with subagents may spawn many child processes
+TasksMax=256
 
 # === Logging ===
 StandardOutput=journal
@@ -657,13 +671,72 @@ fi
 # 5.11 Configure restricted sudo (sudoers)
 # =============================================================================
 
-info "=== Configuring restricted sudo ==="
+info "=== Installing restricted sudo wrappers ==="
 
-echo 'openclaw ALL=(ALL) NOPASSWD: /usr/bin/apt-get install *, /usr/bin/apt install *, /usr/bin/apt-get update, /usr/bin/apt update, /usr/bin/pip3 install *, /usr/bin/systemctl restart *, /usr/bin/systemctl status *, /usr/bin/systemctl start *, /usr/bin/systemctl stop *, /usr/bin/systemctl enable *, /usr/bin/systemctl disable *' \
+# Install safe-apt-install wrapper (validates packages against allowlist)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SAFE_APT_SRC="${SCRIPT_DIR}/safe-apt-install"
+SAFE_SYSTEMCTL_SRC="${SCRIPT_DIR}/safe-systemctl"
+
+# If running from curl (no local scripts dir), download from repo
+if [ ! -f "$SAFE_APT_SRC" ]; then
+    SAFE_APT_SRC="/tmp/safe-apt-install"
+    curl -fsSL -o "$SAFE_APT_SRC" "${REPO_BASE:-https://raw.githubusercontent.com/corbat-tech/corbat-openclaw-hardening/main}/scripts/safe-apt-install"
+fi
+if [ ! -f "$SAFE_SYSTEMCTL_SRC" ]; then
+    SAFE_SYSTEMCTL_SRC="/tmp/safe-systemctl"
+    curl -fsSL -o "$SAFE_SYSTEMCTL_SRC" "${REPO_BASE:-https://raw.githubusercontent.com/corbat-tech/corbat-openclaw-hardening/main}/scripts/safe-systemctl"
+fi
+
+sudo cp "$SAFE_APT_SRC" /usr/local/bin/safe-apt-install
+sudo cp "$SAFE_SYSTEMCTL_SRC" /usr/local/bin/safe-systemctl
+sudo chmod 755 /usr/local/bin/safe-apt-install
+sudo chmod 755 /usr/local/bin/safe-systemctl
+sudo chown root:root /usr/local/bin/safe-apt-install
+sudo chown root:root /usr/local/bin/safe-systemctl
+
+info "Installed safe-apt-install and safe-systemctl wrappers."
+
+# Configure restricted sudoers — only wrappers and apt-get update
+echo 'openclaw ALL=(ALL) NOPASSWD: /usr/local/bin/safe-apt-install, /usr/local/bin/safe-systemctl, /usr/bin/apt-get update, /usr/bin/apt update, /usr/bin/pip3 install *' \
   | sudo tee /etc/sudoers.d/openclaw > /dev/null \
   && sudo chmod 0440 /etc/sudoers.d/openclaw
 
-info "Restricted sudo configured: apt, pip3, systemctl only."
+info "Restricted sudo configured: safe-apt-install, safe-systemctl, apt update, pip3 only."
+
+# =============================================================================
+# SUMMARY
+# =============================================================================
+
+# =============================================================================
+# 5.12 Create /etc/openclaw/env with secrets (requires sudo)
+# =============================================================================
+
+info "=== Creating /etc/openclaw/env ==="
+
+sudo mkdir -p /etc/openclaw
+
+# Build env file content (secrets only — never in openclaw.json)
+ENV_CONTENT="# OpenClaw secrets — loaded via systemd EnvironmentFile
+# Permissions: 600 root:openclaw — do NOT add to version control
+GATEWAY_TOKEN=${GATEWAY_TOKEN}"
+
+if [ -n "${TELEGRAM_TOKEN:-}" ]; then
+    ENV_CONTENT="${ENV_CONTENT}
+TELEGRAM_BOT_TOKEN=${TELEGRAM_TOKEN}"
+fi
+
+echo "$ENV_CONTENT" | sudo tee /etc/openclaw/env > /dev/null
+sudo chmod 600 /etc/openclaw/env
+sudo chown root:openclaw /etc/openclaw/env
+
+info "Secrets written to /etc/openclaw/env (mode 600, root:openclaw)."
+warn "Edit /etc/openclaw/env to add your API keys (KIMI_API_KEY, GOOGLE_API_KEY, etc.)"
+
+# Save gateway token to a temporary file readable only by openclaw
+GATEWAY_TOKEN_FILE=$(mktemp /tmp/openclaw-gateway-token.XXXXXX)
+echo "$GATEWAY_TOKEN" > "$GATEWAY_TOKEN_FILE"
+chmod 600 "$GATEWAY_TOKEN_FILE"
 
 # =============================================================================
 # SUMMARY
@@ -676,54 +749,50 @@ echo "========================================================"
 echo ""
 echo "  Version:        $(openclaw --version 2>/dev/null || echo 'installed')"
 echo "  Config:         ~/.openclaw/openclaw.json"
+echo "  Secrets:        /etc/openclaw/env (mode 600)"
 echo "  Workspace:      ~/openclaw/workspace"
 echo "  Gateway:        127.0.0.1:18789"
-echo "  Gateway token:  ${GATEWAY_TOKEN}"
+echo "  Gateway token:  saved to ${GATEWAY_TOKEN_FILE}"
 echo "  Sandbox:        off (systemd hardening provides isolation)"
 echo "  Docker:         $(docker --version 2>/dev/null || echo 'not found')"
 echo "  Bind:           loopback only"
 echo "  Tools:          full (gateway denied)"
-echo "  Exec approvals: allowlist (44 patterns + sudo restricted)"
-echo "  Sudo:           restricted (apt, pip3, systemctl only)"
-if [ -n "$TELEGRAM_TOKEN" ]; then
+echo "  Exec approvals: allowlist + safe-apt-install + safe-systemctl"
+echo "  Sudo:           restricted (wrappers with allowlists only)"
+if [ -n "${TELEGRAM_TOKEN:-}" ]; then
 echo "  Telegram:       configured (dmPolicy: ${TELEGRAM_DM_POLICY})"
 fi
 echo ""
-echo "  SAVE YOUR GATEWAY TOKEN — you'll need it for remote access."
+echo "  READ YOUR GATEWAY TOKEN:"
+echo "    cat ${GATEWAY_TOKEN_FILE}"
+echo "  Then delete the temp file:"
+echo "    rm ${GATEWAY_TOKEN_FILE}"
 echo ""
 echo "  NEXT STEPS:"
 if [ "${PROVIDER}" = "kimi-coding" ]; then
-echo "  1. Create /etc/openclaw/env with your API keys:"
-echo "     sudo mkdir -p /etc/openclaw"
+echo "  1. Add your API keys to /etc/openclaw/env:"
 echo "     sudo nano /etc/openclaw/env"
 echo "     # Add: KIMI_API_KEY=your-key"
 echo "     # Add: GOOGLE_API_KEY=your-key"
 echo "     # Add: GEMINI_API_KEY=your-google-key"
-echo "     # Add: GATEWAY_TOKEN=your-gateway-token"
-echo "     sudo chmod 600 /etc/openclaw/env"
-echo "     sudo chown root:openclaw /etc/openclaw/env"
-echo ""
-echo "  2. Create systemd override (loads env file + relaxes hardening):"
-echo "     sudo systemctl edit openclaw"
-echo "     # See section 5 of the guide for the full override content"
 else
-echo "  1. Configure your API key:"
-echo "     openclaw models auth add"
+echo "  1. Add your API key to /etc/openclaw/env:"
+echo "     sudo nano /etc/openclaw/env"
 fi
-echo "  3. Start the service:"
+echo "  2. Start the service:"
 echo "     sudo systemctl daemon-reload"
 echo "     sudo systemctl start openclaw"
-echo "  4. Check status (wait ~2 min for gateway to start):"
+echo "  3. Check status (wait ~2 min for gateway to start):"
 echo "     sudo systemctl status openclaw"
-echo "  5. Access from your Mac (via SSH tunnel):"
+echo "  4. Access from your Mac (via SSH tunnel):"
 echo "     ssh -L 18789:127.0.0.1:18789 openclaw@<TAILSCALE_IP>"
-echo "     Then open: http://127.0.0.1:18789/?#token=\${GATEWAY_TOKEN}"
-if [ -n "$TELEGRAM_TOKEN" ]; then
-echo "  6. Send a message to your bot in Telegram"
+echo "     Then open: http://127.0.0.1:18789/?#token=<your-token>"
+if [ -n "${TELEGRAM_TOKEN:-}" ]; then
+echo "  5. Send a message to your bot in Telegram"
 echo "     Then approve pairing: openclaw pairing approve telegram <CODE>"
-echo "  7. Run security audit:"
-else
 echo "  6. Run security audit:"
+else
+echo "  5. Run security audit:"
 fi
 echo "     openclaw security audit"
 echo ""

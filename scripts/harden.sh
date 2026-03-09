@@ -22,6 +22,7 @@ REPO_BASE="https://raw.githubusercontent.com/corbat-tech/corbat-openclaw-hardeni
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
 NC='\033[0m'
 
 info()  { echo -e "${GREEN}[INFO]${NC} $1"; }
@@ -135,9 +136,25 @@ systemctl restart auditd
 
 # --- 3.4 Kernel hardening ---
 info "Applying kernel hardening (sysctl)..."
-cat > /etc/sysctl.d/99-security-hardening.conf << 'EOF'
-net.ipv4.ip_forward = 0
-net.ipv6.conf.all.forwarding = 0
+
+# Ask about IP forwarding — needed for Tailscale subnet router / exit node
+echo ""
+echo "  IP forwarding is disabled by default (more secure)."
+echo "  Enable it ONLY if this VPS will act as a Tailscale subnet router or exit node."
+echo ""
+echo -e "${CYAN}[INPUT]${NC} Will this VPS be a Tailscale subnet router or exit node? (y/N): "
+read -r IP_FWD_ANSWER
+if [[ "$IP_FWD_ANSWER" =~ ^[Yy]$ ]]; then
+    IP_FORWARD_VALUE=1
+    info "IP forwarding ENABLED (required for subnet router / exit node)."
+else
+    IP_FORWARD_VALUE=0
+    info "IP forwarding DISABLED (standard setup)."
+fi
+
+cat > /etc/sysctl.d/99-security-hardening.conf << EOF
+net.ipv4.ip_forward = ${IP_FORWARD_VALUE}
+net.ipv6.conf.all.forwarding = ${IP_FORWARD_VALUE}
 net.ipv4.conf.all.send_redirects = 0
 net.ipv4.conf.default.send_redirects = 0
 net.ipv4.conf.all.accept_source_route = 0
@@ -175,6 +192,20 @@ if [ $? -ne 0 ]; then
 fi
 CRON
 chmod +x /etc/cron.daily/aide-check
+
+# --- 3.7 AIDE log rotation ---
+info "Configuring AIDE log rotation..."
+cat > /etc/logrotate.d/aide-check << 'LOGR'
+/var/log/aide-check.log {
+    weekly
+    rotate 12
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 640 root adm
+}
+LOGR
 
 info "=== Section 3 complete ==="
 echo ""
@@ -254,15 +285,15 @@ echo "" >> /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
 echo "# === Listen ONLY on Tailscale ===" >> /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
 echo "ListenAddress $TAILSCALE_IP" >> /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
 
-# Kill leftover sshd from socket activation and restart
-kill "$(cat /run/sshd.pid 2>/dev/null)" 2>/dev/null || pkill sshd 2>/dev/null || true
-sleep 1
-
+# Restart SSH cleanly (socket activation already disabled above)
+# NOTE: We do NOT use pkill sshd — if systemctl restart fails, the existing
+# sshd process keeps running so you don't lose access.
 if sshd -t; then
     systemctl restart ssh
     info "SSH now listening only on $TAILSCALE_IP:22"
 else
     error "SSH config error. Fix before continuing."
+    error "Your current SSH session is still active — fix the config and retry."
     exit 1
 fi
 

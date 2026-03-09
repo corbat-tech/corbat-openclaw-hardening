@@ -629,7 +629,7 @@ nano ~/.openclaw/exec-approvals.json
 | Desarrollo | `/usr/bin/git`, `docker`, `python3`, `~/.nvm/**/node`, `npm`, `npx`, `corepack` |
 | Red (dev) | `/usr/bin/curl`, `wget` |
 | Binarios locales | `~/.nvm/**/openclaw`, `~/.nvm/**/coco`, `~/.local/bin/*`, `/usr/local/bin/*` |
-| Sudo restringido | `/usr/bin/sudo` (limitado por sudoers — ver abajo) |
+| Sudo restringido | `/usr/local/bin/safe-apt-install`, `/usr/local/bin/safe-systemctl` (wrappers validados — ver abajo) |
 
 **Comandos que REQUIEREN aprobación vía Telegram:**
 
@@ -653,12 +653,24 @@ nano ~/.openclaw/exec-approvals.json
 !!! warning "Reemplaza `YOUR_TELEGRAM_USER_ID` en ambos archivos"
     En `openclaw.json`, establece `approvals.exec.targets[0].to` con tu ID de usuario de Telegram (el mismo valor que `channels.telegram.allowFrom`).
 
-### Configurar sudo restringido (sudoers)
+### Configurar sudo restringido (scripts wrapper + sudoers)
 
-El agente necesita `sudo` para instalar paquetes y gestionar servicios, pero un `sudo` sin restricciones sería un riesgo de seguridad. La solución: permitir `sudo` en el allowlist de exec-approvals, pero restringir lo que puede hacer mediante reglas sudoers a nivel de SO.
+El agente necesita `sudo` para instalar paquetes y gestionar servicios, pero un `sudo` sin restricciones sería un riesgo de seguridad. En vez de permitir `sudo apt-get install *` directo (que podría instalar cualquier paquete de cualquier repo), usamos **scripts wrapper validados**:
+
+- **`safe-apt-install`**: Valida cada paquete contra una allowlist curada de ~230 paquetes confiables de repositorios oficiales de Ubuntu (imágenes, PDF, email, fuentes, herramientas de desarrollo, multimedia, OCR, etc.)
+- **`safe-systemctl`**: Valida el nombre del servicio contra una allowlist de ~12 servicios aprobados (openclaw, tailscaled, ssh, fail2ban, etc.)
+
+El script de instalación instala estos wrappers automáticamente. Si se ejecuta manualmente:
 
 ```bash
-echo 'openclaw ALL=(ALL) NOPASSWD: /usr/bin/apt-get install *, /usr/bin/apt install *, /usr/bin/apt-get update, /usr/bin/apt update, /usr/bin/pip3 install *, /usr/bin/systemctl restart *, /usr/bin/systemctl status *, /usr/bin/systemctl start *, /usr/bin/systemctl stop *, /usr/bin/systemctl enable *, /usr/bin/systemctl disable *' \
+# Instalar scripts wrapper
+sudo cp scripts/safe-apt-install /usr/local/bin/safe-apt-install
+sudo cp scripts/safe-systemctl /usr/local/bin/safe-systemctl
+sudo chmod 755 /usr/local/bin/safe-apt-install /usr/local/bin/safe-systemctl
+sudo chown root:root /usr/local/bin/safe-apt-install /usr/local/bin/safe-systemctl
+
+# Configurar sudoers (solo wrappers + apt update + pip3)
+echo 'openclaw ALL=(ALL) NOPASSWD: /usr/local/bin/safe-apt-install, /usr/local/bin/safe-systemctl, /usr/bin/apt-get update, /usr/bin/apt update, /usr/bin/pip3 install *' \
   | sudo tee /etc/sudoers.d/openclaw > /dev/null \
   && sudo chmod 0440 /etc/sudoers.d/openclaw
 ```
@@ -667,22 +679,23 @@ Esto crea `/etc/sudoers.d/openclaw` con acceso NOPASSWD a **solo** estos comando
 
 | Comando sudo permitido | Propósito |
 |------------------------|-----------|
-| `apt-get install *` / `apt install *` | Instalar paquetes |
+| `safe-apt-install <paquete>` | Instalar solo paquetes aprobados (~230 en la allowlist) |
+| `safe-systemctl <acción> <servicio>` | Gestionar solo servicios aprobados (~12 en la allowlist) |
 | `apt-get update` / `apt update` | Actualizar listas de paquetes |
 | `pip3 install *` | Instalar paquetes Python |
-| `systemctl restart *` | Reiniciar servicios |
-| `systemctl status *` | Verificar estado de servicios |
-| `systemctl start *` / `stop *` | Iniciar/detener servicios |
-| `systemctl enable *` / `disable *` | Habilitar/deshabilitar servicios |
 
-!!! success "Defensa en profundidad: dos capas de protección"
-    1. **OpenClaw exec-approvals**: Controla qué binarios puede invocar el agente (`sudo` está en la allowlist)
-    2. **Sudoers del SO**: Controla qué puede hacer `sudo` realmente (solo los comandos listados arriba)
+!!! success "Defensa en profundidad: tres capas de protección"
+    1. **OpenClaw exec-approvals**: Controla qué binarios puede invocar el agente (los wrappers están en la allowlist, `sudo` directo NO)
+    2. **Scripts wrapper**: Validan nombres de paquetes y servicios contra allowlists curadas antes de ejecutar
+    3. **Sudoers del SO**: Solo los scripts wrapper (no `apt-get install` directo) pueden ejecutarse con NOPASSWD
 
-    Cualquier comando `sudo` que no esté en la lista de sudoers (ej. `sudo rm -rf /`, `sudo reboot`) será **rechazado por el SO** aunque OpenClaw permita la ejecución de `sudo`.
+    Un agente comprometido no puede instalar paquetes arbitrarios (bloqueado por safe-apt-install), reiniciar servicios críticos como sshd o tailscaled arbitrariamente (bloqueado por safe-systemctl), ni ejecutar comandos sudo directos (no están en exec-approvals).
+
+!!! tip "Añadir paquetes a la allowlist"
+    Edita `/usr/local/bin/safe-apt-install` y añade el nombre del paquete al array `ALLOWED_PACKAGES`. Solo añade paquetes de repositorios oficiales Ubuntu/Debian con mantenedores establecidos.
 
 !!! warning "Este paso requiere acceso SSH"
-    El archivo sudoers debe crearse manualmente vía SSH como root o con un usuario que ya tenga sudo. El script de instalación no puede crearlo porque el usuario `openclaw` no tiene sudo en ese momento.
+    El archivo sudoers y los wrappers deben crearse manualmente vía SSH como root o con un usuario que ya tenga sudo. El script de instalación los maneja automáticamente.
 
 !!! tip "Proveedores de modelos"
     Añade los proveedores de modelos elegidos en `models.providers`. Opciones comunes:
@@ -1525,7 +1538,8 @@ Group=openclaw
 WorkingDirectory=/home/openclaw
 
 # --- Cargar variables de entorno ---
-EnvironmentFile=/home/openclaw/.openclaw/.env
+# Cargar API keys y secretos (prefijo dash = no falla si el archivo no existe)
+EnvironmentFile=-/etc/openclaw/env
 Environment=NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache
 Environment=OPENCLAW_NO_RESPAWN=1
 
@@ -1584,12 +1598,12 @@ ProtectClock=true
 # MemoryDenyWriteExecute=true
 
 # --- Límites de recursos ---
-# Máximo 50% CPU
-CPUQuota=50%
+# Ajustar CPUQuota si el VPS es dedicado a OpenClaw (puede usar 80-100%)
+CPUQuota=80%
 # Máximo 2GB RAM
 MemoryMax=2G
-# Máximo 100 procesos/threads
-TasksMax=100
+# Node.js con subagentes puede crear muchos procesos hijo
+TasksMax=256
 
 # --- Logging ---
 StandardOutput=journal

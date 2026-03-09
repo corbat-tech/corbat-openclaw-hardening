@@ -629,7 +629,7 @@ nano ~/.openclaw/exec-approvals.json
 | Development | `/usr/bin/git`, `docker`, `python3`, `~/.nvm/**/node`, `npm`, `npx`, `corepack` |
 | Network (dev) | `/usr/bin/curl`, `wget` |
 | Local binaries | `~/.nvm/**/openclaw`, `~/.nvm/**/coco`, `~/.local/bin/*`, `/usr/local/bin/*` |
-| Restricted sudo | `/usr/bin/sudo` (limited by sudoers — see below) |
+| Restricted sudo | `/usr/local/bin/safe-apt-install`, `/usr/local/bin/safe-systemctl` (validated wrappers — see below) |
 
 **Commands that REQUIRE approval via Telegram:**
 
@@ -653,12 +653,24 @@ nano ~/.openclaw/exec-approvals.json
 !!! warning "Replace `YOUR_TELEGRAM_USER_ID` in both files"
     In `openclaw.json`, set `approvals.exec.targets[0].to` to your Telegram user ID (same value as `channels.telegram.allowFrom`).
 
-### Configure restricted sudo (sudoers)
+### Configure restricted sudo (wrapper scripts + sudoers)
 
-The agent needs `sudo` for package installation and service management, but unrestricted `sudo` would be a security risk. The solution: allow `sudo` in the exec-approvals allowlist, but restrict what it can actually do via OS-level sudoers rules.
+The agent needs `sudo` for package installation and service management, but unrestricted `sudo` would be a security risk. Instead of allowing raw `sudo apt-get install *` (which could install any package from any repo), we use **validated wrapper scripts**:
+
+- **`safe-apt-install`**: Validates each package against a curated allowlist of ~230 trusted packages from official Ubuntu repositories (images, PDF, email, fonts, dev tools, multimedia, OCR, etc.)
+- **`safe-systemctl`**: Validates the service name against an allowlist of ~12 approved services (openclaw, tailscaled, ssh, fail2ban, etc.)
+
+The install script installs these wrappers automatically. If running manually:
 
 ```bash
-echo 'openclaw ALL=(ALL) NOPASSWD: /usr/bin/apt-get install *, /usr/bin/apt install *, /usr/bin/apt-get update, /usr/bin/apt update, /usr/bin/pip3 install *, /usr/bin/systemctl restart *, /usr/bin/systemctl status *, /usr/bin/systemctl start *, /usr/bin/systemctl stop *, /usr/bin/systemctl enable *, /usr/bin/systemctl disable *' \
+# Install wrapper scripts
+sudo cp scripts/safe-apt-install /usr/local/bin/safe-apt-install
+sudo cp scripts/safe-systemctl /usr/local/bin/safe-systemctl
+sudo chmod 755 /usr/local/bin/safe-apt-install /usr/local/bin/safe-systemctl
+sudo chown root:root /usr/local/bin/safe-apt-install /usr/local/bin/safe-systemctl
+
+# Configure sudoers (wrappers + apt update + pip3 only)
+echo 'openclaw ALL=(ALL) NOPASSWD: /usr/local/bin/safe-apt-install, /usr/local/bin/safe-systemctl, /usr/bin/apt-get update, /usr/bin/apt update, /usr/bin/pip3 install *' \
   | sudo tee /etc/sudoers.d/openclaw > /dev/null \
   && sudo chmod 0440 /etc/sudoers.d/openclaw
 ```
@@ -667,22 +679,23 @@ This creates `/etc/sudoers.d/openclaw` with NOPASSWD access to **only** these co
 
 | Allowed sudo command | Purpose |
 |---------------------|---------|
-| `apt-get install *` / `apt install *` | Install packages |
+| `safe-apt-install <pkg>` | Install approved packages only (~230 in allowlist) |
+| `safe-systemctl <action> <svc>` | Manage approved services only (~12 in allowlist) |
 | `apt-get update` / `apt update` | Update package lists |
 | `pip3 install *` | Install Python packages |
-| `systemctl restart *` | Restart services |
-| `systemctl status *` | Check service status |
-| `systemctl start *` / `stop *` | Start/stop services |
-| `systemctl enable *` / `disable *` | Enable/disable services |
 
-!!! success "Defense in depth: two layers of protection"
-    1. **OpenClaw exec-approvals**: Controls which binaries the agent can invoke (`sudo` is in the allowlist)
-    2. **OS sudoers**: Controls what `sudo` can actually do (only the commands listed above)
+!!! success "Defense in depth: three layers of protection"
+    1. **OpenClaw exec-approvals**: Controls which binaries the agent can invoke (wrappers are in the allowlist, raw `sudo` is NOT)
+    2. **Wrapper scripts**: Validate package names and service names against curated allowlists before executing
+    3. **OS sudoers**: Only the wrapper scripts (not raw `apt-get install`) can run with NOPASSWD
 
-    Any `sudo` command not in the sudoers list (e.g., `sudo rm -rf /`, `sudo reboot`) will be **rejected by the OS** even though OpenClaw allows `sudo` to execute.
+    A compromised agent cannot install arbitrary packages (blocked by safe-apt-install), restart critical services like sshd or tailscaled arbitrarily (blocked by safe-systemctl), or execute raw sudo commands (not in exec-approvals).
+
+!!! tip "Adding packages to the allowlist"
+    Edit `/usr/local/bin/safe-apt-install` and add the package name to the `ALLOWED_PACKAGES` array. Only add packages from official Ubuntu/Debian repositories with established maintainers.
 
 !!! warning "This step requires SSH access"
-    The sudoers file must be created manually via SSH as root or with an existing sudo-capable user. The install script cannot create it because the `openclaw` user doesn't have sudo yet at that point.
+    The sudoers file and wrappers must be created manually via SSH as root or with an existing sudo-capable user. The install script handles this automatically.
 
 !!! tip "Model providers"
     Add your chosen model provider(s) to `models.providers`. Common options:
@@ -1531,7 +1544,8 @@ Group=openclaw
 WorkingDirectory=/home/openclaw
 
 # --- Load environment variables ---
-EnvironmentFile=/home/openclaw/.openclaw/.env
+# Load API keys and secrets (dash prefix = don't fail if file missing)
+EnvironmentFile=-/etc/openclaw/env
 Environment=NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache
 Environment=OPENCLAW_NO_RESPAWN=1
 
@@ -1586,12 +1600,12 @@ ProtectClock=true
 # MemoryDenyWriteExecute=true
 
 # --- Resource limits ---
-# Maximum 50% CPU
-CPUQuota=50%
+# Adjust CPUQuota if VPS is dedicated to OpenClaw (can use 80-100%)
+CPUQuota=80%
 # Maximum 2GB RAM
 MemoryMax=2G
-# Maximum 100 processes/threads
-TasksMax=100
+# Node.js with subagents may spawn many child processes
+TasksMax=256
 
 # --- Logging ---
 StandardOutput=journal

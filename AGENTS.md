@@ -284,8 +284,10 @@ These are field-tested, not theoretical. Discovered through real production depl
 - **Moonshot ≠ Kimi Coding**: Separate providers with different API keys (`MOONSHOT_API_KEY` vs `KIMI_API_KEY`) and endpoints
 
 ### Execution control
-- **Execution approvals**: `~/.openclaw/exec-approvals.json` — schema v1 with `socket` (path + auto-generated token), `agents.main.allowlist` with `{ "pattern": "/usr/bin/..." }` entries (absolute paths, glob supported). 44 auto-approved patterns including `/usr/bin/sudo`. `sudo` is allowed in exec-approvals BUT restricted by OS sudoers (`/etc/sudoers.d/openclaw`) to only: apt install/update, pip3 install, systemctl restart/start/stop/status/enable/disable. Destructive commands (`rm`, `kill`, `chmod`, `ssh`) require Telegram approval. `su`, `dd`, `reboot` never allowed
-- **Restricted sudo**: `/etc/sudoers.d/openclaw` with `NOPASSWD` for specific commands only. Defense in depth: exec-approvals controls binary invocation, sudoers controls what sudo can do. Must be created manually via SSH (openclaw user doesn't have sudo during install)
+- **Execution approvals**: `~/.openclaw/exec-approvals.json` — schema v1 with `socket` (path + auto-generated token), `agents.main.allowlist` with `{ "pattern": "/usr/bin/..." }` entries (absolute paths, glob supported). 44 auto-approved patterns including `/usr/local/bin/safe-apt-install` and `/usr/local/bin/safe-systemctl` (NOT raw `/usr/bin/sudo`). Destructive commands (`rm`, `kill`, `chmod`, `ssh`) require Telegram approval. `su`, `dd`, `reboot` never allowed
+- **Restricted sudo**: `/etc/sudoers.d/openclaw` with `NOPASSWD` for wrapper scripts only: `safe-apt-install` (validates packages against allowlist of ~230 trusted packages), `safe-systemctl` (validates service name against allowlist of ~12 services), `apt-get update`, `pip3 install`. Raw `sudo apt-get install` is NOT allowed — must go through safe-apt-install wrapper
+- **safe-apt-install**: `/usr/local/bin/safe-apt-install` — validates each package against a curated allowlist of ~230 packages from official Ubuntu repos (images, PDF, email, fonts, dev tools, etc.). Rejects unknown packages, flags, and version specifiers. Edit the script to add new packages
+- **safe-systemctl**: `/usr/local/bin/safe-systemctl` — only allows actions (restart/start/stop/status/enable/disable/reload) on approved services (openclaw, tailscaled, ssh, fail2ban, auditd, docker, cron, etc.)
 
 ### Web search
 - **web_search**: Requires `GEMINI_API_KEY` env var (auto-detect) or explicit `tools.web.search.provider` config. Detection order: Brave → Gemini → Kimi → Perplexity → Grok
@@ -304,7 +306,7 @@ These are field-tested, not theoretical. Discovered through real production depl
 auth-profiles.json > process.env (systemd/EnvironmentFile) > ~/.openclaw/.env > openclaw.json env.vars
 ```
 
-Our guide centralizes all secrets in `/etc/openclaw/env` (loaded via `EnvironmentFile=` in the systemd override), so they arrive as process.env — second highest priority.
+Our guide centralizes all secrets in `/etc/openclaw/env` (loaded via `EnvironmentFile=-/etc/openclaw/env` in the base systemd service — no override needed), so they arrive as process.env — second highest priority. The `-` prefix means the service won't fail if the file doesn't exist yet.
 
 If auth fails despite correct env vars, check `~/.openclaw/agents/main/agent/auth-profiles.json` for stale keys.
 

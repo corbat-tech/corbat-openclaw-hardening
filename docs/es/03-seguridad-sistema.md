@@ -141,13 +141,13 @@ sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.backup.$(date +%Y%m%d)
 
     **Método 1 — Descargar directamente desde este repositorio (recomendado):**
     ```bash
-    sudo curl -o /etc/ssh/sshd_config.d/99-hardening.conf \
+    sudo curl -o /etc/ssh/sshd_config.d/99-openclaw-hardening.conf \
       https://raw.githubusercontent.com/corbat-tech/corbat-openclaw-hardening/main/scripts/99-openclaw-hardening.conf
     ```
 
     **Método 2 — Usar nano para editar manualmente:**
     ```bash
-    sudo nano /etc/ssh/sshd_config.d/99-hardening.conf
+    sudo nano /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
     ```
     Luego copia el contenido desde el [archivo de configuración en el repositorio](https://github.com/corbat-tech/corbat-openclaw-hardening/blob/main/scripts/99-openclaw-hardening.conf).
 
@@ -223,8 +223,8 @@ sudo chmod 644 /etc/ssh/ssh_host_*_key.pub
 sudo chown root:root /etc/ssh/ssh_host_*_key.pub
 
 # Permisos del archivo de configuración hardening
-sudo chmod 600 /etc/ssh/sshd_config.d/99-hardening.conf
-sudo chown root:root /etc/ssh/sshd_config.d/99-hardening.conf
+sudo chmod 600 /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
+sudo chown root:root /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
 ```
 
 ### Verificar configuración antes de aplicar
@@ -790,7 +790,7 @@ sudo journalctl -u sshd -n 50
 
 # Restaurar backup
 sudo cp /etc/ssh/sshd_config.backup.* /etc/ssh/sshd_config
-sudo rm /etc/ssh/sshd_config.d/99-hardening.conf
+sudo rm /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
 sudo systemctl restart ssh
 ```
 

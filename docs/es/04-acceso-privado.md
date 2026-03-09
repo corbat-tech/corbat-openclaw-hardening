@@ -307,11 +307,11 @@ Añade la directiva ListenAddress automáticamente (evita errores de copia manua
 
 ```bash
 # Añadir ListenAddress con tu IP real de Tailscale
-echo "# === Escuchar SOLO en Tailscale ===" | sudo tee -a /etc/ssh/sshd_config.d/99-hardening.conf
-echo "ListenAddress $(tailscale ip -4)" | sudo tee -a /etc/ssh/sshd_config.d/99-hardening.conf
+echo "# === Escuchar SOLO en Tailscale ===" | sudo tee -a /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
+echo "ListenAddress $(tailscale ip -4)" | sudo tee -a /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
 
 # Verificar que se añadió correctamente
-tail -2 /etc/ssh/sshd_config.d/99-hardening.conf
+tail -2 /etc/ssh/sshd_config.d/99-openclaw-hardening.conf
 ```
 
 **Salida esperada:**

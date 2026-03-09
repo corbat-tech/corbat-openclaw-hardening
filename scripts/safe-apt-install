@@ -1,0 +1,376 @@
+#!/bin/bash
+# =============================================================================
+# safe-apt-install — Restricted apt install wrapper for OpenClaw
+# Only allows installing packages from an approved allowlist.
+# Installed to /usr/local/bin/safe-apt-install with sudoers NOPASSWD.
+#
+# Usage: safe-apt-install <package1> [package2] ...
+# =============================================================================
+
+set -euo pipefail
+
+# --- Approved package allowlist ---
+# These packages are from official Ubuntu/Debian repositories only.
+# Curated for a productivity/automation VPS (image, PDF, email, web, dev, etc.)
+# To add packages: edit this list and re-run install-openclaw.sh or copy manually.
+
+ALLOWED_PACKAGES=(
+  # --- Images ---
+  imagemagick
+  graphicsmagick
+  libvips-tools
+  libvips-dev
+  optipng
+  pngquant
+  jpegoptim
+  webp
+  gifsicle
+  libimage-exiftool-perl
+  inkscape
+  potrace
+  librsvg2-bin
+  libheif-examples
+  libavif-bin
+  libjpeg-turbo-progs
+
+  # --- PDF / Documents ---
+  poppler-utils
+  ghostscript
+  pandoc
+  wkhtmltopdf
+  qpdf
+  pdftk-java
+  enscript
+  mupdf-tools
+  djvulibre-bin
+  calibre
+
+  # --- Office (LibreOffice headless for document conversion) ---
+  libreoffice-calc
+  libreoffice-writer
+  libreoffice-impress
+  libreoffice-draw
+  libreoffice-core
+  libreoffice-common
+
+  # --- LaTeX (for PDF generation) ---
+  texlive-base
+  texlive-latex-base
+  texlive-latex-extra
+  texlive-latex-recommended
+  texlive-fonts-recommended
+  texlive-xetex
+  texlive-luatex
+  latexmk
+
+  # --- Email ---
+  msmtp
+  msmtp-mta
+  mailutils
+  mutt
+  neomutt
+  s-nail
+  postfix
+  dovecot-imapd
+
+  # --- Web / Scraping ---
+  chromium-browser
+  chromium
+  firefox
+  wget
+  curl
+  lynx
+  w3m
+  aria2
+  httpie
+
+  # --- Fonts ---
+  fonts-liberation
+  fonts-liberation2
+  fonts-noto
+  fonts-noto-cjk
+  fonts-noto-color-emoji
+  fonts-noto-mono
+  fonts-dejavu
+  fonts-dejavu-core
+  fonts-roboto
+  fonts-firacode
+  fonts-open-sans
+  fonts-ubuntu
+  fonts-font-awesome
+  fonts-lato
+  fonts-inconsolata
+  fonts-hack
+  fontconfig
+
+  # --- Compression ---
+  zip
+  unzip
+  p7zip-full
+  p7zip-rar
+  xz-utils
+  bzip2
+  zstd
+  lz4
+  pigz
+  rar
+  unrar
+  lzma
+  lzop
+  gzip
+
+  # --- Networking ---
+  net-tools
+  dnsutils
+  traceroute
+  whois
+  socat
+  netcat-openbsd
+  iproute2
+  iperf3
+  mtr-tiny
+  nmap
+  openssh-client
+  sshpass
+  rsync
+  lftp
+
+  # --- Development tools ---
+  git
+  git-lfs
+  build-essential
+  cmake
+  pkg-config
+  automake
+  autoconf
+  libtool
+  gcc
+  g++
+  make
+  ninja-build
+  meson
+  clang
+  llvm
+  gdb
+  valgrind
+  strace
+  ltrace
+
+  # --- Python ---
+  python3
+  python3-pip
+  python3-venv
+  python3-dev
+  python3-setuptools
+  python3-wheel
+  python3-full
+  pipx
+  python3-numpy
+  python3-pandas
+  python3-requests
+  python3-lxml
+  python3-bs4
+  python3-pil
+  python3-matplotlib
+  python3-scipy
+  python3-yaml
+  python3-toml
+  python3-dotenv
+  python3-jinja2
+  python3-cryptography
+  python3-paramiko
+
+  # --- Node.js ecosystem (managed by nvm, but native deps) ---
+  libcairo2-dev
+  libjpeg-dev
+  libpango1.0-dev
+  libgif-dev
+  librsvg2-dev
+  libpixman-1-dev
+  libnode-dev
+
+  # --- Runtimes ---
+  default-jre
+  default-jdk
+  ruby
+  ruby-dev
+  golang
+  rustc
+  cargo
+  lua5.4
+  php-cli
+
+  # --- Database CLI ---
+  sqlite3
+  postgresql-client
+  mysql-client
+  redis-tools
+  mongodb-mongosh
+
+  # --- Multimedia ---
+  ffmpeg
+  sox
+  mediainfo
+  yt-dlp
+  lame
+  opus-tools
+  flac
+  vorbis-tools
+  libsox-fmt-all
+  v4l-utils
+
+  # --- OCR / ML ---
+  tesseract-ocr
+  tesseract-ocr-spa
+  tesseract-ocr-eng
+  tesseract-ocr-fra
+  tesseract-ocr-deu
+  tesseract-ocr-por
+  tesseract-ocr-ita
+  tesseract-ocr-jpn
+  tesseract-ocr-chi-sim
+  tesseract-ocr-chi-tra
+  tesseract-ocr-kor
+  tesseract-ocr-ara
+  tesseract-ocr-rus
+
+  # --- System utilities ---
+  htop
+  btop
+  tree
+  jq
+  bc
+  ncdu
+  tmux
+  screen
+  time
+  fzf
+  ripgrep
+  fd-find
+  bat
+  exa
+  file
+  pv
+  parallel
+  rename
+  watch
+  coreutils
+  moreutils
+  procps
+  psmisc
+  lsof
+  sysstat
+
+  # --- Security ---
+  gnupg
+  gnupg2
+  openssl
+  ca-certificates
+  pass
+  age
+  libpam-google-authenticator
+
+  # --- Containers ---
+  docker.io
+  docker-compose
+  docker-buildx
+  podman
+  buildah
+  skopeo
+
+  # --- Cloud CLI ---
+  awscli
+  rclone
+  restic
+
+  # --- Monitoring ---
+  fail2ban
+  auditd
+  aide
+  logrotate
+
+  # --- System deps often needed by npm packages ---
+  libssl-dev
+  libffi-dev
+  zlib1g-dev
+  libreadline-dev
+  libsqlite3-dev
+  libxml2-dev
+  libxslt1-dev
+  libcurl4-openssl-dev
+  libpq-dev
+  libmysqlclient-dev
+  libyaml-dev
+  libgmp-dev
+
+  # --- Tailscale (already installed but allow updates) ---
+  tailscale
+
+  # --- Misc useful ---
+  duf
+  dust
+  hyperfine
+  tokei
+  xclip
+  xsel
+  expect
+  at
+  cron
+  locales
+  tzdata
+  software-properties-common
+  apt-transport-https
+  lsb-release
+)
+
+# --- Validation ---
+if [ $# -eq 0 ]; then
+  echo "Usage: safe-apt-install <package1> [package2] ..."
+  echo "Only packages from the approved allowlist can be installed."
+  exit 1
+fi
+
+# Check each requested package against the allowlist
+REJECTED=()
+APPROVED=()
+
+for pkg in "$@"; do
+  # Strip version specifiers (e.g., package=1.2.3)
+  pkg_name="${pkg%%=*}"
+  pkg_name="${pkg_name%%/*}"
+
+  # Reject flags (prevent passing -o, --option, etc.)
+  if [[ "$pkg_name" == -* ]]; then
+    echo "[ERROR] Flags are not allowed: $pkg_name"
+    exit 1
+  fi
+
+  found=0
+  for allowed in "${ALLOWED_PACKAGES[@]}"; do
+    if [ "$pkg_name" = "$allowed" ]; then
+      found=1
+      break
+    fi
+  done
+
+  if [ $found -eq 1 ]; then
+    APPROVED+=("$pkg_name")
+  else
+    REJECTED+=("$pkg_name")
+  fi
+done
+
+if [ ${#REJECTED[@]} -gt 0 ]; then
+  echo "[ERROR] The following packages are NOT in the approved allowlist:"
+  for r in "${REJECTED[@]}"; do
+    echo "  - $r"
+  done
+  echo ""
+  echo "To add packages to the allowlist, edit /usr/local/bin/safe-apt-install"
+  echo "or ask the system administrator."
+  exit 1
+fi
+
+# All packages approved — proceed with installation
+echo "[safe-apt-install] Installing approved packages: ${APPROVED[*]}"
+exec /usr/bin/apt-get install -y "${APPROVED[@]}"

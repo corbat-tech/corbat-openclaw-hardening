@@ -1,0 +1,94 @@
+#!/bin/bash
+# =============================================================================
+# safe-systemctl — Restricted systemctl wrapper for OpenClaw
+# Only allows specific actions on approved services.
+# Installed to /usr/local/bin/safe-systemctl with sudoers NOPASSWD.
+#
+# Usage: safe-systemctl <action> <service>
+# =============================================================================
+
+set -euo pipefail
+
+# --- Approved services ---
+ALLOWED_SERVICES=(
+  openclaw
+  tailscaled
+  ssh
+  fail2ban
+  auditd
+  docker
+  cron
+  unattended-upgrades
+  postfix
+  dovecot
+  nginx
+  caddy
+)
+
+# --- Approved actions ---
+ALLOWED_ACTIONS=(
+  restart
+  start
+  stop
+  status
+  enable
+  disable
+  reload
+  is-active
+  is-enabled
+  show
+)
+
+# --- Validation ---
+if [ $# -lt 2 ]; then
+  echo "Usage: safe-systemctl <action> <service>"
+  echo ""
+  echo "Allowed actions: ${ALLOWED_ACTIONS[*]}"
+  echo "Allowed services: ${ALLOWED_SERVICES[*]}"
+  exit 1
+fi
+
+ACTION="$1"
+SERVICE="$2"
+
+# Strip .service suffix for comparison
+SERVICE_NAME="${SERVICE%.service}"
+
+# Reject flags
+if [[ "$ACTION" == -* ]] || [[ "$SERVICE" == -* ]]; then
+  echo "[ERROR] Flags are not allowed."
+  exit 1
+fi
+
+# Validate action
+action_ok=0
+for allowed in "${ALLOWED_ACTIONS[@]}"; do
+  if [ "$ACTION" = "$allowed" ]; then
+    action_ok=1
+    break
+  fi
+done
+
+if [ $action_ok -eq 0 ]; then
+  echo "[ERROR] Action '$ACTION' is not allowed."
+  echo "Allowed actions: ${ALLOWED_ACTIONS[*]}"
+  exit 1
+fi
+
+# Validate service
+service_ok=0
+for allowed in "${ALLOWED_SERVICES[@]}"; do
+  if [ "$SERVICE_NAME" = "$allowed" ]; then
+    service_ok=1
+    break
+  fi
+done
+
+if [ $service_ok -eq 0 ]; then
+  echo "[ERROR] Service '$SERVICE_NAME' is not in the approved list."
+  echo "Allowed services: ${ALLOWED_SERVICES[*]}"
+  exit 1
+fi
+
+# All checks passed — execute
+exec /usr/bin/systemctl "$ACTION" "$SERVICE_NAME"

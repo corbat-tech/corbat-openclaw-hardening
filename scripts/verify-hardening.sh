@@ -235,8 +235,45 @@ fi
 
 echo ""
 
-# --- 5. MONITORING ---
-echo "=== 5. MONITORING ==="
+# --- 5. SUDOERS & WRAPPERS ---
+echo "=== 5. SUDOERS & WRAPPERS ==="
+
+if [ -f /etc/sudoers.d/openclaw ]; then
+    SUDOERS_PERMS=$(stat -c "%a" /etc/sudoers.d/openclaw 2>/dev/null)
+    if [ "$SUDOERS_PERMS" = "440" ]; then
+        check "Sudoers file /etc/sudoers.d/openclaw (perms 0440)" "pass"
+    else
+        check "Sudoers file /etc/sudoers.d/openclaw (perms 0440, got $SUDOERS_PERMS)" "fail"
+    fi
+else
+    check "Sudoers file /etc/sudoers.d/openclaw exists" "fail"
+fi
+
+if [ -x /usr/local/bin/safe-apt-install ]; then
+    check "safe-apt-install wrapper installed" "pass"
+else
+    check "safe-apt-install wrapper installed" "warn"
+fi
+
+if [ -x /usr/local/bin/safe-systemctl ]; then
+    check "safe-systemctl wrapper installed" "pass"
+else
+    check "safe-systemctl wrapper installed" "warn"
+fi
+
+# Check that sudoers does NOT contain wildcard apt-get install *
+if grep -q 'apt-get install \*' /etc/sudoers.d/openclaw 2>/dev/null; then
+    check "Sudoers: no wildcard apt-get install" "fail" "critical"
+elif grep -q 'systemctl restart \*' /etc/sudoers.d/openclaw 2>/dev/null; then
+    check "Sudoers: no wildcard systemctl restart" "fail" "critical"
+else
+    check "Sudoers: no dangerous wildcards" "pass"
+fi
+
+echo ""
+
+# --- 6. MONITORING ---
+echo "=== 6. MONITORING ==="
 
 if sudo auditctl -l 2>/dev/null | grep -q "openclaw"; then
     check "Audit rules for OpenClaw configured" "pass"
