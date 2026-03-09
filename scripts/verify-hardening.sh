@@ -261,11 +261,20 @@ else
     check "safe-systemctl wrapper installed" "warn"
 fi
 
+if [ -x /usr/local/bin/safe-pip-install ]; then
+    check "safe-pip-install wrapper installed" "pass"
+else
+    check "safe-pip-install wrapper installed" "warn"
+fi
+
 # Check that sudoers does NOT contain wildcard apt-get install *
-if grep -q 'apt-get install \*' /etc/sudoers.d/openclaw 2>/dev/null; then
-    check "Sudoers: no wildcard apt-get install" "fail" "critical"
-elif grep -q 'systemctl restart \*' /etc/sudoers.d/openclaw 2>/dev/null; then
-    check "Sudoers: no wildcard systemctl restart" "fail" "critical"
+SUDOERS_WILDCARDS=0
+grep -q 'apt-get install \*' /etc/sudoers.d/openclaw 2>/dev/null && SUDOERS_WILDCARDS=1
+grep -q 'apt install \*' /etc/sudoers.d/openclaw 2>/dev/null && SUDOERS_WILDCARDS=1
+grep -q 'systemctl restart \*' /etc/sudoers.d/openclaw 2>/dev/null && SUDOERS_WILDCARDS=1
+grep -q 'pip3 install \*' /etc/sudoers.d/openclaw 2>/dev/null && SUDOERS_WILDCARDS=1
+if [ $SUDOERS_WILDCARDS -eq 1 ]; then
+    check "Sudoers: no dangerous wildcards" "fail" "critical"
 else
     check "Sudoers: no dangerous wildcards" "pass"
 fi

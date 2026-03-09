@@ -25,7 +25,7 @@ ALLOWED_SERVICES=(
   caddy
 )
 
-# --- Approved actions ---
+# --- Approved actions (require a service name) ---
 ALLOWED_ACTIONS=(
   restart
   start
@@ -39,23 +39,53 @@ ALLOWED_ACTIONS=(
   show
 )
 
+# --- Global actions (no service name needed) ---
+ALLOWED_GLOBAL_ACTIONS=(
+  daemon-reload
+)
+
 # --- Validation ---
-if [ $# -lt 2 ]; then
-  echo "Usage: safe-systemctl <action> <service>"
+if [ $# -eq 0 ]; then
+  echo "Usage: safe-systemctl <action> [service]"
   echo ""
   echo "Allowed actions: ${ALLOWED_ACTIONS[*]}"
+  echo "Allowed global actions: ${ALLOWED_GLOBAL_ACTIONS[*]}"
   echo "Allowed services: ${ALLOWED_SERVICES[*]}"
   exit 1
 fi
 
 ACTION="$1"
-SERVICE="$2"
+SERVICE="${2:-}"
+
+# Reject flags
+if [[ "$ACTION" == -* ]]; then
+  echo "[ERROR] Flags are not allowed."
+  exit 1
+fi
+
+# Check if it's a global action (no service name needed)
+for allowed in "${ALLOWED_GLOBAL_ACTIONS[@]}"; do
+  if [ "$ACTION" = "$allowed" ]; then
+    echo "[safe-systemctl] Executing: systemctl $ACTION"
+    exec /usr/bin/systemctl "$ACTION"
+  fi
+done
+
+# For non-global actions, service name is required
+if [ -z "$SERVICE" ]; then
+  echo "Usage: safe-systemctl <action> <service>"
+  echo ""
+  echo "Allowed actions: ${ALLOWED_ACTIONS[*]}"
+  echo "Allowed global actions (no service needed): ${ALLOWED_GLOBAL_ACTIONS[*]}"
+  echo "Allowed services: ${ALLOWED_SERVICES[*]}"
+  exit 1
+fi
 
 # Strip .service suffix for comparison
 SERVICE_NAME="${SERVICE%.service}"
 
-# Reject flags
-if [[ "$ACTION" == -* ]] || [[ "$SERVICE" == -* ]]; then
+# Reject flags in service name
+if [[ "$SERVICE_NAME" == -* ]]; then
   echo "[ERROR] Flags are not allowed."
   exit 1
 fi
@@ -72,6 +102,7 @@ done
 if [ $action_ok -eq 0 ]; then
   echo "[ERROR] Action '$ACTION' is not allowed."
   echo "Allowed actions: ${ALLOWED_ACTIONS[*]}"
+  echo "Allowed global actions: ${ALLOWED_GLOBAL_ACTIONS[*]}"
   exit 1
 fi
 

@@ -476,9 +476,7 @@ cat > ~/.openclaw/exec-approvals.json << EAEOF
         { "pattern": "/home/openclaw/.nvm/**/coco" },
         { "pattern": "/home/openclaw/.nvm/**/corepack" },
         { "pattern": "/home/openclaw/.local/bin/*" },
-        { "pattern": "/usr/local/bin/*" },
-        { "pattern": "/usr/local/bin/safe-apt-install" },
-        { "pattern": "/usr/local/bin/safe-systemctl" }
+        { "pattern": "/usr/local/bin/*" }
       ]
     }
   }
@@ -531,9 +529,11 @@ You work for the owner of this instance — follow their instructions and act in
 - Do not access `/home/openclaw/.ssh`, `/home/openclaw/.env`, `/etc`, `/var`
 
 ### Execution
-- Use `sudo safe-apt-install <package>` to install packages — raw `sudo apt-get install` is blocked
+- Use `sudo safe-apt-install <package>` to install system packages — raw `sudo apt-get install` is blocked
 - Use `sudo safe-systemctl <action> <service>` for service management — raw `sudo systemctl` is blocked
-- Only install packages that are in the safe-apt-install allowlist. If a package is not listed, ask for explicit approval via the configured channel before requesting it be added
+- Use `sudo safe-pip-install <package>` for system-level pip packages — raw `sudo pip3 install` is blocked
+- For user-level Python packages, use `pip3 install --user <package>` or `pipx install <package>` (no sudo needed)
+- Only install packages that are in the wrapper allowlists. If a package is not listed, ask for explicit approval via the configured channel before requesting it be added
 - Do not modify system configuration
 
 ### Communication
@@ -677,36 +677,41 @@ info "=== Installing restricted sudo wrappers ==="
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SAFE_APT_SRC="${SCRIPT_DIR}/safe-apt-install"
 SAFE_SYSTEMCTL_SRC="${SCRIPT_DIR}/safe-systemctl"
+SAFE_PIP_SRC="${SCRIPT_DIR}/safe-pip-install"
 
 # If running from curl (no local scripts dir), download from repo
+DOWNLOAD_BASE="${REPO_BASE:-https://raw.githubusercontent.com/corbat-tech/corbat-openclaw-hardening/main}"
 if [ ! -f "$SAFE_APT_SRC" ]; then
     SAFE_APT_SRC="/tmp/safe-apt-install"
-    curl -fsSL -o "$SAFE_APT_SRC" "${REPO_BASE:-https://raw.githubusercontent.com/corbat-tech/corbat-openclaw-hardening/main}/scripts/safe-apt-install"
+    curl -fsSL -o "$SAFE_APT_SRC" "${DOWNLOAD_BASE}/scripts/safe-apt-install"
 fi
 if [ ! -f "$SAFE_SYSTEMCTL_SRC" ]; then
     SAFE_SYSTEMCTL_SRC="/tmp/safe-systemctl"
-    curl -fsSL -o "$SAFE_SYSTEMCTL_SRC" "${REPO_BASE:-https://raw.githubusercontent.com/corbat-tech/corbat-openclaw-hardening/main}/scripts/safe-systemctl"
+    curl -fsSL -o "$SAFE_SYSTEMCTL_SRC" "${DOWNLOAD_BASE}/scripts/safe-systemctl"
+fi
+if [ ! -f "$SAFE_PIP_SRC" ]; then
+    SAFE_PIP_SRC="/tmp/safe-pip-install"
+    curl -fsSL -o "$SAFE_PIP_SRC" "${DOWNLOAD_BASE}/scripts/safe-pip-install"
 fi
 
 sudo cp "$SAFE_APT_SRC" /usr/local/bin/safe-apt-install
 sudo cp "$SAFE_SYSTEMCTL_SRC" /usr/local/bin/safe-systemctl
+sudo cp "$SAFE_PIP_SRC" /usr/local/bin/safe-pip-install
 sudo chmod 755 /usr/local/bin/safe-apt-install
 sudo chmod 755 /usr/local/bin/safe-systemctl
+sudo chmod 755 /usr/local/bin/safe-pip-install
 sudo chown root:root /usr/local/bin/safe-apt-install
 sudo chown root:root /usr/local/bin/safe-systemctl
+sudo chown root:root /usr/local/bin/safe-pip-install
 
-info "Installed safe-apt-install and safe-systemctl wrappers."
+info "Installed safe-apt-install, safe-systemctl, and safe-pip-install wrappers."
 
-# Configure restricted sudoers — only wrappers and apt-get update
-echo 'openclaw ALL=(ALL) NOPASSWD: /usr/local/bin/safe-apt-install, /usr/local/bin/safe-systemctl, /usr/bin/apt-get update, /usr/bin/apt update, /usr/bin/pip3 install *' \
+# Configure restricted sudoers — only wrappers and apt-get update (no raw wildcards)
+echo 'openclaw ALL=(ALL) NOPASSWD: /usr/local/bin/safe-apt-install, /usr/local/bin/safe-systemctl, /usr/local/bin/safe-pip-install, /usr/bin/apt-get update, /usr/bin/apt update' \
   | sudo tee /etc/sudoers.d/openclaw > /dev/null \
   && sudo chmod 0440 /etc/sudoers.d/openclaw
 
-info "Restricted sudo configured: safe-apt-install, safe-systemctl, apt update, pip3 only."
-
-# =============================================================================
-# SUMMARY
-# =============================================================================
+info "Restricted sudo configured: safe-apt-install, safe-systemctl, safe-pip-install, apt update only."
 
 # =============================================================================
 # 5.12 Create /etc/openclaw/env with secrets (requires sudo)
@@ -780,10 +785,10 @@ echo "  1. Add your API key to /etc/openclaw/env:"
 echo "     sudo nano /etc/openclaw/env"
 fi
 echo "  2. Start the service:"
-echo "     sudo systemctl daemon-reload"
-echo "     sudo systemctl start openclaw"
+echo "     sudo safe-systemctl daemon-reload"
+echo "     sudo safe-systemctl start openclaw"
 echo "  3. Check status (wait ~2 min for gateway to start):"
-echo "     sudo systemctl status openclaw"
+echo "     sudo safe-systemctl status openclaw"
 echo "  4. Access from your Mac (via SSH tunnel):"
 echo "     ssh -L 18789:127.0.0.1:18789 openclaw@<TAILSCALE_IP>"
 echo "     Then open: http://127.0.0.1:18789/?#token=<your-token>"

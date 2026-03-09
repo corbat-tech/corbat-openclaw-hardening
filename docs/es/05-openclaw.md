@@ -658,7 +658,8 @@ nano ~/.openclaw/exec-approvals.json
 El agente necesita `sudo` para instalar paquetes y gestionar servicios, pero un `sudo` sin restricciones sería un riesgo de seguridad. En vez de permitir `sudo apt-get install *` directo (que podría instalar cualquier paquete de cualquier repo), usamos **scripts wrapper validados**:
 
 - **`safe-apt-install`**: Valida cada paquete contra una allowlist curada de ~230 paquetes confiables de repositorios oficiales de Ubuntu (imágenes, PDF, email, fuentes, herramientas de desarrollo, multimedia, OCR, etc.)
-- **`safe-systemctl`**: Valida el nombre del servicio contra una allowlist de ~12 servicios aprobados (openclaw, tailscaled, ssh, fail2ban, etc.)
+- **`safe-systemctl`**: Valida el nombre del servicio contra una allowlist de ~12 servicios aprobados (openclaw, tailscaled, ssh, fail2ban, etc.). También soporta acciones globales como `daemon-reload`
+- **`safe-pip-install`**: Valida paquetes pip contra una allowlist curada de ~130 paquetes populares de PyPI (requests, pandas, Pillow, openai, etc.). Para instalaciones a nivel de usuario, usa `pip3 install --user` o `pipx install` directamente (sin sudo)
 
 El script de instalación instala estos wrappers automáticamente. Si se ejecuta manualmente:
 
@@ -666,11 +667,12 @@ El script de instalación instala estos wrappers automáticamente. Si se ejecuta
 # Instalar scripts wrapper
 sudo cp scripts/safe-apt-install /usr/local/bin/safe-apt-install
 sudo cp scripts/safe-systemctl /usr/local/bin/safe-systemctl
-sudo chmod 755 /usr/local/bin/safe-apt-install /usr/local/bin/safe-systemctl
-sudo chown root:root /usr/local/bin/safe-apt-install /usr/local/bin/safe-systemctl
+sudo cp scripts/safe-pip-install /usr/local/bin/safe-pip-install
+sudo chmod 755 /usr/local/bin/safe-apt-install /usr/local/bin/safe-systemctl /usr/local/bin/safe-pip-install
+sudo chown root:root /usr/local/bin/safe-apt-install /usr/local/bin/safe-systemctl /usr/local/bin/safe-pip-install
 
-# Configurar sudoers (solo wrappers + apt update + pip3)
-echo 'openclaw ALL=(ALL) NOPASSWD: /usr/local/bin/safe-apt-install, /usr/local/bin/safe-systemctl, /usr/bin/apt-get update, /usr/bin/apt update, /usr/bin/pip3 install *' \
+# Configurar sudoers (solo wrappers + apt update — sin wildcards)
+echo 'openclaw ALL=(ALL) NOPASSWD: /usr/local/bin/safe-apt-install, /usr/local/bin/safe-systemctl, /usr/local/bin/safe-pip-install, /usr/bin/apt-get update, /usr/bin/apt update' \
   | sudo tee /etc/sudoers.d/openclaw > /dev/null \
   && sudo chmod 0440 /etc/sudoers.d/openclaw
 ```
@@ -679,10 +681,10 @@ Esto crea `/etc/sudoers.d/openclaw` con acceso NOPASSWD a **solo** estos comando
 
 | Comando sudo permitido | Propósito |
 |------------------------|-----------|
-| `safe-apt-install <paquete>` | Instalar solo paquetes aprobados (~230 en la allowlist) |
-| `safe-systemctl <acción> <servicio>` | Gestionar solo servicios aprobados (~12 en la allowlist) |
+| `safe-apt-install <paquete>` | Instalar solo paquetes apt aprobados (~230 en la allowlist) |
+| `safe-systemctl <acción> [servicio]` | Gestionar servicios aprobados (~12) + acciones globales (daemon-reload) |
+| `safe-pip-install <paquete>` | Instalar solo paquetes pip aprobados (~130 en la allowlist) |
 | `apt-get update` / `apt update` | Actualizar listas de paquetes |
-| `pip3 install *` | Instalar paquetes Python |
 
 !!! success "Defensa en profundidad: tres capas de protección"
     1. **OpenClaw exec-approvals**: Controla qué binarios puede invocar el agente (los wrappers están en la allowlist, `sudo` directo NO)

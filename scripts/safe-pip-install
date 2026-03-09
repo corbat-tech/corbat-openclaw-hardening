@@ -1,0 +1,226 @@
+#!/bin/bash
+# =============================================================================
+# safe-pip-install — Restricted pip3 install wrapper for OpenClaw
+# Only allows installing packages from an approved allowlist.
+# Installed to /usr/local/bin/safe-pip-install with sudoers NOPASSWD.
+#
+# Usage: safe-pip-install <package1> [package2] ...
+#
+# NOTE: Prefer installing Python packages WITHOUT sudo (user-level):
+#   pip3 install --user <package>
+#   pipx install <package>
+# Only use this wrapper when system-level installation is truly needed.
+# =============================================================================
+
+set -euo pipefail
+
+# --- Approved pip package allowlist ---
+# These are well-known, high-download packages from PyPI with established maintainers.
+# Only packages that genuinely need system-level install should be here.
+
+ALLOWED_PACKAGES=(
+  # --- Web / HTTP ---
+  requests
+  httpx
+  aiohttp
+  urllib3
+  beautifulsoup4
+  lxml
+  scrapy
+  selenium
+  playwright
+
+  # --- Data / Analysis ---
+  numpy
+  pandas
+  scipy
+  matplotlib
+  seaborn
+  plotly
+  openpyxl
+  xlsxwriter
+  tabulate
+  csvkit
+
+  # --- Image processing ---
+  Pillow
+  pillow
+  opencv-python-headless
+  cairosvg
+  svglib
+  qrcode
+  barcode
+
+  # --- PDF ---
+  reportlab
+  fpdf2
+  PyPDF2
+  pypdf
+  pdfplumber
+  ocrmypdf
+  weasyprint
+  pdfminer.six
+
+  # --- Email ---
+  himalaya
+  imapclient
+  yagmail
+
+  # --- AI / ML ---
+  openai
+  anthropic
+  google-generativeai
+  tiktoken
+  transformers
+  torch
+  langchain
+  langchain-core
+  langchain-community
+  llama-index
+
+  # --- Automation / CLI ---
+  click
+  typer
+  rich
+  tqdm
+  python-dotenv
+  pyyaml
+  toml
+  tomli
+  tomli-w
+  jinja2
+  arrow
+  pendulum
+  schedule
+  celery
+  rq
+
+  # --- Database ---
+  sqlalchemy
+  psycopg2-binary
+  pymongo
+  redis
+  aiosqlite
+  asyncpg
+
+  # --- Crypto / Auth ---
+  cryptography
+  paramiko
+  pyjwt
+  bcrypt
+  passlib
+  certifi
+
+  # --- Dev tools ---
+  pytest
+  black
+  ruff
+  mypy
+  flake8
+  isort
+  pre-commit
+  ipython
+  jupyter
+  notebook
+  nbconvert
+
+  # --- Web frameworks (for internal tools) ---
+  flask
+  fastapi
+  uvicorn
+  gunicorn
+  starlette
+  django
+
+  # --- File handling ---
+  python-magic
+  chardet
+  python-docx
+  python-pptx
+  markdown
+  markdownify
+  html2text
+
+  # --- System ---
+  psutil
+  watchdog
+  pexpect
+  fabric
+  invoke
+
+  # --- Networking ---
+  dnspython
+  scapy
+  websockets
+  python-socketio
+)
+
+# --- Validation ---
+if [ $# -eq 0 ]; then
+  echo "Usage: safe-pip-install <package1> [package2] ..."
+  echo "Only packages from the approved allowlist can be installed."
+  echo ""
+  echo "TIP: Prefer user-level install when possible:"
+  echo "  pip3 install --user <package>"
+  echo "  pipx install <package>"
+  exit 1
+fi
+
+# Check each requested package against the allowlist
+REJECTED=()
+APPROVED=()
+
+for pkg in "$@"; do
+  # Strip version specifiers (e.g., package==1.2.3, package>=1.0)
+  pkg_name="${pkg%%=*}"
+  pkg_name="${pkg_name%%>*}"
+  pkg_name="${pkg_name%%<*}"
+  pkg_name="${pkg_name%%[*}"
+  pkg_name="${pkg_name%%!*}"
+
+  # Reject flags (prevent passing --target, --prefix, etc.)
+  if [[ "$pkg_name" == -* ]]; then
+    echo "[ERROR] Flags are not allowed: $pkg_name"
+    echo "Use pip3 directly (without sudo) for advanced options."
+    exit 1
+  fi
+
+  # Reject URLs and paths (prevent installing from arbitrary sources)
+  if [[ "$pkg_name" == *"/"* ]] || [[ "$pkg_name" == *":"* ]] || [[ "$pkg_name" == *".whl" ]] || [[ "$pkg_name" == *".tar"* ]]; then
+    echo "[ERROR] URLs, paths, and wheel files are not allowed: $pkg_name"
+    echo "Only named packages from PyPI are accepted."
+    exit 1
+  fi
+
+  # Case-insensitive comparison (PyPI package names are case-insensitive)
+  found=0
+  pkg_lower=$(echo "$pkg_name" | tr '[:upper:]' '[:lower:]')
+  for allowed in "${ALLOWED_PACKAGES[@]}"; do
+    allowed_lower=$(echo "$allowed" | tr '[:upper:]' '[:lower:]')
+    if [ "$pkg_lower" = "$allowed_lower" ]; then
+      found=1
+      break
+    fi
+  done
+
+  if [ $found -eq 1 ]; then
+    APPROVED+=("$pkg_name")
+  else
+    REJECTED+=("$pkg_name")
+  fi
+done
+
+if [ ${#REJECTED[@]} -gt 0 ]; then
+  echo "[ERROR] The following packages are NOT in the approved allowlist:"
+  for r in "${REJECTED[@]}"; do
+    echo "  - $r"
+  done
+  echo ""
+  echo "To install without sudo (user-level): pip3 install --user ${REJECTED[*]}"
+  echo "To add to the allowlist, edit /usr/local/bin/safe-pip-install"
+  exit 1
+fi
+
+# All packages approved — proceed with installation
+echo "[safe-pip-install] Installing approved packages: ${APPROVED[*]}"
+exec /usr/bin/pip3 install "${APPROVED[@]}"
