@@ -476,7 +476,8 @@ cat > ~/.openclaw/exec-approvals.json << EAEOF
         { "pattern": "/home/openclaw/.nvm/**/coco" },
         { "pattern": "/home/openclaw/.nvm/**/corepack" },
         { "pattern": "/home/openclaw/.local/bin/*" },
-        { "pattern": "/usr/local/bin/*" }
+        { "pattern": "/usr/local/bin/*" },
+        { "pattern": "/usr/bin/sudo" }
       ]
     }
   }
@@ -762,7 +763,7 @@ echo "  Sandbox:        off (systemd hardening provides isolation)"
 echo "  Docker:         $(docker --version 2>/dev/null || echo 'not found')"
 echo "  Bind:           loopback only"
 echo "  Tools:          full (gateway denied)"
-echo "  Exec approvals: allowlist + safe-apt-install + safe-systemctl"
+echo "  Exec approvals: allowlist + safe-apt-install + safe-systemctl + safe-pip-install"
 echo "  Sudo:           restricted (wrappers with allowlists only)"
 if [ -n "${TELEGRAM_TOKEN:-}" ]; then
 echo "  Telegram:       configured (dmPolicy: ${TELEGRAM_DM_POLICY})"

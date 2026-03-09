@@ -629,7 +629,7 @@ nano ~/.openclaw/exec-approvals.json
 | Desarrollo | `/usr/bin/git`, `docker`, `python3`, `~/.nvm/**/node`, `npm`, `npx`, `corepack` |
 | Red (dev) | `/usr/bin/curl`, `wget` |
 | Binarios locales | `~/.nvm/**/openclaw`, `~/.nvm/**/coco`, `~/.local/bin/*`, `/usr/local/bin/*` |
-| Sudo restringido | `/usr/local/bin/safe-apt-install`, `/usr/local/bin/safe-systemctl` (wrappers validados — ver abajo) |
+| Ops privilegiadas | `/usr/bin/sudo`, `/usr/local/bin/safe-apt-install`, `safe-systemctl`, `safe-pip-install` (wrappers validados — ver abajo) |
 
 **Comandos que REQUIEREN aprobación vía Telegram:**
 
@@ -687,11 +687,11 @@ Esto crea `/etc/sudoers.d/openclaw` con acceso NOPASSWD a **solo** estos comando
 | `apt-get update` / `apt update` | Actualizar listas de paquetes |
 
 !!! success "Defensa en profundidad: tres capas de protección"
-    1. **OpenClaw exec-approvals**: Controla qué binarios puede invocar el agente (los wrappers están en la allowlist, `sudo` directo NO)
+    1. **OpenClaw exec-approvals**: Controla qué binarios puede invocar el agente (`sudo` está permitido, pero lo que sudo puede ejecutar está restringido por la capa 3)
     2. **Scripts wrapper**: Validan nombres de paquetes y servicios contra allowlists curadas antes de ejecutar
-    3. **Sudoers del SO**: Solo los scripts wrapper (no `apt-get install` directo) pueden ejecutarse con NOPASSWD
+    3. **Sudoers del SO**: Solo los scripts wrapper (no `apt-get install`, `systemctl`, ni `pip3 install` directos) pueden ejecutarse con NOPASSWD
 
-    Un agente comprometido no puede instalar paquetes arbitrarios (bloqueado por safe-apt-install), reiniciar servicios críticos como sshd o tailscaled arbitrariamente (bloqueado por safe-systemctl), ni ejecutar comandos sudo directos (no están en exec-approvals).
+    Un agente comprometido no puede instalar paquetes arbitrarios (bloqueado por safe-apt-install), reiniciar servicios críticos como sshd o tailscaled arbitrariamente (bloqueado por safe-systemctl), instalar paquetes pip arbitrarios (bloqueado por safe-pip-install), ni ejecutar comandos privilegiados directos (bloqueado por sudoers).
 
 !!! tip "Añadir paquetes a la allowlist"
     Edita `/usr/local/bin/safe-apt-install` y añade el nombre del paquete al array `ALLOWED_PACKAGES`. Solo añade paquetes de repositorios oficiales Ubuntu/Debian con mantenedores establecidos.

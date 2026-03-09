@@ -471,7 +471,7 @@ The install script generates `~/.openclaw/exec-approvals.json` with a unique soc
 }
 ```
 
-`sudo` is in the allowlist but restricted by OS sudoers (`/etc/sudoers.d/openclaw`) to only: `apt install`, `apt update`, `pip3 install`, `systemctl restart/start/stop/status/enable/disable`.
+`sudo` is in the allowlist but restricted by OS sudoers (`/etc/sudoers.d/openclaw`) to only run the validated wrapper scripts: `safe-apt-install`, `safe-systemctl`, `safe-pip-install`, plus `apt-get update` and `apt update`. Each wrapper validates its arguments against a curated allowlist before executing the real command.
 
 Commands not in the allowlist (`rm`, `kill`, `chmod`, `ssh`, `scp`) require approval via Telegram. Commands like `su`, `dd`, `reboot` are never allowed (not in any list).
 

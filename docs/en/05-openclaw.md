@@ -629,7 +629,7 @@ nano ~/.openclaw/exec-approvals.json
 | Development | `/usr/bin/git`, `docker`, `python3`, `~/.nvm/**/node`, `npm`, `npx`, `corepack` |
 | Network (dev) | `/usr/bin/curl`, `wget` |
 | Local binaries | `~/.nvm/**/openclaw`, `~/.nvm/**/coco`, `~/.local/bin/*`, `/usr/local/bin/*` |
-| Restricted sudo | `/usr/local/bin/safe-apt-install`, `/usr/local/bin/safe-systemctl` (validated wrappers — see below) |
+| Privileged ops | `/usr/bin/sudo`, `/usr/local/bin/safe-apt-install`, `safe-systemctl`, `safe-pip-install` (validated wrappers — see below) |
 
 **Commands that REQUIRE approval via Telegram:**
 
@@ -687,11 +687,11 @@ This creates `/etc/sudoers.d/openclaw` with NOPASSWD access to **only** these co
 | `apt-get update` / `apt update` | Update package lists |
 
 !!! success "Defense in depth: three layers of protection"
-    1. **OpenClaw exec-approvals**: Controls which binaries the agent can invoke (wrappers are in the allowlist, raw `sudo` is NOT)
+    1. **OpenClaw exec-approvals**: Controls which binaries the agent can invoke (`sudo` is allowed, but what sudo can run is restricted by layer 3)
     2. **Wrapper scripts**: Validate package names and service names against curated allowlists before executing
-    3. **OS sudoers**: Only the wrapper scripts (not raw `apt-get install`) can run with NOPASSWD
+    3. **OS sudoers**: Only the wrapper scripts (not raw `apt-get install`, `systemctl`, or `pip3 install`) can run with NOPASSWD
 
-    A compromised agent cannot install arbitrary packages (blocked by safe-apt-install), restart critical services like sshd or tailscaled arbitrarily (blocked by safe-systemctl), or execute raw sudo commands (not in exec-approvals).
+    A compromised agent cannot install arbitrary packages (blocked by safe-apt-install), restart critical services like sshd or tailscaled arbitrarily (blocked by safe-systemctl), install arbitrary pip packages (blocked by safe-pip-install), or run raw privileged commands (blocked by sudoers).
 
 !!! tip "Adding packages to the allowlist"
     Edit `/usr/local/bin/safe-apt-install` and add the package name to the `ALLOWED_PACKAGES` array. Only add packages from official Ubuntu/Debian repositories with established maintainers.
