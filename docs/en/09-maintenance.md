@@ -355,114 +355,315 @@ nano ~/.ssh/config
 
 ## Backups
 
-### What to include in backups
+### Strategy overview
 
-| File/Directory | Criticality | Frequency |
-|----------------|-------------|-----------|
-| `~/.openclaw/openclaw.json` | Critical | Weekly |
-| `/etc/openclaw/env` | Critical | Weekly |
-| `~/openclaw/workspace/` | Medium | Daily (if data exists) |
-| SSH keys (`.ssh/`) | High | After rotation |
-| systemd configuration | Medium | After changes |
+Your OpenClaw agent's personality, memory, and configuration are stored in files on the VPS. If the server is lost, you lose your agent's identity. The recommended strategy is to back up non-sensitive files to a **private Git repository**, which gives you:
 
-### Backup script
+- **Automatic offsite backup** — data lives outside the VPS
+- **Version history** — see how your agent's memory and personality evolve
+- **Easy restore** — `git clone` on a new server and you're back
+- **No manual downloads** — cron handles everything
+
+!!! info "OpenClaw also has `openclaw backup create`"
+    This creates a local tarball of `~/.openclaw` + workspace. It's useful for one-off snapshots before upgrades, but it stays on the VPS — if the server dies, so does the backup. The Git approach below solves this by pushing offsite automatically.
+
+### What to back up
+
+| Category | Files | Goes to Git? |
+|----------|-------|:---:|
+| **Agent identity** | `~/openclaw/workspace/SOUL.md` | Yes |
+| **Agent memory** | `~/openclaw/workspace/MEMORY.md`, `~/openclaw/workspace/memory/` | Yes |
+| **Agent workspace** | `~/openclaw/workspace/AGENTS.md`, `IDENTITY.md`, `USER.md`, `TOOLS.md` | Yes |
+| **OpenClaw config** | `~/.openclaw/openclaw.json` | Yes |
+| **Exec approvals** | `~/.openclaw/exec-approvals.json` | Yes |
+| **systemd overrides** | `/etc/systemd/system/openclaw.service.d/*.conf` | Yes |
+| **SSH hardening** | `/etc/ssh/sshd_config.d/99-openclaw-hardening.conf` | Yes |
+| **SSH boot order** | `/etc/systemd/system/ssh.service.d/after-tailscale.conf` | Yes |
+| **SSH authorized keys** | `~/.ssh/authorized_keys` | Yes |
+| **API keys / secrets** | `/etc/openclaw/env` | **NEVER** |
+| **Auth profiles** | `~/.openclaw/agents/main/agent/auth-profiles.json` | **NEVER** (may contain keys) |
+| **State directory** | `~/.openclaw/` (full) | **NEVER** (contains tokens, sessions) |
+
+### Step 1: Create a private GitHub repository
+
+1. Create a **dedicated GitHub account** for your OpenClaw instance (recommended) or use your personal account
+2. Create a **private** repository (e.g., `openclaw-backup`)
+3. Do **NOT** initialize it with a README
+
+!!! tip "Why a dedicated account?"
+    A separate account with its own SSH key limits the blast radius — if the VPS is compromised, only the backup repo is accessible, not your personal GitHub. It also keeps the bot's activity separate from yours.
+
+### Step 2: Set up SSH key for Git access
+
+On the VPS, generate a deploy key:
 
 ```bash
-nano ~/openclaw/scripts/backup.sh
+# Generate an SSH key for Git (no passphrase for automated use)
+ssh-keygen -t ed25519 -C "openclaw-backup" -f ~/.ssh/git_backup_key -N ""
+
+# Show the public key
+cat ~/.ssh/git_backup_key.pub
+```
+
+Add the public key to your GitHub repo:
+
+- Go to your repo → **Settings** → **Deploy keys** → **Add deploy key**
+- Paste the public key
+- Check **Allow write access**
+- Click **Add key**
+
+Configure SSH to use this key for GitHub:
+
+```bash
+cat >> ~/.ssh/config << 'EOF'
+
+# Git backup
+Host github-backup
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/git_backup_key
+    IdentitiesOnly yes
+EOF
+
+chmod 600 ~/.ssh/config
+```
+
+### Step 3: Initialize the backup repository
+
+```bash
+# Create the backup staging directory
+mkdir -p ~/openclaw-backup
+cd ~/openclaw-backup
+git init
+git remote add origin git@github-backup:<YOUR_GITHUB_USER>/openclaw-backup.git
+```
+
+Create a `.gitignore` to prevent secrets from ever being committed:
+
+```bash
+cat > ~/openclaw-backup/.gitignore << 'EOF'
+# NEVER commit secrets
+.env
+*.env
+env
+*.gpg
+*.pem
+*.key
+auth-profiles.json
+credentials/
+secrets/
+
+# OS files
+.DS_Store
+*.swp
+*.swo
+*~
+EOF
+```
+
+Do an initial commit:
+
+```bash
+cd ~/openclaw-backup
+git add .gitignore
+git commit -m "chore: initial commit with .gitignore"
+git branch -M main
+git push -u origin main
+```
+
+### Step 4: Create the backup script
+
+```bash
+nano ~/openclaw/scripts/git-backup.sh
 ```
 
 ```bash
 #!/bin/bash
-# OpenClaw configuration backup
-# Run weekly
+# Automated Git backup for OpenClaw workspace and configuration
+# Backs up non-sensitive files to a private GitHub repository
+set -euo pipefail
 
-set -e
+BACKUP_DIR="$HOME/openclaw-backup"
+LOG_FILE="$HOME/openclaw/logs/git-backup.log"
 
-BACKUP_DIR="$HOME/backups"
-DATE=$(date +%Y%m%d_%H%M%S)
-BACKUP_NAME="openclaw_backup_$DATE"
-BACKUP_PATH="$BACKUP_DIR/$BACKUP_NAME"
+log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG_FILE"; }
 
-# Create backup directory
-mkdir -p "$BACKUP_PATH"
+log "Starting backup..."
 
-echo "Creating backup: $BACKUP_NAME"
+# Ensure backup directory exists
+mkdir -p "$BACKUP_DIR"/{workspace,config,system}
 
-# Backup OpenClaw configuration (encrypted)
-echo "- Backing up OpenClaw configuration..."
-if [ -f "$HOME/openclaw/.env" ]; then
-    gpg --symmetric --cipher-algo AES256 -o "$BACKUP_PATH/env.gpg" "$HOME/openclaw/.env"
+# --- Workspace files (agent identity, memory, personality) ---
+if [ -d "$HOME/openclaw/workspace" ]; then
+    rsync -a --delete \
+        --exclude='*.env' \
+        --exclude='credentials/' \
+        --exclude='secrets/' \
+        "$HOME/openclaw/workspace/" "$BACKUP_DIR/workspace/"
+    log "Workspace synced"
 fi
-cp "$HOME/.openclaw/openclaw.json" "$BACKUP_PATH/" 2>/dev/null || true
-cp "$HOME/.openclaw/workspace/SOUL.md" "$BACKUP_PATH/" 2>/dev/null || true
-cp "$HOME/.openclaw/workspace/TOOLS.md" "$BACKUP_PATH/" 2>/dev/null || true
 
-# Backup maintenance scripts
-echo "- Backing up scripts..."
-cp -r "$HOME/openclaw/scripts" "$BACKUP_PATH/" 2>/dev/null || true
+# --- OpenClaw configuration (non-sensitive) ---
+cp "$HOME/.openclaw/openclaw.json" "$BACKUP_DIR/config/" 2>/dev/null || true
+cp "$HOME/.openclaw/exec-approvals.json" "$BACKUP_DIR/config/" 2>/dev/null || true
+log "Config files copied"
 
-# Backup systemd configuration
-echo "- Backing up systemd service..."
-sudo cp /etc/systemd/system/openclaw.service "$BACKUP_PATH/"
+# --- System configuration ---
+cp /etc/ssh/sshd_config.d/99-openclaw-hardening.conf "$BACKUP_DIR/system/" 2>/dev/null || true
+cp /etc/systemd/system/ssh.service.d/after-tailscale.conf "$BACKUP_DIR/system/" 2>/dev/null || true
+cp "$HOME/.ssh/authorized_keys" "$BACKUP_DIR/system/" 2>/dev/null || true
 
-# Backup SSH authorized_keys
-echo "- Backing up SSH keys..."
-cp "$HOME/.ssh/authorized_keys" "$BACKUP_PATH/"
+# Copy systemd overrides if they exist
+if [ -d /etc/systemd/system/openclaw.service.d ]; then
+    mkdir -p "$BACKUP_DIR/system/openclaw.service.d"
+    cp /etc/systemd/system/openclaw.service.d/*.conf "$BACKUP_DIR/system/openclaw.service.d/" 2>/dev/null || true
+fi
+log "System config copied"
 
-# Backup audit rules
-echo "- Backing up audit rules..."
-sudo cp /etc/audit/rules.d/openclaw.rules "$BACKUP_PATH/" 2>/dev/null || true
+# --- Server info (for restore reference) ---
+cat > "$BACKUP_DIR/SERVER_INFO.md" << EOF
+# Server Information
 
-# Create info file
-cat > "$BACKUP_PATH/backup_info.txt" << EOF
-Backup created: $(date)
-Hostname: $(hostname)
-Tailscale IP: $(tailscale ip -4)
-OpenClaw version: $(openclaw --version 2>/dev/null || echo "unknown")
+- **Last backup**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+- **Hostname**: $(hostname)
+- **Tailscale IP**: $(tailscale ip -4 2>/dev/null || echo "unknown")
+- **OpenClaw version**: $(openclaw --version 2>/dev/null || echo "unknown")
+- **OS**: $(lsb_release -ds 2>/dev/null || cat /etc/os-release | grep PRETTY_NAME | cut -d'"' -f2)
+- **Node.js**: $(node --version 2>/dev/null || echo "unknown")
 EOF
+log "Server info updated"
 
-# Compress backup
-echo "- Compressing..."
+# --- Safety check: ensure no secrets are staged ---
 cd "$BACKUP_DIR"
-tar -czf "$BACKUP_NAME.tar.gz" "$BACKUP_NAME"
-rm -rf "$BACKUP_PATH"
+if grep -rl 'sk-ant-\|sk-\|nvapi-\|OPENAI_API_KEY=\|ANTHROPIC_API_KEY=\|GEMINI_API_KEY=' . \
+    --include='*.json' --include='*.md' --include='*.conf' --include='*.env' 2>/dev/null | grep -v '.git/'; then
+    log "ERROR: Potential secrets detected in backup files! Aborting."
+    echo "ERROR: Potential secrets detected. Backup aborted." >&2
+    exit 1
+fi
 
-# Clean old backups (keep last 4)
-echo "- Cleaning old backups..."
-ls -t "$BACKUP_DIR"/openclaw_backup_*.tar.gz | tail -n +5 | xargs -r rm
+# --- Commit and push ---
+cd "$BACKUP_DIR"
+git add -A
 
-echo "Backup completed: $BACKUP_DIR/$BACKUP_NAME.tar.gz"
-echo "Size: $(du -h "$BACKUP_DIR/$BACKUP_NAME.tar.gz" | cut -f1)"
+if git diff --cached --quiet; then
+    log "No changes to commit"
+else
+    git commit -m "backup: $(date '+%Y-%m-%d %H:%M') — $(hostname)"
+    git push origin main
+    log "Changes pushed to GitHub"
+fi
 
-# Reminder to download backup
-echo ""
-echo "⚠️  IMPORTANT: Download the backup to your local machine:"
-echo "   scp openclaw@<YOUR_TAILSCALE_IP>:$BACKUP_DIR/$BACKUP_NAME.tar.gz ./"
+log "Backup complete"
 ```
 
 ```bash
-chmod +x ~/openclaw/scripts/backup.sh
+chmod +x ~/openclaw/scripts/git-backup.sh
+mkdir -p ~/openclaw/logs
 ```
 
-### Schedule automatic backups
+### Step 5: Test the backup
+
+```bash
+# Run it manually first
+~/openclaw/scripts/git-backup.sh
+
+# Check the log
+cat ~/openclaw/logs/git-backup.log
+
+# Verify on GitHub that files appeared in your private repo
+```
+
+### Step 6: Schedule automatic backups
 
 ```bash
 crontab -e
 ```
 
+Add:
+
 ```cron
-# Weekly backup (Sundays at 3am)
-0 3 * * 0 /home/openclaw/openclaw/scripts/backup.sh >> /home/openclaw/openclaw/logs/backup.log 2>&1
+# Daily Git backup at 4:00 AM
+0 4 * * * /home/openclaw/openclaw/scripts/git-backup.sh >> /home/openclaw/openclaw/logs/git-backup.log 2>&1
 ```
 
-### Download backups to your local machine
+!!! tip "Frequency"
+    Daily is sufficient for most setups. If your agent is very active and accumulates memory quickly, you can increase to every 6 hours: `0 */6 * * *`.
 
-!!! danger "Backups on the VPS are not enough"
-    If you lose the VPS, you lose the backups. Download regularly to your local machine.
+### Step 7: Verify backups are running
+
+After a day, check:
 
 ```bash
-# From your local machine
-scp openclaw@<YOUR_TAILSCALE_IP>:~/backups/openclaw_backup_*.tar.gz ~/backups/vps/
+# Check cron ran successfully
+tail -20 ~/openclaw/logs/git-backup.log
+
+# Check last commit date on the repo
+cd ~/openclaw-backup && git log --oneline -5
+```
+
+### Restore to a new server
+
+If your VPS is lost, restoring is straightforward:
+
+1. Provision a new VPS following sections 1-5 of this guide
+2. Clone your backup:
+
+```bash
+git clone git@github.com:<YOUR_GITHUB_USER>/openclaw-backup.git ~/openclaw-backup
+```
+
+3. Restore files to their locations:
+
+```bash
+# Restore workspace (agent identity and memory)
+cp -r ~/openclaw-backup/workspace/* ~/openclaw/workspace/
+
+# Restore OpenClaw configuration
+cp ~/openclaw-backup/config/openclaw.json ~/.openclaw/
+cp ~/openclaw-backup/config/exec-approvals.json ~/.openclaw/ 2>/dev/null || true
+
+# Restore system configuration
+sudo cp ~/openclaw-backup/system/99-openclaw-hardening.conf /etc/ssh/sshd_config.d/
+sudo mkdir -p /etc/systemd/system/ssh.service.d
+sudo cp ~/openclaw-backup/system/after-tailscale.conf /etc/systemd/system/ssh.service.d/
+cp ~/openclaw-backup/system/authorized_keys ~/.ssh/
+
+# Restore systemd overrides
+if [ -d ~/openclaw-backup/system/openclaw.service.d ]; then
+    sudo cp -r ~/openclaw-backup/system/openclaw.service.d /etc/systemd/system/
+fi
+
+sudo systemctl daemon-reload
+```
+
+4. Re-configure secrets (these are NOT in the backup — you need your API keys):
+
+```bash
+sudo nano /etc/openclaw/env
+# Add your API keys, Telegram token, etc.
+```
+
+5. Restart services:
+
+```bash
+sudo systemctl restart ssh
+sudo systemctl restart openclaw
+```
+
+!!! success "Your agent is back"
+    With the workspace restored, your agent retains its personality (SOUL.md), memory (MEMORY.md + memory/), and all configuration. Only secrets need to be re-entered.
+
+### Pre-update snapshot
+
+Before major changes (OpenClaw updates, provider switches), take a manual snapshot:
+
+```bash
+# Quick backup via OpenClaw CLI
+openclaw backup create
+
+# Or trigger your Git backup immediately
+~/openclaw/scripts/git-backup.sh
 ```
 
 ---
@@ -569,81 +770,75 @@ chmod 600 ~/.msmtprc
 
 ### Scenario: Total VPS loss
 
-#### Step 1: Create new VPS
+If your VPS is destroyed and you have Git backups configured (see [Backups](#backups) above), recovery is straightforward.
 
-Follow the instructions in [Section 2](02-vps.md) to create a new VPS.
+#### Step 1: Create and harden a new VPS
 
-#### Step 2: Restore from backup
+Follow sections 1-4 of this guide:
 
-```bash
-# Upload backup to new VPS
-scp openclaw_backup_DATE.tar.gz root@NEW_VPS:/tmp/
+- [2. Provision VPS](02-vps.md) — create a new server
+- [3. System security](03-system-security.md) — create user, harden SSH
+- [4. Private access](04-private-access.md) — install Tailscale, close public SSH
 
-# On the new VPS
-tar -xzf /tmp/openclaw_backup_DATE.tar.gz -C /tmp/
-```
+#### Step 2: Install OpenClaw
 
-#### Step 3: Run initial setup
+Follow [Section 5](05-openclaw.md) to install OpenClaw on the new server.
 
-```bash
-# Create user (Section 3)
-adduser openclaw
-usermod -aG sudo openclaw
-
-# Restore authorized_keys
-mkdir -p /home/openclaw/.ssh
-cp /tmp/openclaw_backup_*/authorized_keys /home/openclaw/.ssh/
-chown -R openclaw:openclaw /home/openclaw/.ssh
-chmod 700 /home/openclaw/.ssh
-chmod 600 /home/openclaw/.ssh/authorized_keys
-```
-
-#### Step 4: Restore configuration
+#### Step 3: Restore from Git backup
 
 ```bash
-# As openclaw user
-su - openclaw
+# Clone your backup repository
+git clone git@github.com:<YOUR_GITHUB_USER>/openclaw-backup.git ~/openclaw-backup
 
-# Install OpenClaw
-npm install -g openclaw@latest
-
-# Create structure
-mkdir -p ~/.openclaw
-mkdir -p ~/openclaw/{workspace,logs,scripts}
+# Restore workspace (agent identity, memory, personality)
+cp -r ~/openclaw-backup/workspace/* ~/openclaw/workspace/
 
 # Restore OpenClaw configuration
-cp /tmp/openclaw_backup_*/openclaw.json ~/.openclaw/
-cp /tmp/openclaw_backup_*/SOUL.md ~/.openclaw/workspace/ 2>/dev/null || true
-cp /tmp/openclaw_backup_*/TOOLS.md ~/.openclaw/workspace/ 2>/dev/null || true
-cp -r /tmp/openclaw_backup_*/scripts/* ~/openclaw/scripts/ 2>/dev/null || true
+cp ~/openclaw-backup/config/openclaw.json ~/.openclaw/
+cp ~/openclaw-backup/config/exec-approvals.json ~/.openclaw/ 2>/dev/null || true
 
-# Restore env file (decrypt)
-gpg -d /tmp/openclaw_backup_*/env.gpg | sudo tee /etc/openclaw/env > /dev/null
-sudo chmod 600 /etc/openclaw/env
-sudo chown root:openclaw /etc/openclaw/env
+# Restore system configuration
+sudo cp ~/openclaw-backup/system/99-openclaw-hardening.conf /etc/ssh/sshd_config.d/
+sudo mkdir -p /etc/systemd/system/ssh.service.d
+sudo cp ~/openclaw-backup/system/after-tailscale.conf /etc/systemd/system/ssh.service.d/
+cp ~/openclaw-backup/system/authorized_keys ~/.ssh/
 
-# Restore systemd service
-sudo cp /tmp/openclaw_backup_*/openclaw.service /etc/systemd/system/
-sudo systemctl daemon-reload
+# Restore systemd overrides
+if [ -d ~/openclaw-backup/system/openclaw.service.d ]; then
+    sudo cp -r ~/openclaw-backup/system/openclaw.service.d /etc/systemd/system/
+fi
 ```
 
-#### Step 5: Re-run hardening
+#### Step 4: Re-configure secrets
 
-Follow the relevant sections:
-
-- [3. System security](03-system-security.md) - SSH hardening
-- [4. Private access](04-private-access.md) - Tailscale
-- [5. OpenClaw](05-openclaw.md) - Installation
-
-#### Step 6: Verify
+Secrets are never stored in the backup. You need to re-enter your API keys:
 
 ```bash
-# Run verification script
-~/openclaw/scripts/verify_permissions.sh
+sudo nano /etc/openclaw/env
+# Add: API keys, Telegram bot token, and any other secrets
 
-# Verify services
-~/openclaw/scripts/status.sh
+sudo chmod 600 /etc/openclaw/env
+sudo chown root:openclaw /etc/openclaw/env
 ```
+
+#### Step 5: Apply and verify
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart ssh
+sudo systemctl restart openclaw
+
+# Verify everything is running
+sudo systemctl is-active tailscaled ssh openclaw
+openclaw status --all
+```
+
+#### Step 6: Re-enable backups on the new server
+
+Follow [Step 2](#step-2-set-up-ssh-key-for-git-access) onwards from the Backups section to set up the SSH key and cron job on the new server.
+
+!!! tip "Keep your API keys safe outside the VPS"
+    Store your API keys in a password manager (Bitwarden, 1Password, etc.) so you can re-enter them during recovery without depending on the VPS.
 
 ### Disaster recovery test
 
@@ -685,8 +880,8 @@ Follow the relevant sections:
 - [ ] Review audit rules
 
 ### Backups
-- [ ] Verify automatic backups
-- [ ] Download backup to local
+- [ ] Verify Git backup cron is running (`tail -5 ~/openclaw/logs/git-backup.log`)
+- [ ] Check last commit date (`cd ~/openclaw-backup && git log --oneline -1`)
 - [ ] Verify restore works (quarterly)
 
 ### Secret rotation
