@@ -342,7 +342,36 @@ sudo mkdir -p /run/sshd
 sudo kill $(cat /run/sshd.pid 2>/dev/null) 2>/dev/null || true
 ```
 
-### Paso 3: Verificar sintaxis
+### Paso 3: Asegurar que SSH arranque después de Tailscale
+
+!!! danger "Crítico: sin esto, SSH fallará en cada reinicio"
+    Como SSH está configurado para escuchar solo en la IP de Tailscale (`ListenAddress`),
+    **debe** esperar a que Tailscale esté listo antes de arrancar. Sin este drop-in, SSH
+    intenta hacer bind a la IP de Tailscale antes de que exista, falla con "Cannot assign
+    requested address" y pierdes acceso SSH hasta reiniciarlo manualmente desde la consola VNC.
+
+```bash
+# Crear drop-in de systemd para que SSH espere a Tailscale
+sudo mkdir -p /etc/systemd/system/ssh.service.d
+sudo tee /etc/systemd/system/ssh.service.d/after-tailscale.conf > /dev/null << 'EOF'
+[Unit]
+After=tailscaled.service
+Wants=tailscaled.service
+
+[Service]
+RestartSec=5
+Restart=on-failure
+EOF
+
+sudo systemctl daemon-reload
+```
+
+Esto asegura:
+
+- SSH **espera** a que `tailscaled` arranque antes de hacer bind
+- SSH **se reinicia automáticamente** si falla (ej: Tailscale tardó en asignar la IP)
+
+### Paso 4: Verificar sintaxis
 
 ```bash
 sudo sshd -t
@@ -350,13 +379,13 @@ sudo sshd -t
 
 **Si hay errores, NO reinicies SSH.** Corrige primero.
 
-### Paso 4: Reiniciar SSH
+### Paso 5: Reiniciar SSH
 
 ```bash
 sudo systemctl restart ssh
 ```
 
-### Paso 5: Eliminar regla de firewall
+### Paso 6: Eliminar regla de firewall
 
 ```bash
 # Eliminar regla que permite SSH desde cualquier lugar
@@ -723,6 +752,41 @@ sudo systemctl restart ssh
 # Verificar que solo escucha en la IP de Tailscale
 ss -tln | grep :22
 ```
+
+### SSH falla tras reinicio: "Cannot assign requested address"
+
+**Causa**: SSH intentó hacer bind a la IP de Tailscale antes de que `tailscaled` la asignara. Ocurre cuando falta el drop-in de systemd (`/etc/systemd/system/ssh.service.d/after-tailscale.conf`) o Tailscale tardó en arrancar.
+
+**Arreglo rápido** (desde consola VNC o sesión existente):
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart ssh
+```
+
+**Arreglo permanente** — instala el drop-in si no existe:
+```bash
+sudo mkdir -p /etc/systemd/system/ssh.service.d
+sudo tee /etc/systemd/system/ssh.service.d/after-tailscale.conf > /dev/null << 'EOF'
+[Unit]
+After=tailscaled.service
+Wants=tailscaled.service
+
+[Service]
+RestartSec=5
+Restart=on-failure
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl restart ssh
+```
+
+!!! tip "Checklist post-reinicio"
+    Después de cada reinicio del VPS, si no puedes conectar por SSH, entra por la **consola VNC de Hetzner** y ejecuta:
+    ```bash
+    sudo tailscale status          # ¿Está Tailscale conectado?
+    sudo systemctl restart ssh     # Reiniciar SSH una vez Tailscale está arriba
+    ```
+    Con el drop-in instalado, esto debería ser automático — pero si algo falla, estos dos comandos lo solucionan.
 
 ### Error: "Cannot bind any address" o "Address already in use"
 
