@@ -64,6 +64,7 @@ plugins:
               - 9. Mantenimiento: 09-mantenimiento.md
               - 10. Checklist final: 10-checklist-final.md
             - Referencia:
+              - Referencia rápida: referencia-rapida.md
               - Glosario: glosario.md
 
 markdown_extensions:
@@ -96,6 +97,7 @@ nav:
     - 9. Maintenance: 09-maintenance.md
     - 10. Final checklist: 10-final-checklist.md
   - Reference:
+    - Quick reference: quick-reference.md
     - Glossary: glossary.md
 
 extra:
