@@ -403,6 +403,13 @@ sudo ss -tlnp | grep sshd
 LISTEN  0  128  100.x.x.x:22  0.0.0.0:*  users:(("sshd",pid=XXX,fd=3))
 ```
 
+!!! warning "Verifica el acceso por consola antes de cerrar tu sesión"
+    Tu contraseña local es la única vía de recuperación si Tailscale no arranca tras un reinicio.
+    Abre la **consola VNC de Hetzner** (icono Console en el panel) y verifica que puedes hacer
+    login con tu usuario `openclaw`. Si no pusiste contraseña al crear el usuario,
+    hazlo ahora con `sudo passwd openclaw` — la autenticación SSH por contraseña sigue
+    deshabilitada independientemente.
+
 !!! success "Si ves solo tu IP de Tailscale, el hardening está completo"
 
 ---
@@ -740,43 +747,58 @@ sudo systemctl restart ssh
 
 ### Perdí el acceso: SSH público cerrado y Tailscale caído
 
-**Causa**: Ejecutaste `tailscale down` o Tailscale se detuvo cuando el SSH público ya estaba cerrado. La consola del VPS tampoco funciona si tu usuario no tiene contraseña (autenticación solo por clave SSH).
+**Causa**: Ejecutaste `tailscale down`, Tailscale se cayó, o `tailscaled` no estaba habilitado y no arrancó tras un reinicio. La consola del VPS tampoco funciona si tu usuario no tiene contraseña.
 
 **Solución — Modo Rescue de Hetzner:**
 
 1. En el panel de Hetzner Cloud → tu servidor → pestaña **Rescue** → **Enable Rescue & Power Cycle**
 2. Copia la **contraseña de root** que muestra el panel
 3. Ve a la pestaña **Power** → **Power cycle** el servidor (arrancará en rescue)
-4. Desde tu máquina local, elimina la clave antigua y conecta:
+4. Accede al sistema rescue por **una** de estas vías:
+    - **Consola VNC** (recomendado): Haz clic en el icono Console (`>_`) en el panel de Hetzner. Login con `root` y la contraseña del rescue. No necesita red ni firewall.
+    - **SSH** (si tu Cloud Firewall permite puerto 22):
+        ```bash
+        ssh-keygen -R <TU_IP_PUBLICA>
+        ssh root@<TU_IP_PUBLICA>
+        ```
+        Usa la contraseña de root del rescue del paso 2.
+5. Monta tu disco y entra en chroot:
     ```bash
-    ssh-keygen -R <TU_IP_PUBLICA>
-    ssh root@<TU_IP_PUBLICA>
-    ```
-    Usa la contraseña de root del rescue del paso 2.
-5. Monta tu disco y levanta Tailscale:
-    ```bash
-    # Montar el sistema de archivos del servidor
     mount /dev/sda1 /mnt
-
-    # Chroot a tu sistema
     mount --bind /dev /mnt/dev
     mount --bind /proc /mnt/proc
     mount --bind /sys /mnt/sys
     chroot /mnt
-
-    # Levantar Tailscale
-    tailscale up --advertise-tags=tag:vps
     ```
-6. Tras re-autenticar, sal del chroot y reinicia en modo normal:
+6. Corrige el problema — pon contraseñas y asegura que Tailscale arranque al inicio:
+    ```bash
+    # Poner contraseñas locales (acceso de recuperación por consola VNC)
+    passwd root
+    passwd openclaw
+
+    # Asegurar que Tailscale arranque con el sistema
+    systemctl enable tailscaled
+
+    # Ver qué falló (opcional)
+    journalctl -u tailscaled --no-pager -n 50
+    ```
+7. Sal del chroot y reinicia en modo normal:
     ```bash
     exit
     umount -R /mnt
     reboot
     ```
-7. En el panel de Hetzner → pestaña **Rescue** → **Disable Rescue** para que el siguiente reinicio sea normal.
+8. En el panel de Hetzner → pestaña **Rescue** → **Disable Rescue** para que el siguiente reinicio sea normal.
+9. Entra por la **consola VNC** con la contraseña que acabas de poner y verifica:
+    ```bash
+    sudo tailscale status
+    ```
+
+!!! tip "Teclado no-US en la consola VNC"
+    El sistema rescue usa teclado US por defecto. Si tienes teclado español, ejecuta `loadkeys es` primero. Alternativamente, usa el **botón de pegar** en la barra de la consola VNC para evitar problemas de mapeo de teclado.
 
 !!! tip "Cloud Firewall de Hetzner"
-    El modo rescue arranca un sistema diferente que ignora UFW, pero sí respeta el **Cloud Firewall de Hetzner**. Si SSH al rescue es rechazado, ve a la pestaña **Firewalls** y añade temporalmente una regla de entrada permitiendo TCP puerto 22.
+    El modo rescue arranca un sistema diferente que ignora UFW, pero sí respeta el **Cloud Firewall de Hetzner**. Si SSH al rescue es rechazado, usa la **consola VNC** en su lugar, o ve a la pestaña **Firewalls** y añade temporalmente una regla de entrada permitiendo TCP puerto 22.
 
 ---
 

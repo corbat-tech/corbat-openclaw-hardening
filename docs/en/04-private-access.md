@@ -403,6 +403,13 @@ sudo ss -tlnp | grep sshd
 LISTEN  0  128  100.x.x.x:22  0.0.0.0:*  users:(("sshd",pid=XXX,fd=3))
 ```
 
+!!! warning "Verify console access before closing your session"
+    Your local password is the only recovery path if Tailscale fails to start after a reboot.
+    Open the **Hetzner VNC console** (Console icon in the panel) and verify you can login
+    with your `openclaw` user password. If you skipped setting a password during user creation,
+    set one now with `sudo passwd openclaw` — SSH password authentication remains disabled
+    regardless.
+
 !!! success "If you see only your Tailscale IP, hardening is complete"
 
 ---
@@ -740,43 +747,58 @@ sudo systemctl restart ssh
 
 ### Lost access: public SSH closed and Tailscale is down
 
-**Cause**: You ran `tailscale down` or Tailscale stopped while public SSH was already closed. The VPS console login won't work either if your user has no password (SSH key-only authentication).
+**Cause**: You ran `tailscale down`, Tailscale crashed, or `tailscaled` was not enabled and didn't start after a reboot. The VPS console login won't work either if your user has no password.
 
 **Solution — Hetzner Rescue Mode:**
 
 1. In Hetzner Cloud panel → your server → **Rescue** tab → **Enable Rescue & Power Cycle**
 2. Copy the **root password** shown in the panel
 3. Go to the **Power** tab → **Power cycle** the server (it will boot into rescue)
-4. From your local machine, remove the old host key and connect:
+4. Access the rescue system via **one** of these methods:
+    - **VNC Console** (recommended): Click the Console icon (`>_`) in the Hetzner panel. Login with `root` and the rescue password. No network or firewall needed.
+    - **SSH** (if your Cloud Firewall allows port 22):
+        ```bash
+        ssh-keygen -R <YOUR_PUBLIC_IP>
+        ssh root@<YOUR_PUBLIC_IP>
+        ```
+        Use the rescue root password from step 2.
+5. Mount your disk and enter chroot:
     ```bash
-    ssh-keygen -R <YOUR_PUBLIC_IP>
-    ssh root@<YOUR_PUBLIC_IP>
-    ```
-    Use the rescue root password from step 2.
-5. Mount your disk and bring Tailscale back up:
-    ```bash
-    # Mount the server's root filesystem
     mount /dev/sda1 /mnt
-
-    # Chroot into your system
     mount --bind /dev /mnt/dev
     mount --bind /proc /mnt/proc
     mount --bind /sys /mnt/sys
     chroot /mnt
-
-    # Bring Tailscale back up
-    tailscale up --advertise-tags=tag:vps
     ```
-6. After re-authenticating, exit chroot and reboot into normal mode:
+6. Fix the issue — set passwords and ensure Tailscale starts on boot:
+    ```bash
+    # Set local passwords (recovery access via VNC console)
+    passwd root
+    passwd openclaw
+
+    # Ensure Tailscale starts on boot
+    systemctl enable tailscaled
+
+    # Check what went wrong (optional)
+    journalctl -u tailscaled --no-pager -n 50
+    ```
+7. Exit chroot and reboot into normal mode:
     ```bash
     exit
     umount -R /mnt
     reboot
     ```
-7. In Hetzner panel → **Rescue** tab → **Disable Rescue** so the next reboot is normal.
+8. In Hetzner panel → **Rescue** tab → **Disable Rescue** so the next reboot is normal.
+9. Login via **VNC console** with the password you just set and verify:
+    ```bash
+    sudo tailscale status
+    ```
+
+!!! tip "Non-US keyboard in VNC console"
+    The rescue system defaults to US keyboard layout. If you have a Spanish keyboard, run `loadkeys es` first. Alternatively, use the **paste button** in the VNC console toolbar to avoid keyboard mapping issues.
 
 !!! tip "Hetzner Cloud Firewall"
-    Rescue mode boots a different OS that ignores UFW, but it still respects the **Hetzner Cloud Firewall**. If SSH to rescue is refused, go to the **Firewalls** tab and temporarily add an inbound rule allowing TCP port 22.
+    Rescue mode boots a different OS that ignores UFW, but it still respects the **Hetzner Cloud Firewall**. If SSH to rescue is refused, use the **VNC console** instead, or go to the **Firewalls** tab and temporarily add an inbound rule allowing TCP port 22.
 
 ---
 
