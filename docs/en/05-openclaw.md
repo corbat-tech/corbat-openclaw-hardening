@@ -472,7 +472,6 @@ nano ~/.openclaw/openclaw.json
   },
   "tools": {
     "profile": "full",
-    "deny": ["gateway"],
     "web": {
       "search": {
         "enabled": true,
@@ -742,12 +741,12 @@ This creates `/etc/sudoers.d/openclaw` with NOPASSWD access to **only** these co
     - `google-generative-ai` + `.../v1beta` (native, without `/openai`)
 
 !!! info "Tools configuration"
-    The recommended tools config uses `profile: "full"` with `deny: ["gateway"]`:
+    The recommended tools config uses `profile: "full"` (no deny list):
 
-    - `"full"` enables all tools including web search, browser, canvas, cron, and shell
-    - `"deny": ["gateway"]` prevents the agent from modifying its own gateway config at runtime
+    - `"full"` enables all tools including web search, browser, canvas, cron, gateway, and shell
+    - On a hardened VPS (gateway bound to `127.0.0.1`, TLS pairing, Tailscale), there is no need to deny `gateway` — the risk is minimal and denying it limits `group:automation` functionality (cron scheduling, etc.)
 
-    Using `profile: "coding"` with `allow: ["group:web"]` does NOT correctly enable `web_search` (possible bug). Use `"full"` + `"deny"` instead.
+    Using `profile: "coding"` with `allow: ["group:web"]` does NOT correctly enable `web_search` (possible bug). Use `"full"` instead.
 
     For a fully unrestricted agent: `"tools": {}`
 
@@ -776,7 +775,7 @@ This creates `/etc/sudoers.d/openclaw` with NOPASSWD access to **only** these co
     The `coding` profile may warn about unknown tools (`apply_patch`, `image`) — this is harmless, those tools simply won't load without their plugins.
 
     !!! warning "Known issue: `coding` profile and `web_search`"
-        Using `profile: "coding"` with `allow: ["group:web"]` does NOT correctly enable `web_search` (possible bug). This is why we recommend `profile: "full"` with `deny: ["gateway"]` instead.
+        Using `profile: "coding"` with `allow: ["group:web"]` does NOT correctly enable `web_search` (possible bug). This is why we recommend `profile: "full"` instead.
 
 !!! info "`web_search` setup"
     The `web_search` tool requires a search provider API key. OpenClaw auto-detects in this order: Brave → Gemini → Kimi → Perplexity → Grok.
@@ -1076,7 +1075,7 @@ nano ~/openclaw/workspace/TOOLS.md
 ```markdown
 # Tools
 
-## Available tools (via profile "full" − deny ["gateway"])
+## Available tools (via profile "full")
 
 ### Filesystem (group:fs)
 - read, write, edit, apply_patch
@@ -1103,10 +1102,10 @@ nano ~/openclaw/workspace/TOOLS.md
 ### Cron
 - Schedule recurring tasks
 
-## NOT available (intentionally excluded)
-
-### Gateway
-NOT available — modifying gateway config at runtime is a security risk.
+### Automation (group:automation)
+- cron, gateway
+- Cron: schedule recurring tasks
+- Gateway: manage gateway config (safe on hardened VPS)
 
 ## Guidelines
 
@@ -1118,22 +1117,21 @@ NOT available — modifying gateway config at runtime is a security risk.
 
 ### Sandbox and tool restrictions
 
-For a **dedicated single-user VPS** with the hardening from this guide, sandbox mode `"off"` is the recommended setting. Security is enforced by `exec-approvals` allowlist, restricted `sudoers`, dedicated VPS isolation (Tailscale VPN, non-root user), and tool restrictions (`tools.profile` + `tools.deny`).
+For a **dedicated single-user VPS** with the hardening from this guide, sandbox mode `"off"` is the recommended setting. Security is enforced by `exec-approvals` allowlist, restricted `sudoers`, dedicated VPS isolation (Tailscale VPN, non-root user), and gateway hardening (`127.0.0.1` binding, TLS pairing).
 
-Tool access is controlled in `openclaw.json` (already configured in the main JSON example above):
+Tool access is controlled via `tools.profile` in `openclaw.json` (already configured in the main JSON example above):
 
 ```json
 "sandbox": { "mode": "off" },
 "tools": {
-  "profile": "full",
-  "deny": ["gateway"]
+  "profile": "full"
 }
 ```
 
-This gives the agent all tools (filesystem, shell, git, sessions, memory, web search, web fetch, browser, canvas, cron, etc.) except `gateway` — which is denied because it would let the agent modify its own gateway configuration at runtime.
+This gives the agent all tools (filesystem, shell, git, sessions, memory, web search, web fetch, browser, canvas, cron, gateway, etc.). On a hardened VPS with gateway bound to `127.0.0.1`, TLS pairing, and Tailscale access, there is no need to deny any tools.
 
 !!! warning "`coding` profile bug with web_search"
-    Using `profile: "coding"` with `allow: ["group:web"]` does NOT correctly enable `web_search` (possible OpenClaw bug). Use `"full"` + `"deny"` to ensure all tools work correctly.
+    Using `profile: "coding"` with `allow: ["group:web"]` does NOT correctly enable `web_search` (possible OpenClaw bug). Use `"full"` to ensure all tools work correctly.
 
 !!! info "When to use sandbox mode 'all' instead"
     Use `"all"` only on **shared or multi-user servers** where you cannot trust other users. It containerizes all tool execution in Docker, which provides stronger isolation but requires Docker installed and makes `.env` files and host environment variables unavailable inside the container.
@@ -2128,7 +2126,7 @@ ls -la ~/.openclaw/
 
     | Setting | This guide | Common in production | Our rationale |
     |---------|-----------|---------------------|---------------|
-    | `tools.profile` | `"full"` + `deny: ["gateway"]` | `"full"` | `coding` profile has a bug where `web_search` doesn't enable correctly — use `full` + `deny` |
+    | `tools.profile` | `"full"` (no deny) | `"full"` | `coding` profile has a bug where `web_search` doesn't enable correctly — use `full`; gateway is safe on hardened VPS |
     | `maxConcurrent` | `1` | `4` typical | Conservative for 4GB VPS — increase to 2-4 for 8GB+ |
     | `heartbeat.model` | Not configured | Cheap model every 30m | Optional — add if you want proactive agent check-ins |
     | `subagents.model` | Inherits primary | Different (cheaper) model | Cost saving — set to DeepSeek V3 or Flash Lite for subagents |

@@ -349,8 +349,7 @@ cat > ~/.openclaw/openclaw.json << OCEOF
     }
   },
   "tools": {
-    "profile": "full",
-    "deny": ["gateway"]$(if [ "${PROVIDER}" = "kimi-coding" ]; then echo ',
+    "profile": "full"$(if [ "${PROVIDER}" = "kimi-coding" ]; then echo ',
     "web": {
       "search": {
         "enabled": true,

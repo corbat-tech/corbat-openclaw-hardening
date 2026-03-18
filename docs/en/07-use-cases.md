@@ -28,11 +28,11 @@ By the end of this section you will have:
 
     In OpenClaw:
 
-    - **`openclaw.json`** controls which tools are *available* via `tools.profile` and `tools.deny` — this is the same for all use cases (configured in section 5)
+    - **`openclaw.json`** controls which tools are *available* via `tools.profile` — this is the same for all use cases (configured in section 5)
     - **`SOUL.md`** controls how the agent *behaves* — this is where you define per-use-case restrictions, capabilities, and guidelines
     - **MCP servers** extend capabilities with external integrations (GitHub, databases, etc.)
 
-    The base `openclaw.json` from section 5 gives the agent access to all tools except `gateway`. **Use SOUL.md to tell the agent what it should and shouldn't do.**
+    The base `openclaw.json` from section 5 gives the agent access to all tools (including gateway). **Use SOUL.md to tell the agent what it should and shouldn't do.**
 
 ---
 
@@ -94,7 +94,7 @@ By the end of this section you will have:
 | `sessions_*`, `session_status` | `group:sessions` | Sub-agent sessions | Controlled by `maxConcurrent` |
 | `memory_search`, `memory_get` | `group:memory` | Persistent memory | Agent-scoped |
 | `cron` | individual | Scheduled tasks | SOUL.md approval rules |
-| `gateway` | individual | Gateway config | **DENIED** — security risk |
+| `gateway` | `group:automation` | Gateway config | Safe on hardened VPS (localhost + TLS + Tailscale) |
 
 ### MCP servers (Model Context Protocol)
 

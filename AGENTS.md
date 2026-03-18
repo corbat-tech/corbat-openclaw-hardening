@@ -247,7 +247,6 @@ nc -zv imap.gmail.com 993 -w 5
   "session": { "dmScope": "per-channel-peer" },
   "tools": {
     "profile": "full",
-    "deny": ["gateway"],
     "web": {
       "search": {
         "enabled": true,
@@ -288,7 +287,7 @@ These are field-tested, not theoretical. Discovered through real production depl
 - **dmPolicy**: Use `"allowlist"` with `allowFrom` to restrict access. `"pairing"` ignores `allowFrom`
 - **SOUL.md path**: Must be in the workspace dir from `agents.defaults.workspace` (e.g., `~/openclaw/workspace/SOUL.md`), NOT in `~/.openclaw/workspace/`
 - **Root-level keys**: `sandbox`, `dmPolicy`, `security`, `tools.blocked` at root level are NOT recognized — they go inside `agents.defaults` or per-channel config
-- **Tools config**: Use `profile: "full"` with `deny: ["gateway"]`. The `coding` profile has a bug where `web_search` doesn't enable correctly. Do NOT deny `process` — skills need it. The correct Telegram streaming field is `streaming` (NOT `streamMode`)
+- **Tools config**: Use `profile: "full"` (no deny list needed — gateway is safe on hardened VPS). The `coding` profile has a bug where `web_search` doesn't enable correctly. Do NOT deny `process` — skills need it. The correct Telegram streaming field is `streaming` (NOT `streamMode`)
 - **Invalid schema fields**: `sendOptions`, `requestOptions`, `passthrough`, `extraBody`, `streamMode` — all cause "Config invalid" errors
 
 ### Systemd hardening
@@ -508,7 +507,7 @@ Commands not in the allowlist (`rm`, `kill`, `chmod`, `ssh`, `scp`) require appr
 - **Never** add `SystemCallFilter` in override.conf — causes NAMESPACE errors
 - **Never** deny `process` in tools — skills need it to run scripts
 - **Never** run `openclaw doctor --fix` after manual config — it overwrites provider settings
-- **Always** use `tools.profile: "full"` with `deny: ["gateway"]` — `coding` profile has a bug where `web_search` doesn't enable correctly
+- **Always** use `tools.profile: "full"` — `coding` profile has a bug where `web_search` doesn't enable correctly
 - **Always** use sandbox `"off"` on dedicated VPS with systemd hardening
 - **Always** configure `exec-approvals.json` with `security: "allowlist"` — prevents uncontrolled command execution
 - **Always** create `/etc/sudoers.d/openclaw` to restrict `sudo` to apt, pip3, systemctl only

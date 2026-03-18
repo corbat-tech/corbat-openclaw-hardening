@@ -472,7 +472,6 @@ nano ~/.openclaw/openclaw.json
   },
   "tools": {
     "profile": "full",
-    "deny": ["gateway"],
     "web": {
       "search": {
         "enabled": true,
@@ -742,12 +741,12 @@ Esto crea `/etc/sudoers.d/openclaw` con acceso NOPASSWD a **solo** estos comando
     - `google-generative-ai` + `.../v1beta` (nativo, sin `/openai`)
 
 !!! info "Configuración de tools"
-    La configuración recomendada usa `profile: "full"` con `deny: ["gateway"]`:
+    La configuración recomendada usa `profile: "full"` (sin deny list):
 
-    - `"full"` habilita todas las herramientas incluyendo web search, browser, canvas, cron y shell
-    - `"deny": ["gateway"]` impide que el agente modifique su propia configuración del gateway en runtime
+    - `"full"` habilita todas las herramientas incluyendo web search, browser, canvas, cron, gateway y shell
+    - En un VPS hardened (gateway en `127.0.0.1`, TLS pairing, Tailscale), no es necesario denegar `gateway` — el riesgo es mínimo y denegarlo limita la funcionalidad de `group:automation` (cron scheduling, etc.)
 
-    Usar `profile: "coding"` con `allow: ["group:web"]` NO habilita correctamente `web_search` (posible bug). Usa `"full"` + `"deny"` en su lugar.
+    Usar `profile: "coding"` con `allow: ["group:web"]` NO habilita correctamente `web_search` (posible bug). Usa `"full"` en su lugar.
 
     Para un agente sin restricciones: `"tools": {}`
 
@@ -776,7 +775,7 @@ Esto crea `/etc/sudoers.d/openclaw` con acceso NOPASSWD a **solo** estos comando
     El perfil `coding` puede advertir sobre tools desconocidas (`apply_patch`, `image`) — es inofensivo, esas tools simplemente no se cargan sin sus plugins.
 
     !!! warning "Problema conocido: perfil `coding` y `web_search`"
-        Usar `profile: "coding"` con `allow: ["group:web"]` NO habilita correctamente `web_search` (posible bug). Por eso recomendamos `profile: "full"` con `deny: ["gateway"]`.
+        Usar `profile: "coding"` con `allow: ["group:web"]` NO habilita correctamente `web_search` (posible bug). Por eso recomendamos `profile: "full"`.
 
 !!! info "Configuración de `web_search`"
     La herramienta `web_search` requiere una API key de búsqueda. OpenClaw auto-detecta en este orden: Brave → Gemini → Kimi → Perplexity → Grok.
@@ -1070,7 +1069,7 @@ nano ~/openclaw/workspace/TOOLS.md
 ```markdown
 # Herramientas
 
-## Herramientas disponibles (via profile "full" − deny ["gateway"])
+## Herramientas disponibles (via profile "full")
 
 ### Filesystem (group:fs)
 - read, write, edit, apply_patch
@@ -1097,10 +1096,10 @@ nano ~/openclaw/workspace/TOOLS.md
 ### Cron
 - Programar tareas recurrentes
 
-## NO disponible (excluido intencionalmente)
-
-### Gateway
-NO disponible — modificar la configuración del gateway en runtime es un riesgo de seguridad.
+### Automation (group:automation)
+- cron, gateway
+- Cron: programar tareas recurrentes
+- Gateway: gestionar config del gateway (seguro en VPS hardened)
 
 ## Directrices
 
@@ -1112,22 +1111,21 @@ NO disponible — modificar la configuración del gateway en runtime es un riesg
 
 ### Sandbox y restricciones de herramientas
 
-Para un **VPS dedicado de un solo usuario** con el hardening de esta guía, el modo sandbox `"off"` es la configuración recomendada. La seguridad se aplica mediante `exec-approvals` allowlist, `sudoers` restringido, aislamiento del VPS dedicado (Tailscale VPN, usuario non-root) y restricciones de herramientas (`tools.profile` + `tools.deny`).
+Para un **VPS dedicado de un solo usuario** con el hardening de esta guía, el modo sandbox `"off"` es la configuración recomendada. La seguridad se aplica mediante `exec-approvals` allowlist, `sudoers` restringido, aislamiento del VPS dedicado (Tailscale VPN, usuario non-root) y hardening del gateway (`127.0.0.1` binding, TLS pairing).
 
-El acceso a herramientas se controla en `openclaw.json` (ya configurado en el ejemplo JSON principal de arriba):
+El acceso a herramientas se controla via `tools.profile` en `openclaw.json` (ya configurado en el ejemplo JSON principal de arriba):
 
 ```json
 "sandbox": { "mode": "off" },
 "tools": {
-  "profile": "full",
-  "deny": ["gateway"]
+  "profile": "full"
 }
 ```
 
-Esto da al agente todas las herramientas (filesystem, shell, git, sessions, memory, web search, web fetch, browser, canvas, cron, etc.) excepto `gateway` — que se deniega porque permitiría al agente modificar su propia configuración del gateway en runtime.
+Esto da al agente todas las herramientas (filesystem, shell, git, sessions, memory, web search, web fetch, browser, canvas, cron, gateway, etc.). En un VPS hardened con gateway en `127.0.0.1`, TLS pairing y acceso Tailscale, no es necesario denegar ninguna herramienta.
 
 !!! warning "Bug del perfil `coding` con `web_search`"
-    Usar `profile: "coding"` con `allow: ["group:web"]` NO habilita correctamente `web_search` (posible bug de OpenClaw). Usa `"full"` + `"deny"` para asegurar que todas las herramientas funcionan correctamente.
+    Usar `profile: "coding"` con `allow: ["group:web"]` NO habilita correctamente `web_search` (posible bug de OpenClaw). Usa `"full"` para asegurar que todas las herramientas funcionan correctamente.
 
 !!! info "Cuándo usar sandbox mode 'all' en su lugar"
     Usa `"all"` solo en **servidores compartidos o multi-usuario** donde no puedas confiar en otros usuarios. Containeriza toda la ejecución de herramientas en Docker, lo que proporciona un aislamiento más fuerte pero requiere Docker instalado y hace que los archivos `.env` y las variables de entorno del host no estén disponibles dentro del contenedor.
@@ -2127,7 +2125,7 @@ ls -la ~/.openclaw/
 
     | Ajuste | Esta guía | Común en producción | Nuestra justificación |
     |--------|----------|--------------------|-----------------------|
-    | `tools.profile` | `"full"` + `deny: ["gateway"]` | `"full"` | El perfil `coding` tiene un bug donde `web_search` no se habilita correctamente — usar `full` + `deny` |
+    | `tools.profile` | `"full"` (sin deny) | `"full"` | El perfil `coding` tiene un bug donde `web_search` no se habilita correctamente — usar `full`; gateway es seguro en VPS hardened |
     | `maxConcurrent` | `1` | `4` típico | Conservador para VPS de 4GB — aumentar a 2-4 para 8GB+ |
     | `heartbeat.model` | No configurado | Modelo barato cada 30m | Opcional — añadir si quieres check-ins proactivos del agente |
     | `subagents.model` | Hereda primary | Modelo diferente (más barato) | Ahorro de costes — usar DeepSeek V3 o Flash Lite para subagentes |

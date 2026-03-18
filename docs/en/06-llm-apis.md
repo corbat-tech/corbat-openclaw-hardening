@@ -491,7 +491,6 @@ Grok 4.1 Fast Reasoning + Brave for web search):
   },
   "tools": {
     "profile": "full",
-    "deny": ["gateway"],
     "web": {
       "search": {
         "enabled": true,
