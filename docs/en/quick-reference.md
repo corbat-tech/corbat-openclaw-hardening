@@ -58,6 +58,9 @@ openclaw doctor
 
 # Validate sandbox configuration
 openclaw sandbox explain
+
+# Validate that configured LLM providers respond correctly
+openclaw models status --probe
 ```
 
 !!! danger "Never run `openclaw doctor --fix` after manual configuration"
@@ -113,14 +116,15 @@ sudo journalctl -u openclaw -n 10 --no-pager -o cat
 
 ### Provider env vars reference
 
-| Provider | Variables | Model ID |
-|----------|-----------|----------|
-| **OpenAI** | `OPENAI_API_KEY` | `gpt-5-mini`, `gpt-5` |
-| **Anthropic** | `ANTHROPIC_API_KEY` | `claude-sonnet-4-5-20250514`, `claude-opus-4-6` |
-| **Google** | `GEMINI_API_KEY` | `gemini-2.5-flash`, `gemini-2.5-pro` |
-| **DeepSeek** | `DEEPSEEK_API_KEY` | `deepseek-chat`, `deepseek-reasoner` |
-| **NVIDIA NIM** | `NVIDIA_API_KEY` | `moonshotai/kimi-k2.5` |
-| **Kimi Coding** | `KIMI_API_KEY` | `kimi-for-coding` (subscription) |
+| Provider | Variables | Model ID | Notes |
+|----------|-----------|----------|-------|
+| **Kimi Coding** | `KIMI_API_KEY` | `kimi-for-coding` | Free with subscription, recommended primary |
+| **xAI** | `XAI_API_KEY` | `grok-4-1-fast-reasoning` | $0.20/$0.50 per MTok, recommended fallback |
+| **Google** | `GOOGLE_API_KEY` | `gemini-2.5-flash` | $0.30/$2.50 per MTok, optional LLM fallback |
+| **Brave** | `BRAVE_SEARCH_API_KEY` | — | Free ~1,000 queries/month, recommended web search |
+| **Anthropic** | `ANTHROPIC_API_KEY` | `claude-sonnet-4-6`, `claude-opus-4-6` | Premium quality |
+| **OpenAI** | `OPENAI_API_KEY` | `gpt-5-mini`, `gpt-5` | General use |
+| **DeepSeek** | `DEEPSEEK_API_KEY` | `deepseek-chat` | Budget option |
 
 ### Add OpenAI (ChatGPT) as provider
 
@@ -162,24 +166,8 @@ sudo systemctl restart openclaw
 
 ### Multi-provider setup (primary + fallback)
 
-A common pattern is using a reasoning model as primary and a fast model for web search and simple tasks:
-
-```json
-{
-  "providers": {
-    "kimi-coding": {
-      "model": "kimi-for-coding",
-      "baseUrl": "https://api.kimi.com/coding/v1",
-      "headers": { "User-Agent": "claude-code/0.1.0" },
-      "reasoning": false
-    },
-    "gemini": {
-      "model": "gemini-2.5-flash",
-      "maxTokens": 65536,
-      "compat": { "supportsStore": false }
-    }
-  }
-}
+A common pattern is using Kimi Coding as primary with Grok 4.1 Fast Reasoning as fallback and Brave for web search.
+See [section 6](06-llm-apis.md#multi-model-configuration-with-fallbacks) for the full `openclaw.json` configuration
 ```
 
 ---

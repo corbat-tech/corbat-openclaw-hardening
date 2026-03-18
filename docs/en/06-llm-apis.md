@@ -30,40 +30,83 @@ By the end of this section you will have:
 
 ## Provider comparison (March 2026)
 
-| Provider | Recommended model | Quality | Price | Best for |
-|----------|-------------------|---------|-------|----------|
-| **Kimi/Moonshot** | Kimi K2.5 | ⭐⭐⭐⭐⭐ | **FREE** | Getting started at no cost |
-| **Anthropic** | Claude Sonnet 4.6 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | Complex reasoning, coding |
-| **Anthropic** | Claude Opus 4.6 | ⭐⭐⭐⭐⭐⭐ | ⭐⭐ | Maximum quality |
-| **OpenAI** | GPT-5 mini | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | General use, stable |
-| **DeepSeek** | DeepSeek V3 | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | High volume, low cost |
-| **Google** | Gemini Flash | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ | High volume |
-
-!!! success "Kimi K2.5 free"
-    Kimi K2.5 (launched January 2026) is available **for free** through NVIDIA NIM.
-    Excellent option to get started at no cost and test OpenClaw.
+| Provider | Model | Model ID | Pricing | Context | Best for |
+|----------|-------|----------|---------|---------|----------|
+| **xAI** | Grok 4.1 Fast | `grok-4-1-fast-reasoning` | $0.20 / $0.50 per MTok | 2M | Best price/performance, agentic tool calling |
+| **Kimi Coding** | Kimi for Coding | `kimi-for-coding` | **Free** (with Kimi Code subscription) | 262K | Daily use, coding, tooling |
+| **Kimi/Moonshot** | Kimi K2.5 | `kimi-k2.5` | ~$0.50 / $1.50 per MTok | 262K | Multilingual, coding, good reasoning |
+| **Google** | Gemini 2.5 Flash | `gemini-2.5-flash` | $0.30 / $2.50 per MTok | 1M | Web search, large context |
+| **DeepSeek** | DeepSeek V3.2 | `deepseek-chat` | $0.28 / $0.42 per MTok | 128K | Budget champion, reasoning + tools |
+| **Anthropic** | Claude Sonnet 4.6 | `claude-sonnet-4-6` | $3.00 / $15.00 per MTok | 1M | Mission-critical, maximum reliability |
+| **Anthropic** | Claude Opus 4.6 | `claude-opus-4-6` | $5.00 / $25.00 per MTok | 1M | Maximum quality |
+| **OpenAI** | GPT-5 mini | `gpt-5-mini` | $1.75 / $14.00 per MTok | 128K | General use, stable |
 
 ---
 
-## Recommendation by use case
+## Recommended setups (March 2026)
 
-### Personal use / testing
+!!! tip "Community consensus: Grok 4.1 Fast is the best overall value"
+    2M token context, best agentic tool calling, and $0.20/$0.50 per MTok. The **reasoning** variant scores 64 vs 38 (non-reasoning) on benchmarks at the same price per token — it just consumes more tokens for chain-of-thought.
 
-- **Model:** Kimi K2.5 (free)
-- **Budget:** $0/month
-- **Why:** Free on NVIDIA NIM, sufficient quality for testing
+### Near-zero cost (with Kimi Code subscription)
 
-### Development / daily use
+| Role | Model | Cost |
+|------|-------|------|
+| Primary | Kimi for Coding (free with subscription) | $0 |
+| Fallback | Grok 4.1 Fast Reasoning | $0.20/$0.50 per MTok |
+| Web search | Brave (free ~1,000 queries/month) | $0 |
 
-- **Model:** Claude Sonnet 4.6 or GPT-5 mini
-- **Budget:** $30-50/month
-- **Why:** Good quality/cost balance
+**Estimated: <$1/month.** The Kimi Code subscription covers the primary. Grok only activates when Kimi fails, so consumption is minimal.
 
-### Production / intensive use
+### Best price/performance
 
-- **Model:** Claude Sonnet 4.6 (primary) + DeepSeek V3 (simple tasks)
-- **Budget:** $80-150/month
-- **Why:** Quality for complex tasks, low cost for volume
+| Role | Model | Cost |
+|------|-------|------|
+| Primary | Grok 4.1 Fast Reasoning | $0.20/$0.50 per MTok |
+| Fallback | DeepSeek V3.2 | $0.28/$0.42 per MTok |
+| Web search | Brave | Free |
+
+**Estimated: ~$10-30/month.** Grok as primary offers 2M context and the best agentic performance. DeepSeek as a cheap and capable fallback.
+
+### Budget minimum (no subscriptions)
+
+| Role | Model | Cost |
+|------|-------|------|
+| Primary | Kimi K2.5 | ~$0.50/$1.50 per MTok |
+| Fallback | MiniMax M2.5 or MiMo-V2-Flash | Very low |
+| Web search | Brave (free) or SearXNG (self-hosted) | Free |
+
+**Estimated: ~$15/month.**
+
+### Maximum reliability
+
+| Role | Model | Cost |
+|------|-------|------|
+| Primary | Claude Sonnet 4.6 | $3/$15 per MTok |
+| Fallback | Grok 4.1 Fast Reasoning | $0.20/$0.50 per MTok |
+| Web search | Brave or Gemini | Low |
+
+**Estimated: ~$50-200/month depending on usage.**
+
+!!! info "Cost-saving tip"
+    Use DeepSeek V3.2 or Gemini Flash for subagents and heartbeats instead of the primary model — estimated savings of $40-60/month.
+
+---
+
+## Web search providers
+
+OpenClaw supports multiple web search providers. **Only one provider** can be active — there is no fallback chain for web search (feature request [#2317](https://github.com/openclaw/openclaw/issues/2317)).
+
+Auto-detection order (if no explicit provider configured): Brave → Gemini → Perplexity → Grok.
+
+| Provider | Cost | Free tier | Quality | Notes |
+|----------|------|-----------|---------|-------|
+| **Brave** (recommended) | $5/1K queries | $5 credits/month (~1,000 queries) | Own index, clean results | Requires card (no charge within credits) |
+| **Gemini** | $14-35/1K (grounding) | 1,500 requests/day free | Google Search grounding | Most generous free tier |
+| **Grok** | $5/1K tool calls | No | AI-synthesized + citations | Reuses your `XAI_API_KEY` |
+| **Kimi** | $0.005/call + tokens | No | Moonshot native | Requires `MOONSHOT_API_KEY` (Kimi Code key does NOT work) |
+| **Perplexity** | Paid | No | AI-synthesized answers | Good quality, more expensive |
+| **SearXNG** | Free (self-hosted) | Unlimited | Variable | Requires Docker, maximum privacy |
 
 ---
 
@@ -90,6 +133,18 @@ LLM_PROVIDER=nvidia
 NVIDIA_API_KEY=nvapi-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 NVIDIA_BASE_URL=https://integrate.api.nvidia.com/v1
 DEFAULT_MODEL=moonshotai/kimi-k2.5
+```
+
+### xAI (Grok 4.1 Fast)
+
+1. Go to [console.x.ai](https://console.x.ai/home) and create an account
+2. In the left sidebar, go to **Billing** and add a payment method
+3. Go to **API Keys** → **Create API Key**
+4. Copy the key starting with `xai-...`
+
+```bash
+# In /etc/openclaw/env
+XAI_API_KEY=xai-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
 
 ### OpenAI
@@ -150,6 +205,11 @@ DEFAULT_MODEL=deepseek-chat
 
 1. Go to [console.anthropic.com/settings/limits](https://console.anthropic.com/settings/limits)
 2. Set **Monthly spending limit:** $50
+
+### xAI (Grok)
+
+1. Go to [console.x.ai](https://console.x.ai/home) → **Billing**
+2. Set a monthly spending cap (xAI supports hard limits)
 
 ### NVIDIA NIM (Kimi K2.5)
 
@@ -355,28 +415,146 @@ chmod +x ~/openclaw/scripts/check_api_usage.sh
 
 ---
 
-## Multi-model configuration (advanced)
+## Multi-model configuration with fallbacks
 
-If OpenClaw supports it, you can use different models for different tasks:
+OpenClaw supports a primary model with automatic fallbacks. Here is the recommended
+configuration for `~/.openclaw/openclaw.json` using our reference setup (Kimi Coding +
+Grok 4.1 Fast Reasoning + Brave for web search):
 
-```yaml
-# config/models.yaml (example)
-routing:
-  # Complex tasks: powerful model
-  complex_reasoning:
-    provider: anthropic
-    model: claude-sonnet-4-5-20250514
-
-  # Simple tasks: economical model
-  simple_tasks:
-    provider: deepseek
-    model: deepseek-chat
-
-  # Default: free model
-  default:
-    provider: nvidia
-    model: moonshotai/kimi-k2.5
+```json
+{
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "kimi-coding": {
+        "baseUrl": "https://api.kimi.com/coding",
+        "apiKey": "${KIMI_API_KEY}",
+        "api": "anthropic-messages",
+        "headers": {
+          "User-Agent": "claude-code/0.1.0"
+        },
+        "models": [
+          {
+            "id": "kimi-for-coding",
+            "name": "Kimi Coding",
+            "reasoning": false,
+            "input": ["text"],
+            "contextWindow": 262144,
+            "maxTokens": 32768
+          }
+        ]
+      },
+      "xai": {
+        "baseUrl": "https://api.x.ai/v1",
+        "apiKey": "${XAI_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "grok-4-1-fast-reasoning",
+            "name": "Grok 4.1 Fast",
+            "reasoning": false,
+            "input": ["text", "image"],
+            "contextWindow": 2097152,
+            "maxTokens": 131072
+          }
+        ]
+      },
+      "google": {
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "apiKey": "${GOOGLE_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "gemini-2.5-flash",
+            "name": "Gemini 2.5 Flash",
+            "reasoning": false,
+            "input": ["text", "image"],
+            "contextWindow": 1048576,
+            "maxTokens": 65536,
+            "compat": {
+              "supportsStore": false
+            }
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "kimi-coding/kimi-for-coding",
+        "fallbacks": [
+          "xai/grok-4-1-fast-reasoning"
+        ]
+      }
+    }
+  },
+  "tools": {
+    "profile": "full",
+    "deny": ["gateway"],
+    "web": {
+      "search": {
+        "enabled": true,
+        "provider": "brave",
+        "apiKey": "${BRAVE_SEARCH_API_KEY}"
+      },
+      "fetch": {
+        "enabled": true
+      }
+    }
+  }
+}
 ```
+
+!!! info "Key details about this configuration"
+    - **Kimi Coding** uses `anthropic-messages` API (not `openai-completions`)
+    - **Kimi Coding** `baseUrl` has no trailing `/v1` — it's `https://api.kimi.com/coding`
+    - **Kimi Coding** requires the `User-Agent` header or requests will fail
+    - **Grok** model ID is `grok-4-1-fast-reasoning` (the **reasoning** variant — scores 64 vs 38 at same price/token)
+    - **Grok** `reasoning: false` in the model definition is correct — this controls OpenClaw's prompt handling, not the model's internal reasoning
+    - **Gemini** requires `compat.supportsStore: false` (see Issue #22704)
+    - **Web search** uses Brave with a dedicated API key (`BRAVE_SEARCH_API_KEY`)
+    - Environment variables (`${VAR}`) are resolved from `/etc/openclaw/env`
+    - **Hot reload**: OpenClaw detects changes to `openclaw.json` automatically — restart is not always needed
+
+### Required environment variables
+
+Add these to `/etc/openclaw/env`:
+
+```bash
+# Primary: Kimi Coding (subscription)
+KIMI_API_KEY=kimi-XXXXXXXXXXXXXXXXXXXXXXXX
+
+# Fallback: xAI Grok
+XAI_API_KEY=xai-XXXXXXXXXXXXXXXXXXXXXXXX
+
+# Optional LLM: Google Gemini (if using as fallback)
+GOOGLE_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# Web search: Brave
+BRAVE_SEARCH_API_KEY=BSAxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+Then apply:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart openclaw
+```
+
+---
+
+## Technical notes
+
+!!! warning "Important configuration details"
+    These are field-tested findings from real deployments, not theoretical recommendations.
+
+- **Hot reload**: OpenClaw detects changes to `openclaw.json` automatically — a service restart is not always needed, but recommended for env var changes
+- **Brave web search config**: The `apiKey` goes in `tools.web.search.apiKey`, NOT inside `tools.web.search.brave.apiKey` (schema validation error if nested incorrectly)
+- **Kimi auth keys**: The Kimi Code subscription key (`sk-kimi-*`) and the Moonshot platform API key (`sk-*`) are different credentials. Web search via Kimi in OpenClaw requires the Moonshot key, not the Kimi Code key
+- **Grok reasoning vs non-reasoning**: Variants of the same model (`grok-4-1-fast-reasoning` / `grok-4-1-fast-non-reasoning`). Same price per token, but reasoning consumes more tokens for chain-of-thought. Quality difference is significant (64 vs 38 on benchmarks)
+- **Config sync**: `models.json` (agent-level) and `openclaw.json` (global) define providers redundantly — keep them synchronized to avoid inconsistencies
+- **Web search has no fallback**: OpenClaw only allows one provider for `web_search` — there is no fallback chain. Feature request [#2317](https://github.com/openclaw/openclaw/issues/2317) is open
 
 ---
 
@@ -420,9 +598,12 @@ sudo cat -A /etc/openclaw/env | grep API_KEY
 **Solution:**
 ```bash
 # Verify exact model names in official documentation
+# Kimi Coding: kimi-for-coding
+# xAI Grok: grok-4-1-fast-reasoning (reasoning variant)
+# Google: gemini-2.5-flash
 # OpenAI: gpt-5-mini, gpt-5
-# Anthropic: claude-sonnet-4-5-20250514, claude-opus-4-5-20251101
-# NVIDIA: moonshotai/kimi-k2.5
+# Anthropic: claude-sonnet-4-6, claude-opus-4-6
+# DeepSeek: deepseek-chat
 ```
 
 ---

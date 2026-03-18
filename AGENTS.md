@@ -34,7 +34,8 @@ CLAUDE.md            # Claude Code pointer (references this file)
 - **Access**: Tailscale only (no public SSH)
 - **OpenClaw version**: 2026.3.x
 - **Primary model**: kimi-coding/kimi-for-coding (subscription)
-- **Fallback model**: google/gemini-2.5-flash (free tier + web_search)
+- **Fallback model**: xai/grok-4-1-fast-reasoning ($0.20/$0.50 per MTok, 2M context)
+- **Web search**: Brave (free ~1,000 queries/month)
 - **Google Gemini API**: `openai-completions` with baseUrl `https://generativelanguage.googleapis.com/v1beta/openai` and `compat.supportsStore: false`
 - **Channels**: Telegram with allowlist
 - **Email**: Gmail with app password via himalaya skill
@@ -96,8 +97,9 @@ If API keys are missing, guide the user:
 sudo mkdir -p /etc/openclaw
 sudo nano /etc/openclaw/env
 # Add: KIMI_API_KEY=sk-...
-# Add: GOOGLE_API_KEY=...
-# Add: GEMINI_API_KEY=...  (same value as GOOGLE_API_KEY)
+# Add: XAI_API_KEY=xai-...
+# Add: BRAVE_SEARCH_API_KEY=BSA...
+# Add: GOOGLE_API_KEY=...  (optional, if using Gemini)
 # Add: GATEWAY_TOKEN=...
 # Add: TELEGRAM_BOT_TOKEN=...  (if using Telegram)
 
@@ -143,10 +145,11 @@ nc -zv imap.gmail.com 993 -w 5
       "maxConcurrent": 1,
       "model": {
         "primary": "kimi-coding/kimi-for-coding",
-        "fallbacks": ["google/gemini-2.5-flash"]
+        "fallbacks": ["xai/grok-4-1-fast-reasoning"]
       },
       "models": {
         "kimi-coding/kimi-for-coding": { "alias": "Kimi Coding" },
+        "xai/grok-4-1-fast-reasoning": { "alias": "Grok 4.1 Fast" },
         "google/gemini-2.5-flash": { "alias": "Gemini 2.5 Flash" }
       },
       "sandbox": { "mode": "off" },
@@ -157,7 +160,8 @@ nc -zv imap.gmail.com 993 -w 5
   "auth": {
     "profiles": {
       "google:default": { "provider": "google", "mode": "api_key" },
-      "kimi-coding:default": { "provider": "kimi-coding", "mode": "api_key" }
+      "kimi-coding:default": { "provider": "kimi-coding", "mode": "api_key" },
+      "xai:default": { "provider": "xai", "mode": "api_key" }
     }
   },
   "channels": {
@@ -166,6 +170,7 @@ nc -zv imap.gmail.com 993 -w 5
       "botToken": "${TELEGRAM_BOT_TOKEN}",
       "dmPolicy": "allowlist",
       "allowFrom": ["YOUR_TELEGRAM_USER_ID"],
+      "groupPolicy": "allowlist",
       "streaming": "partial"
     }
   },
@@ -181,13 +186,17 @@ nc -zv imap.gmail.com 993 -w 5
   "commands": {
     "native": "auto",
     "nativeSkills": "auto",
-    "restart": true
+    "restart": true,
+    "ownerDisplay": "raw"
   },
   "gateway": {
     "auth": { "mode": "token", "token": "${GATEWAY_TOKEN}" },
     "bind": "loopback",
     "mode": "local",
     "port": 18789
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
   },
   "models": {
     "mode": "merge",
@@ -219,6 +228,19 @@ nc -zv imap.gmail.com 993 -w 5
           "maxTokens": 32768,
           "reasoning": false
         }]
+      },
+      "xai": {
+        "api": "openai-completions",
+        "apiKey": "${XAI_API_KEY}",
+        "baseUrl": "https://api.x.ai/v1",
+        "models": [{
+          "id": "grok-4-1-fast-reasoning",
+          "name": "Grok 4.1 Fast",
+          "input": ["text", "image"],
+          "contextWindow": 2097152,
+          "maxTokens": 131072,
+          "reasoning": false
+        }]
       }
     }
   },
@@ -229,11 +251,8 @@ nc -zv imap.gmail.com 993 -w 5
     "web": {
       "search": {
         "enabled": true,
-        "provider": "gemini",
-        "gemini": {
-          "apiKey": "${GEMINI_API_KEY}",
-          "model": "gemini-2.5-flash"
-        }
+        "provider": "brave",
+        "apiKey": "${BRAVE_SEARCH_API_KEY}"
       },
       "fetch": {
         "enabled": true
@@ -262,7 +281,7 @@ These are field-tested, not theoretical. Discovered through real production depl
 ### Secrets & auth
 - **Secrets CLI**: `openclaw secrets configure` (interactive wizard), `openclaw secrets audit`, `openclaw secrets reload` — there is NO `openclaw secrets set` command
 - **Secrets storage**: Store ALL API keys and tokens in `/etc/openclaw/env` (mode `600`, `root:openclaw`), loaded via `EnvironmentFile=` in the systemd override. NOT in `.bashrc`, `~/.openclaw/.env`, or plaintext in `openclaw.json`. Reference with `${VAR_NAME}`
-- **Google Gemini requires two env vars**: Both `GOOGLE_API_KEY` and `GEMINI_API_KEY` must be set (same value). `GOOGLE_API_KEY` for LLM completions, `GEMINI_API_KEY` for web search/grounding
+- **Google Gemini**: Requires `GOOGLE_API_KEY` for LLM completions. If using Gemini for web search (instead of Brave), also set `GEMINI_API_KEY` (same value)
 - **`auth-profiles.json`**: `~/.openclaw/agents/main/agent/auth-profiles.json` overrides env vars — if it has a stale key, it blocks auth even with correct systemd env vars. Fix: `echo '{}' > ~/.openclaw/agents/main/agent/auth-profiles.json`
 
 ### Config structure
@@ -281,7 +300,9 @@ These are field-tested, not theoretical. Discovered through real production depl
 ### Model compatibility
 - **Kimi Coding**: `kimi-coding/kimi-for-coding` requires `User-Agent: claude-code/0.1.0` header, `reasoning: false`, and baseUrl without trailing slash (`https://api.kimi.com/coding`)
 - **Gemini**: `google/gemini-2.5-flash` requires `compat.supportsStore: false`
+- **Grok**: `xai/grok-4-1-fast-reasoning` via `openai-completions` API at `https://api.x.ai/v1`. The reasoning variant scores 64 vs 38 (non-reasoning) on benchmarks at the same price per token — it just consumes more tokens for chain-of-thought. Set `reasoning: false` in model definition (controls OpenClaw prompt handling, not the model's internal reasoning)
 - **Moonshot ≠ Kimi Coding**: Separate providers with different API keys (`MOONSHOT_API_KEY` vs `KIMI_API_KEY`) and endpoints
+- **Hot reload**: OpenClaw detects changes to `openclaw.json` automatically — restart not always needed, but recommended for env var changes
 
 ### Execution control
 - **Execution approvals**: `~/.openclaw/exec-approvals.json` — schema v1 with `socket` (path + auto-generated token), `agents.main.allowlist` with `{ "pattern": "/usr/bin/..." }` entries (absolute paths, glob supported). 44 auto-approved patterns including `/usr/local/bin/safe-apt-install`, `safe-systemctl`, `safe-pip-install`, and `/usr/bin/sudo` (restricted by sudoers to wrappers only). Destructive commands (`rm`, `kill`, `chmod`, `ssh`) require Telegram approval. `su`, `dd`, `reboot` never allowed
@@ -291,9 +312,11 @@ These are field-tested, not theoretical. Discovered through real production depl
 - **safe-pip-install**: `/usr/local/bin/safe-pip-install` — validates pip packages against a curated allowlist of ~130 popular PyPI packages (requests, pandas, Pillow, openai, etc.). Rejects URLs, paths, wheel files, and flags. For user-level installs (no sudo needed), use `pip3 install --user` or `pipx install` directly
 
 ### Web search
-- **web_search**: Requires `GEMINI_API_KEY` env var (auto-detect) or explicit `tools.web.search.provider` config. Detection order: Brave → Gemini → Kimi → Perplexity → Grok
-- **web_search config**: Needs 3 fields: `enabled: true`, `gemini.model` explicit, `fetch.enabled: true`
-- **web_search apiKey**: Must be nested under provider: `gemini.apiKey`, NOT `search.apiKey`
+- **web_search**: Requires explicit `tools.web.search.provider` config or auto-detect via env vars. Detection order: Brave → Gemini → Perplexity → Grok
+- **web_search providers**: Brave (recommended, free ~1,000 queries/month), Gemini (1,500/day free), Grok (reuses XAI_API_KEY), Kimi (needs MOONSHOT_API_KEY, NOT Kimi Code key), SearXNG (self-hosted, free unlimited)
+- **Brave config**: `apiKey` goes in `tools.web.search.apiKey`, NOT `tools.web.search.brave.apiKey`
+- **web_search has no fallback chain**: Only one provider active at a time. Feature request [#2317](https://github.com/openclaw/openclaw/issues/2317)
+- **Kimi auth distinction**: Kimi Code subscription key (`sk-kimi-*`) ≠ Moonshot platform API key (`sk-*`). Web search via Kimi requires the Moonshot key
 
 ### Dangerous commands
 - **`openclaw doctor --fix`**: Do NOT run after manual config — it overwrites provider settings (especially Kimi) with broken defaults
@@ -318,8 +341,9 @@ If auth fails despite correct env vars, check `~/.openclaw/agents/main/agent/aut
 | Variable | Where | Purpose |
 |---|---|---|
 | `KIMI_API_KEY` | `/etc/openclaw/env` | Kimi Coding LLM (primary model) |
-| `GOOGLE_API_KEY` | `/etc/openclaw/env` | Google Gemini LLM completions |
-| `GEMINI_API_KEY` | `/etc/openclaw/env` | Gemini web search/grounding (same value as GOOGLE_API_KEY) |
+| `XAI_API_KEY` | `/etc/openclaw/env` | xAI Grok LLM (fallback model) |
+| `GOOGLE_API_KEY` | `/etc/openclaw/env` | Google Gemini LLM completions (optional) |
+| `BRAVE_SEARCH_API_KEY` | `/etc/openclaw/env` | Brave web search (recommended provider) |
 | `GATEWAY_TOKEN` | `/etc/openclaw/env` | OpenClaw gateway authentication |
 | `TELEGRAM_BOT_TOKEN` | `/etc/openclaw/env` | Telegram channel (if configured) |
 
@@ -329,9 +353,10 @@ If auth fails despite correct env vars, check `~/.openclaw/agents/main/agent/aut
 
 | Model | Provider | Tool calls | Cost | Best for |
 |-------|----------|-----------|------|----------|
-| `moonshot/kimi-k2.5` | Moonshot | Yes | Free tier | General assistant, coding |
-| `google/gemini-2.5-flash` | Google | Yes | Free tier | Fast responses, large context (1M tokens) |
-| `kimi-coding/kimi-for-coding` | Kimi Code | Limited | Subscription | Coding tasks (tool calls may fail with reasoning enabled) |
+| `xai/grok-4-1-fast-reasoning` | xAI | Yes | $0.20/$0.50 per MTok | Best price/performance, agentic use, 2M context |
+| `kimi-coding/kimi-for-coding` | Kimi Code | Yes | Free with subscription | Daily coding, tooling |
+| `google/gemini-2.5-flash` | Google | Yes | $0.30/$2.50 per MTok | Large context (1M tokens), optional fallback |
+| `deepseek/deepseek-chat` | DeepSeek | Yes | $0.28/$0.42 per MTok | Budget champion, reasoning + tools |
 
 To switch models, change `agents.defaults.model.primary` and restart:
 ```bash
